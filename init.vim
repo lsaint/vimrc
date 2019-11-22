@@ -6,7 +6,6 @@
 "PlugDiff	    Examine changes from the previous update and the pending changes
 "PlugSnapshot[!] [output path]	Generate script for restoring the current snapshot of the plugins
 call plug#begin('~/.vim/plugged')
-Plug 'mhinz/vim-startify'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'mbbill/undotree'
 Plug 'nathanaelkane/vim-indent-guides'
@@ -90,10 +89,6 @@ noremap <C-C> <ESC>:q<CR>
 " last file
 map <leader>` :e#<CR>
 
-
-" vim-startify
-
-
 " vim-indent-guides
 map <leader><tab> :IndentGuidesToggle<CR>
 
@@ -134,6 +129,7 @@ let g:NERDTreeMapOpenSplit="s"
 let g:NERDTreeMapOpenVSplit="v"
 " exit vim when nerdtree window only
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif 
+au VimEnter *  NERDTree
 
 "Tagbar
 "let g:tagbar_left=1
@@ -324,6 +320,17 @@ function! s:check_back_space() abort
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
 inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
@@ -343,8 +350,9 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
 
 nmap <silent> <leader>cor :CocRestart<cr>
 nmap <silent> <leader>coc :CocCommand<cr>
+nmap <silent> <leader>col :CocList<cr>
 nmap <silent> <leader>cof :CocConfig<cr>
-nmap <silent> <leader>col :CocLocalConfig<cr>
+nmap <silent> <leader>coF :CocLocalConfig<cr>
 imap <C-l> <Plug>(coc-snippets-expand)
 
 
