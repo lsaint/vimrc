@@ -1,7 +1,3 @@
-// :CocInstall coc-python
-// :CocInstall coc-tsserver
-// :CocInstall coc-lua
-// :CocInstall coc-java
 {
   "coc.preferences.formatOnSaveFiletypes": ["python"],
 

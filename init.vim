@@ -6,6 +6,7 @@
 "PlugDiff	    Examine changes from the previous update and the pending changes
 "PlugSnapshot[!] [output path]	Generate script for restoring the current snapshot of the plugins
 call plug#begin('~/.vim/plugged')
+Plug 'mhinz/vim-startify'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'mbbill/undotree'
 Plug 'nathanaelkane/vim-indent-guides'
@@ -88,6 +89,9 @@ let mapleader = " "
 noremap <C-C> <ESC>:q<CR>
 " last file
 map <leader>` :e#<CR>
+
+
+" vim-startify
 
 
 " vim-indent-guides
@@ -284,8 +288,20 @@ let g:airline#extensions#ale#enabled = 1
 
 
 " coc.nvim
-" :CocCommand workspace.showOutput for debug message
 "
+let g:coc_global_extensions = [
+  \ 'coc-tsserver',
+  \ 'coc-html',
+  \ 'coc-css',
+  \ 'coc-python',
+  \ 'coc-lua',
+  \ 'coc-java',
+  \ 'coc-yaml',
+  \ 'coc-json',
+  \ 'coc-snippets',
+  \ ]
+
+
 " Some servers have issues with backup files, see #649
 set nobackup
 set nowritebackup
@@ -295,8 +311,6 @@ set cmdheight=2
 set updatetime=300
 " don't give |ins-completion-menu| messages.
 set shortmess+=c
-" always show signcolumns
-"set signcolumn=yes
 " Use tab for trigger completion with characters ahead and navigate.
 " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
 inoremap <silent><expr> <TAB>
@@ -309,15 +323,6 @@ function! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
-
-" Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
-
-nmap <silent> <leader>coc :CocCommand<cr>
-nmap <silent> <leader>cof :CocConfig<cr>
-nmap <silent> <leader>col :CocLocalConfig<cr>
-nmap <silent> <Leader>i <Plug>(coc-diagnostic-info)
-imap <C-l> <Plug>(coc-snippets-expand)
 
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
@@ -335,6 +340,12 @@ nmap <silent> <leader>r <Plug>(coc-references)
 
 autocmd FileType json syntax match Comment +\/\/.\+$+
 
+
+nmap <silent> <leader>cor :CocRestart<cr>
+nmap <silent> <leader>coc :CocCommand<cr>
+nmap <silent> <leader>cof :CocConfig<cr>
+nmap <silent> <leader>col :CocLocalConfig<cr>
+imap <C-l> <Plug>(coc-snippets-expand)
 
 
 """""""""""|front-end|""""""""""""
