@@ -17,7 +17,6 @@ Plug 'markonm/traces.vim'
 Plug 'vim-scripts/CmdlineComplete'
 Plug 'vim-scripts/ctrlp.vim'
 Plug 'vim-scripts/The-NERD-tree', {'on': 'NERDTreeToggle'}
-"Plug 'vim-scripts/EasyMotion'
 Plug 'vim-scripts/Smooth-Scroll'
 Plug 'majutsushi/tagbar'
 Plug 'mileszs/ack.vim'
@@ -129,7 +128,6 @@ let g:NERDTreeMapOpenSplit="s"
 let g:NERDTreeMapOpenVSplit="v"
 " exit vim when nerdtree window only
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif 
-au VimEnter *  NERDTree
 
 "Tagbar
 "let g:tagbar_left=1
@@ -186,7 +184,7 @@ endif
 
 
 " win style save
-noremap <C-S> :w<CR>
+noremap <C-S> :update<CR>
 vnoremap <C-S> <C-c>:update<CR>
 inoremap <C-S> <C-o>:update<CR>
 
@@ -291,6 +289,7 @@ let g:coc_global_extensions = [
   \ 'coc-css',
   \ 'coc-python',
   \ 'coc-lua',
+  \ 'coc-go',
   \ 'coc-java',
   \ 'coc-yaml',
   \ 'coc-json',
