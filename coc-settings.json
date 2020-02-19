@@ -1,12 +1,18 @@
 {
-  "coc.preferences.formatOnSaveFiletypes": ["python"],
+    "coc.preferences.rootPatterns": [
+        ".vim",
+        ".git",
+        ".hg",
+        ".projections.json"
+    ],
+    "coc.preferences.formatOnSaveFiletypes": ["python"],
 
-  "diagnostic.displayByAle": true,
+    "diagnostic.displayByAle": true,
 
-  "python.jediEnabled": false,
-  "python.formatting.provider": "black",
-  "python.formatting.blackPath": "/usr/local/bin/black",
-  "python.venvPath": "~/Envs",
+    "python.jediEnabled": false,
+    "python.formatting.provider": "black",
+    "python.formatting.blackPath": "/usr/local/bin/black",
+    "python.venvPath": "~/Envs",
 
-  "java.jdt.ls.vmargs": "-javaagent:/Users/lsaint/Coffee/lib/lombok.jar  -Xbootclasspath/a:/Users/lsaint/Coffee/lib/lombok.jar"
+    "java.jdt.ls.vmargs": "-javaagent:/Users/lsaint/Coffee/lib/lombok.jar  -Xbootclasspath/a:/Users/lsaint/Coffee/lib/lombok.jar"
 }

@@ -282,7 +282,8 @@ let g:airline#extensions#ale#enabled = 1
 
 
 " coc.nvim
-"
+" coc detects acceptable new version of installed extension everyday (by default) the first time it starts. 
+" When it finds a new version of an extension, it will update it for you automatically.
 let g:coc_global_extensions = [
   \ 'coc-tsserver',
   \ 'coc-html',
