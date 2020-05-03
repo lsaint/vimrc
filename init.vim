@@ -38,7 +38,7 @@ Plug 'dearrrfish/vim-applescript'
 Plug 'prettier/vim-prettier'
 Plug 'pangloss/vim-javascript', {'for': ['js', 'jsx']}
 Plug 'mxw/vim-jsx', {'for': ['js', 'jsx']}
-Plug 'HerringtonDarkholme/yats.vim', {'for': ['js', 'jsx']}
+Plug 'HerringtonDarkholme/yats.vim', {'for': ['js', 'jsx', 'ts', 'tsx']}
 " themes
 Plug 'vim-airline/vim-airline-themes'
 Plug 'morhetz/gruvbox'
@@ -144,6 +144,8 @@ let g:qfenter_keymap.open = ['<CR>', '<2-LeftMouse>']
 let g:qfenter_keymap.vopen = ['<C-v>']
 let g:qfenter_keymap.hopen = ['<C-s>']
 
+let g:qf_shorten_path = 0
+
 
 " highlight cur word
 let g:highlighting = 0
@@ -167,10 +169,10 @@ nmap <F5> <Plug>(qf_qf_toggle)
 set pastetoggle=<F6>
 
 " <leader> number
-nmap <leader>1 :Ack! --python --ignore "*test*" -s -w <C-r><C-w><cr>
+nmap <leader>1 :Ack! --python --ignore "/*test/*" -s -w <C-r><C-w><cr>
 nmap <leader>2 :Lack! -s -w <C-r><C-w><cr>
-"nmap <leader>3 :Ack! --ignore "*test*" -s -w --python 
-autocmd bufenter * execute "nmap <leader>3 :Ack! --ignore '*test*' -s -w --" . g:extension . " "
+nmap <leader>3 :Ack! --ignore "/*test/*" --ignore-dir "node_modules" -s -w <C-r><C-w>
+"autocmd bufenter * execute "nmap <leader>3 :Ack! --ignore '*test*' -s -w --" . g:extension . " "
 nmap <leader>4 :AckFile! 
 
 " <leader> F
@@ -276,8 +278,11 @@ let g:airline_powerline_fonts = 1
 
 " ale
 "let g:ale_enabled = 0
+"let g:ale_sign_error = '>'
+"let g:ale_sign_warning = '-'
 nmap <Leader>qq <Plug>(ale_previous_wrap)
 nmap <Leader>ww <Plug>(ale_next_wrap)
+nmap <Leader>ad :ALEDetail<CR>
 let g:airline#extensions#ale#enabled = 1
 
 
@@ -286,6 +291,7 @@ let g:airline#extensions#ale#enabled = 1
 " When it finds a new version of an extension, it will update it for you automatically.
 let g:coc_global_extensions = [
   \ 'coc-tsserver',
+  \ 'coc-eslint',
   \ 'coc-html',
   \ 'coc-css',
   \ 'coc-python',
