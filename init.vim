@@ -15,7 +15,7 @@ Plug 'terryma/vim-multiple-cursors'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'markonm/traces.vim'
 Plug 'vim-scripts/CmdlineComplete'
-Plug 'vim-scripts/ctrlp.vim'
+Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
 Plug 'vim-scripts/The-NERD-tree', {'on': 'NERDTreeToggle'}
 Plug 'vim-scripts/Smooth-Scroll'
 Plug 'majutsushi/tagbar'
@@ -91,20 +91,20 @@ map <leader>` :e#<CR>
 " vim-indent-guides
 map <leader><tab> :IndentGuidesToggle<CR>
 
-" CtrlP
-nnoremap <leader>f  :CtrlP<CR>
-nnoremap <leader>b  :CtrlPBuffer<CR>
-nnoremap <leader>u  :CtrlPMRU<CR>
-nnoremap <leader>m  :CtrlPMixed<CR>
-let g:ctrlp_show_hidden = 0
-let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-let g:ctrlp_max_files = 0
-let g:ctrlp_match_window_bottom = 0
-let g:ctrlp_custom_ignore = {
-  \ 'dir':  '\v[\/](doc|tmp|node_modules|build|bin)',
-  \ 'file': '\v\.(o|po|png|pyc|class|jpg|exe|bak|swp|jar|war|ear|zip|tar|gz|bz2|docx|bson|ttf|svg)$',
-  \ }
-
+" LeaderF
+noremap <leader>hf :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
+noremap <leader>hm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
+noremap <leader>ht :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
+noremap <leader>hl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
+noremap <leader>hs :<C-U><C-R>=printf("Leaderf searchHistory %s", "")<CR><CR>
+let g:Lf_WindowPosition = 'popup'
+let g:Lf_PopupPosition = [30, 0]
+let g:Lf_PreviewInPopup = 1
+let g:Lf_PreviewResult = {'Function': 1, 'BufTag': 1, 'Buffer': 1}
+let g:Lf_WildIgnore = {
+  \ 'dir': ['.svn','.git','.hg', 'node_modules', 'tmp', 'bin'],
+  \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.bson','*.exe','*.swp']
+  \}
 
 "surround.vim
 let g:surround_83 = "{% static \'\r\' %}"
@@ -177,7 +177,9 @@ nmap <leader>4 :AckFile!
 
 " <leader> F
 map <leader><F2> :TagbarToggle<cr> 
-nmap <leader><F11> :bufdo! e<cr>
+nmap <Leader><F5> <Plug>(qf_loc_toggle)
+nmap <leader><F10> :bufdo! e<cr>
+nnoremap <leader><F11> :vsplit $MYVIMRC<cr>
 if has("nvim")
     nmap <leader><F12> :source ~/.config/nvim/init.vim<cr>
 else
@@ -237,7 +239,7 @@ map <Leader>sw :call WinBufSwap()<CR>
 
 
 " Format the statusline
-set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{CurDir()}%h\ \ \ Line:\ %l/%L:%c
+"set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{CurDir()}%h\ \ \ Line:\ %l/%L:%c
 
 function! CurDir()
     let curdir = substitute(getcwd(), '/Users/lsaint/', "~/", "g")
