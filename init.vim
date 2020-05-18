@@ -5,22 +5,25 @@
 "PlugStatus	    Check the status of plugins
 "PlugDiff	    Examine changes from the previous update and the pending changes
 "PlugSnapshot[!] [output path]	Generate script for restoring the current snapshot of the plugins
+"
+"curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+"curl -fLo ~/.vimrc https://raw.githubusercontent.com/lsaint/vimrc/master/init.vim
+":PlugInstall
 call plug#begin('~/.vim/plugged')
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'mbbill/undotree'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'dense-analysis/ale'
 Plug 'yssl/QFEnter'
-Plug 'terryma/vim-multiple-cursors'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'markonm/traces.vim'
 Plug 'vim-scripts/CmdlineComplete'
 Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
-Plug 'vim-scripts/The-NERD-tree', {'on': 'NERDTreeToggle'}
-Plug 'vim-scripts/Smooth-Scroll'
+Plug 'preservim/nerdtree'
+Plug 'terryma/vim-smooth-scroll'
 Plug 'majutsushi/tagbar'
 Plug 'mileszs/ack.vim'
-Plug 'vim-scripts/surround.vim'
+Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdcommenter'
 Plug 'vim-airline/vim-airline'
 Plug 'romainl/vim-qf'
@@ -91,12 +94,20 @@ map <leader>` :e#<CR>
 " vim-indent-guides
 map <leader><tab> :IndentGuidesToggle<CR>
 
+" scroll
+noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 9, 2)<CR>
+noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 9, 2)<CR>
+noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 9, 4)<CR>
+noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 9, 4)<CR>
+
+
 " LeaderF
-noremap <leader>hf :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
+noremap <leader>F :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
 noremap <leader>hm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
 noremap <leader>ht :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
 noremap <leader>hl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
 noremap <leader>hs :<C-U><C-R>=printf("Leaderf searchHistory %s", "")<CR><CR>
+let g:Lf_CommandMap = {'<C-X>': ['<C-S>'], '<C-]>': ['<C-V>'], '<C-P>': ['<C-H>'], '<C-V>': ['<C-P>']}
 let g:Lf_WindowPosition = 'popup'
 let g:Lf_PopupPosition = [30, 0]
 let g:Lf_PreviewInPopup = 1
@@ -110,14 +121,11 @@ let g:Lf_WildIgnore = {
 let g:surround_83 = "{% static \'\r\' %}"
 let g:surround_85 = "{% url \'\r\' %}"
 
-"vim-multiple-cursors
-let g:multi_cursor_select_all_word_key = '<Leader><C-n>'
-
 
 " format
-map <leader>pj :%!python3 -m json.tool<CR>
-map <leader>px :%!xmllint % --format<CR>
-map <leader>pp :Prettier<cr>
+nnoremap <leader>pj :%!python3 -m json.tool<CR>
+nnoremap <leader>px :%!xmllint % --format<CR>
+nnoremap <leader>pp <Plug>(Prettier)
 
 
 " NERDTree
@@ -128,9 +136,6 @@ let g:NERDTreeMapOpenSplit="s"
 let g:NERDTreeMapOpenVSplit="v"
 " exit vim when nerdtree window only
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif 
-
-"Tagbar
-"let g:tagbar_left=1
 
 " run
 map <leader>rp :!python3 %<cr>
@@ -143,9 +148,7 @@ let g:qfenter_keymap = {}
 let g:qfenter_keymap.open = ['<CR>', '<2-LeftMouse>']
 let g:qfenter_keymap.vopen = ['<C-v>']
 let g:qfenter_keymap.hopen = ['<C-s>']
-
 let g:qf_shorten_path = 0
-
 
 " highlight cur word
 let g:highlighting = 0
@@ -166,6 +169,7 @@ let g:maximizer_default_mapping_key = '<F3>'
 nnoremap <F4> :UndotreeToggle<cr>
 nmap <Leader><F5> <Plug>(qf_loc_toggle)
 nmap <F5> <Plug>(qf_qf_toggle)
+nmap <F7> <Plug>(qf_shorten_path_toggle)
 set pastetoggle=<F6>
 
 " <leader> number
@@ -287,6 +291,8 @@ nmap <Leader>ww <Plug>(ale_next_wrap)
 nmap <Leader>ad :ALEDetail<CR>
 let g:airline#extensions#ale#enabled = 1
 
+autocmd BufWritePre *.py :CocCommand python.sortImports
+
 
 " coc.nvim
 " coc detects acceptable new version of installed extension everyday (by default) the first time it starts. 
@@ -374,10 +380,73 @@ autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.gra
 
 
 """""""""""|neovim|""""""""""""
-let g:python3_host_prog = '/usr/local/bin/python3'
+let g:python3_host_prog = '/usr/local/opt/python@3.8/bin/python3.8'
 if exists(':tnoremap')
     tnoremap <Esc> <C-\><C-n>
 endif
 
 
+""" fold/unfold python docstring """
+function! PyFoldDocString()
+    setlocal foldmethod=manual
+pythonx << EOF
+import vim
+import ast
 
+docstring_start_lines = []
+lines = list(map(lambda x: "#" if x == "" else x, vim.current.buffer))
+root = ast.parse("\n".join(lines))
+for node in ast.walk(root):
+    if isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.Module)):
+        if (node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Str)):
+            start, end = node.lineno, node.body[0].value.lineno
+            docstring_start_lines.append(end)
+            #print(start, end, node.body[0].value.s)
+
+docstring_end_lines = []
+for start_line in docstring_start_lines:
+    offset = 0
+    for line in lines[start_line:]:
+        offset += 1
+        if '"""' in line.strip():
+            docstring_end_lines.append(start_line + offset)
+            break
+
+docstrings = list(zip(docstring_start_lines, docstring_end_lines))
+for start, end in docstrings:
+    vim.command("%d,%dfold" % (start, end))
+EOF
+endfunction
+
+" show nextline in foldtext
+function! MarkdownFoldText()
+  return getline(v:foldstart+1)
+endfunction
+setlocal foldtext=MarkdownFoldText()
+
+let g:PyDocString="off"
+function! TogglePyDocString()
+    if g:PyDocString == "off"
+        call PyFoldDocString()
+        let g:PyDocString = "on"
+    else
+        normal! zr
+        let g:PyDocString="off"
+    endif
+endfunction
+nnoremap <F9> :call TogglePyDocString()<CR>
+
+
+"""""""" 
+let g:MyVimTips="off"
+function! ToggleVimTips()
+  if g:MyVimTips == "on"
+    let g:MyVimTips="off"
+    pclose
+  else
+    let g:MyVimTips="on"
+    pedit /Users/lsaint/Dropbox/vimtips.txt
+  endif
+endfunction
+
+nnoremap <F8> :call ToggleVimTips()<CR>
