@@ -62,19 +62,14 @@ set encoding=utf-8
 filetype plugin indent on
 syntax on
 set nocompatible
+colorscheme gruvbox
+let mapleader = " "
 
 autocmd bufenter * execute "let g:extension = expand('%:e')"
 
 " delete without copy
-" nnoremap d "_d
-" vnoremap d "_d
-
-" highlight the current line only on the active buffer
-augroup CursorLine
-    au!
-    au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
-    au WinLeave * setlocal nocursorline
-augroup END
+nnoremap <leader>d "_d
+vnoremap <leader>d "_d
 
 " true color setting
 if exists('+termguicolors')
@@ -83,9 +78,6 @@ if exists('+termguicolors')
   set termguicolors
 endif
 
-colorscheme gruvbox
-
-let mapleader = " "
 " quit 
 noremap <C-C> <ESC>:q<CR>
 " last file
@@ -149,6 +141,15 @@ let g:qfenter_keymap.open = ['<CR>', '<2-LeftMouse>']
 let g:qfenter_keymap.vopen = ['<C-v>']
 let g:qfenter_keymap.hopen = ['<C-s>']
 let g:qf_shorten_path = 0
+
+
+" highlight the current line only on the active buffer
+augroup CursorLine
+    au!
+    au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+    au WinLeave * setlocal nocursorline
+augroup END
+
 
 " highlight cur word
 let g:highlighting = 0
@@ -242,23 +243,6 @@ command! Wswap :call WinBufSwap()
 map <Leader>sw :call WinBufSwap()<CR>
 
 
-" Format the statusline
-"set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{CurDir()}%h\ \ \ Line:\ %l/%L:%c
-
-function! CurDir()
-    let curdir = substitute(getcwd(), '/Users/lsaint/', "~/", "g")
-    return curdir
-endfunction
-
-function! HasPaste()
-    if &paste
-        return 'PASTE MODE  '
-    else
-        return ''
-    endif
-endfunction
-
-
 " vim-go
 au FileType go nmap <Leader>i <Plug>(go-info)
 au FileType go nmap <Leader>doc <Plug>(go-doc)
@@ -310,8 +294,6 @@ let g:coc_global_extensions = [
   \ 'coc-json',
   \ 'coc-snippets',
   \ ]
-
-
 " Some servers have issues with backup files, see #649
 set nobackup
 set nowritebackup
@@ -361,7 +343,6 @@ nmap <silent> <leader>r <Plug>(coc-references)
 
 autocmd FileType json syntax match Comment +\/\/.\+$+
 
-
 nmap <silent> <leader>cor :CocRestart<cr>
 nmap <silent> <leader>coc :CocCommand<cr>
 nmap <silent> <leader>col :CocList<cr>
@@ -394,21 +375,21 @@ import vim
 import ast
 
 docstring_start_lines = []
-lines = list(map(lambda x: "#" if x == "" else x, vim.current.buffer))
+lines = vim.current.buffer
 root = ast.parse("\n".join(lines))
 for node in ast.walk(root):
     if isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.Module)):
         if (node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Str)):
-            start, end = node.lineno, node.body[0].value.lineno
-            docstring_start_lines.append(end)
+            start, end = node.lineno, node.body[0].value.lineno 
             #print(start, end, node.body[0].value.s)
+            docstring_start_lines.append(end)
 
 docstring_end_lines = []
 for start_line in docstring_start_lines:
     offset = 0
     for line in lines[start_line:]:
         offset += 1
-        if '"""' in line.strip():
+        if '"""' in line or "'''" in line:
             docstring_end_lines.append(start_line + offset)
             break
 
