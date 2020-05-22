@@ -49,6 +49,8 @@ call plug#end()
 
 """""""""""""""""""""""""""""""""""""""
 
+set title " Show file title in terminal tab
+set scrolloff=2 " Start scrolling slightly before the cursor reaches an edge
 set shortmess=a
 set cmdheight=2
 set tabstop=4
@@ -59,9 +61,9 @@ set hidden
 set expandtab
 set backspace=indent,eol,start
 set encoding=utf-8
+set nocompatible
 filetype plugin indent on
 syntax on
-set nocompatible
 colorscheme gruvbox
 let mapleader = " "
 
@@ -70,6 +72,9 @@ autocmd bufenter * execute "let g:extension = expand('%:e')"
 " delete without copy
 nnoremap <leader>d "_d
 vnoremap <leader>d "_d
+
+nnoremap <tab>j }
+nnoremap <tab>k {
 
 " true color setting
 if exists('+termguicolors')
@@ -367,6 +372,11 @@ if exists(':tnoremap')
 endif
 
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                       Ethan Vim Function                                     "
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+
 """ fold/unfold python docstring """
 function! PyFoldDocString()
     setlocal foldmethod=manual
@@ -380,9 +390,9 @@ root = ast.parse("\n".join(lines))
 for node in ast.walk(root):
     if isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.Module)):
         if (node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Str)):
-            start, end = node.lineno, node.body[0].value.lineno 
-            #print(start, end, node.body[0].value.s)
-            docstring_start_lines.append(end)
+            start = node.body[0].value.lineno 
+            #print(start, node.body[0].value.s)
+            docstring_start_lines.append(start)
 
 docstring_end_lines = []
 for start_line in docstring_start_lines:
@@ -418,7 +428,7 @@ endfunction
 nnoremap <F9> :call TogglePyDocString()<CR>
 
 
-"""""""" 
+""" toggle my tips in preview window """ 
 let g:MyVimTips="off"
 function! ToggleVimTips()
   if g:MyVimTips == "on"
@@ -426,8 +436,28 @@ function! ToggleVimTips()
     pclose
   else
     let g:MyVimTips="on"
-    pedit /Users/lsaint/Dropbox/vimtips.txt
+    pedit ~/Dropbox/vimtips.txt
   endif
 endfunction
-
 nnoremap <F8> :call ToggleVimTips()<CR>
+
+
+""" go to next ([{< in current line """
+let g:enclosure = [["(", "[", "{", "<"], [")", "]", "}", ">"]]
+function! GotoEnclosure(direction)
+    let line=getline('.')
+    let colidx = col('.') - 1
+    let enc = g:enclosure[0]
+    let f = a:direction == 0 ? 'f' : "F"
+    let r = a:direction == 0 ? range(1, len(line) - colidx) : map(range(1, colidx), {k, v -> -v})
+    for i in r
+        let c = line[colidx + i]
+        let w = index(enc, c)
+        if w != -1
+            execute "normal! " . f . enc[w]
+            return
+        endif
+    endfor
+endfunction
+map <silent> <tab>l :call GotoEnclosure(0)<CR>
+map <silent> <tab>h :call GotoEnclosure(1)<CR>
