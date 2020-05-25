@@ -36,7 +36,6 @@ Plug 'stephpy/vim-yaml', {'for': 'yaml'}
 Plug 'fatih/vim-go', {'for': 'go'}
 Plug 'vim-scripts/java_getset.vim',{'for': 'java'}
 Plug 'tbastos/vim-lua', {'for': 'lua'}
-Plug 'dearrrfish/vim-applescript'
 " front-end
 Plug 'prettier/vim-prettier'
 Plug 'pangloss/vim-javascript', {'for': ['js', 'jsx']}
@@ -411,7 +410,11 @@ endfunction
 
 " show nextline in foldtext
 function! MarkdownFoldText()
-  return getline(v:foldstart+1)
+    let line = getline(v:foldstart)
+    if len(trim(line)) > 3
+        return line
+    endif
+    return getline(v:foldstart+1)
 endfunction
 setlocal foldtext=MarkdownFoldText()
 
