@@ -131,7 +131,7 @@ noremap <leader>z :NERDTreeFind<cr>
 let g:NERDTreeMapOpenSplit="s"
 let g:NERDTreeMapOpenVSplit="v"
 " exit vim when nerdtree window only
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif 
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 " run
 map <leader>rp :!python3 %<cr>
@@ -447,10 +447,10 @@ nnoremap <F8> :call ToggleVimTips()<CR>
 
 """ go to next ([{< in current line """
 let g:enclosure = [["(", "[", "{", "<"], [")", "]", "}", ">"]]
-function! GotoEnclosure(direction)
+function! GotoEnclosure(direction, side)
     let line=getline('.')
     let colidx = col('.') - 1
-    let enc = g:enclosure[0]
+    let enc = (a:side == 0) ? g:enclosure[0] : g:enclosure[1]
     let f = a:direction == 0 ? 'f' : "F"
     let r = a:direction == 0 ? range(1, len(line) - colidx) : map(range(1, colidx), {k, v -> -v})
     for i in r
@@ -458,9 +458,16 @@ function! GotoEnclosure(direction)
         let w = index(enc, c)
         if w != -1
             execute "normal! " . f . enc[w]
-            return
+            return 1
         endif
     endfor
+    return 0
 endfunction
-map <silent> <tab>l :call GotoEnclosure(0)<CR>
-map <silent> <tab>h :call GotoEnclosure(1)<CR>
+function! GotoEnclosureDual(direction)
+    let another_side = (a:direction == 0) ? 1 : 0
+    if GotoEnclosure(a:direction, 0) == 0
+        call GotoEnclosure(a:direction, another_side)
+    endif
+endfunction
+map <silent> <tab>l :call GotoEnclosureDual(0)<CR>
+map <silent> <tab>h :call GotoEnclosureDual(1)<CR>
