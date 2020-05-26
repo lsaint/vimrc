@@ -31,6 +31,7 @@ Plug 'szw/vim-maximizer'
 Plug 'tpope/vim-fugitive'
 Plug 'unblevable/quick-scope'
 Plug 'wincent/ferret'
+Plug 'skywind3000/vim-quickui'
 " language
 Plug 'stephpy/vim-yaml', {'for': 'yaml'}
 Plug 'fatih/vim-go', {'for': 'go'}
@@ -118,12 +119,6 @@ let g:surround_83 = "{% static \'\r\' %}"
 let g:surround_85 = "{% url \'\r\' %}"
 
 
-" format
-nnoremap <leader>pj :%!python3 -m json.tool<CR>
-nnoremap <leader>px :%!xmllint % --format<CR>
-nnoremap <leader>pp <Plug>(Prettier)
-
-
 " NERDTree
 "let g:NERDTreeWinPos = "right"
 let NERDTreeIgnore=['\~$', '\.pyc$', 'node_modules']
@@ -132,40 +127,21 @@ let g:NERDTreeMapOpenSplit="s"
 let g:NERDTreeMapOpenVSplit="v"
 " exit vim when nerdtree window only
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-
-" run
-map <leader>rp :!python3 %<cr>
-map <leader>rg :!go run %<cr>
-map <leader>rs :!sh %<cr>
+" open a NERDTree automatically when vim starts up if no files were specified
+" autocmd StdinReadPre * let s:std_in=1
+" autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
 
-" quifx enter
+" QFEnter
 let g:qfenter_keymap = {}
 let g:qfenter_keymap.open = ['<CR>', '<2-LeftMouse>']
 let g:qfenter_keymap.vopen = ['<C-v>']
 let g:qfenter_keymap.hopen = ['<C-s>']
+
+
+" vim-qf
 let g:qf_shorten_path = 0
 
-
-" highlight the current line only on the active buffer
-augroup CursorLine
-    au!
-    au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
-    au WinLeave * setlocal nocursorline
-augroup END
-
-
-" highlight cur word
-let g:highlighting = 0
-function! Highlighting()
-    if g:highlighting == 1 && @/ =~ '^\\<'.expand('<cword>').'\\>$'
-      let g:highlighting = 0
-      return ":silent nohlsearch\<CR>"
-    endif
-    let @/ = '\<'.expand('<cword>').'\>'
-    let g:highlighting = 1
-    return ":silent set hlsearch\<CR>"
-endfunction
 
 " F
 nnoremap <silent> <expr> <F1> Highlighting()
@@ -212,6 +188,28 @@ noremap <C-J> <C-W>j
 noremap <C-K> <C-W>k
 noremap <C-H> <C-W>h
 noremap <C-L> <C-W>l
+
+
+" highlight the current line only on the active buffer
+augroup CursorLine
+    au!
+    au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+    au WinLeave * setlocal nocursorline
+augroup END
+
+
+" highlight cur word
+let g:highlighting = 0
+function! Highlighting()
+    if g:highlighting == 1 && @/ =~ '^\\<'.expand('<cword>').'\\>$'
+      let g:highlighting = 0
+      return ":silent nohlsearch\<CR>"
+    endif
+    let @/ = '\<'.expand('<cword>').'\>'
+    let g:highlighting = 1
+    return ":silent set hlsearch\<CR>"
+endfunction
+
 
 " Horizontal to Vertical, vise versa
 function! ToggleWindowHorizontalVerticalSplit()
@@ -320,16 +318,6 @@ function! s:check_back_space() abort
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
-" Use K to show documentation in preview window
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
 
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
@@ -353,6 +341,49 @@ nmap <silent> <leader>col :CocList<cr>
 nmap <silent> <leader>cof :CocConfig<cr>
 nmap <silent> <leader>coF :CocLocalConfig<cr>
 imap <C-l> <Plug>(coc-snippets-expand)
+
+
+" quick-ui
+call quickui#menu#reset()
+call quickui#menu#install("&Goto", [
+    \ [ "LeaderF &Mru", 'Leaderf mru --regexMode', 'Open recently accessed files'],
+    \ [ "LeaderF &SearchHistory", 'Leaderf searchHistory', 'List search history'],
+    \ [ "LeaderF &CmdHistory", 'Leaderf cmdHistory', 'List cmd history'],
+    \ [ "LeaderF &BufTag", 'Leaderf bufTag', 'List tag in current buffer'],
+    \ [ "LeaderF Li&ne", 'Leaderf line', 'List line in current buffer'],
+    \ ])
+call quickui#menu#install("F&ormat", [
+    \ ['Show &Indent', 'IndentGuidesToggle', 'highlight indent'],
+    \ [ "--", ],
+    \ ['Format &Json', '%!python3 -m json.tool', 'format json file using python3 module json.tool'],
+    \ ['Format &Xml', '%!xmllint % --format', 'format xml using xmlint'],
+    \ ['Format &Prettier', 'Prettier', 'format current buffer using Prettier'],
+    \ ])
+call quickui#menu#install("&Run", [
+    \ ['Run &Python', '!python3 %', ''],
+    \ ['Run &Go', '!go run %', ''],
+    \ ['Run &Shell', '!sh %', ''],
+    \ ])
+call quickui#menu#install("&Config", [
+    \ ['&Vimrc', ':e $MYVIMRC', ''],
+    \ ['Vim&Tips', ':e ~/Dropbox/vimtips.txt', ''],
+    \ ['&CocConfig', ':CocConfig', ''],
+    \ ['C&ocLocalConfig', ':CocLocalConfig', ''],
+    \ ])
+nnoremap <silent><space><space> :call quickui#menu#open()<cr>
+"
+let g:context_menu_1= [
+    \ ["&Show Doc", "call CocAction('doHover')", "coc action doHover"],
+    \ ["&Vim help", 'exec "h " . expand("<cword>")'],
+    \ ]
+nnoremap <silent>K :call quickui#context#open(g:context_menu_1, {})<cr>
+"
+let g:quickui_show_tip = 1
+let g:quickui_color_scheme = 'gruvbox'
+augroup MyQuickfixPreview
+  au!
+  au FileType qf noremap <silent><buffer> ` :call quickui#tools#preview_quickfix()<cr>
+augroup END
 
 
 """""""""""|front-end|""""""""""""
