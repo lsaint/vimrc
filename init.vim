@@ -1,14 +1,25 @@
-"PlugInstall [name ...] [#threads]	Install plugins
-"PlugUpdate [name ...] [#threads]	Install or update plugins
-"PlugClean[!]	Remove unlisted plugins (bang version will clean without prompt)
-"PlugUpgrade	Upgrade vim-plug itself
-"PlugStatus	    Check the status of plugins
-"PlugDiff	    Examine changes from the previous update and the pending changes
-"PlugSnapshot[!] [output path]	Generate script for restoring the current snapshot of the plugins
+"===============================================================================
+"
+" start from 0
 "
 "curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 "curl -fLo ~/.vimrc https://raw.githubusercontent.com/lsaint/vimrc/master/init.vim
 ":PlugInstall
+"===============================================================================
+
+
+"===============================================================================
+" 
+" vim-plug
+"
+" PlugInstall [name ...] [#threads]	Install plugins
+" PlugUpdate [name ...] [#threads]	Install or update plugins
+" PlugClean[!]	Remove unlisted plugins (bang version will clean without prompt)
+" PlugUpgrade	Upgrade vim-plug itself
+" PlugStatus	    Check the status of plugins
+" PlugDiff	    Examine changes from the previous update and the pending changes
+" PlugSnapshot[!] [output path]	Generate script for restoring the current snapshot of the plugins
+"===============================================================================
 call plug#begin('~/.vim/plugged')
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'mbbill/undotree'
@@ -47,8 +58,11 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'morhetz/gruvbox'
 call plug#end()
 
-"""""""""""""""""""""""""""""""""""""""
 
+
+"===============================================================================
+" mapping
+"===============================================================================
 set title " Show file title in terminal tab
 set scrolloff=2 " Start scrolling slightly before the cursor reaches an edge
 set shortmess=a
@@ -56,22 +70,26 @@ set cmdheight=2
 set tabstop=4
 set shiftwidth=4
 set autoindent
-set hls
+set hlsearch
 set hidden
 set expandtab
 set backspace=indent,eol,start
 set encoding=utf-8
 set nocompatible
-filetype plugin indent on
+set splitright
+set splitbelow
 syntax on
 colorscheme gruvbox
-let mapleader = " "
+filetype plugin indent on
+let mapleader = "\<Space>"
 
 autocmd bufenter * execute "let g:extension = expand('%:e')"
 
 " delete without copy
 nnoremap <leader>d "_d
 vnoremap <leader>d "_d
+" copy to system clipboard
+vnoremap <leader>y "*y
 
 nnoremap <tab>j }
 nnoremap <tab>k {
@@ -89,7 +107,7 @@ noremap <C-C> <ESC>:q<CR>
 map <leader>` :e#<CR>
 
 " vim-indent-guides
-map <leader><tab> :IndentGuidesToggle<CR>
+map <leader>t :IndentGuidesToggle<CR>
 
 " scroll
 noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 9, 2)<CR>
@@ -114,10 +132,6 @@ let g:Lf_WildIgnore = {
   \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.bson','*.exe','*.swp']
   \}
 
-"surround.vim
-let g:surround_83 = "{% static \'\r\' %}"
-let g:surround_85 = "{% url \'\r\' %}"
-
 
 " NERDTree
 "let g:NERDTreeWinPos = "right"
@@ -127,9 +141,6 @@ let g:NERDTreeMapOpenSplit="s"
 let g:NERDTreeMapOpenVSplit="v"
 " exit vim when nerdtree window only
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-" open a NERDTree automatically when vim starts up if no files were specified
-" autocmd StdinReadPre * let s:std_in=1
-" autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
 
 " QFEnter
@@ -145,19 +156,18 @@ let g:qf_shorten_path = 0
 
 " F
 nnoremap <silent> <expr> <F1> Highlighting()
-map <F2> :NERDTreeToggle<CR>
+noremap <F2> :NERDTreeToggle<CR>
 let g:maximizer_default_mapping_key = '<F3>'
 nnoremap <F4> :UndotreeToggle<cr>
-nmap <Leader><F5> <Plug>(qf_loc_toggle)
-nmap <F5> <Plug>(qf_qf_toggle)
-nmap <F7> <Plug>(qf_shorten_path_toggle)
+nnoremap <Leader><F5> <Plug>(qf_loc_toggle)
+nnoremap <F5> <Plug>(qf_qf_toggle)
+nnoremap <F7> <Plug>(qf_shorten_path_toggle)
 set pastetoggle=<F6>
 
 " <leader> number
 nmap <leader>1 :Ack! --python --ignore "/*test/*" -s -w <C-r><C-w><cr>
 nmap <leader>2 :Lack! -s -w <C-r><C-w><cr>
 nmap <leader>3 :Ack! --ignore "/*test/*" --ignore-dir "node_modules" -s -w <C-r><C-w>
-"autocmd bufenter * execute "nmap <leader>3 :Ack! --ignore '*test*' -s -w --" . g:extension . " "
 nmap <leader>4 :AckFile! 
 
 " <leader> F
@@ -188,6 +198,7 @@ noremap <C-J> <C-W>j
 noremap <C-K> <C-W>k
 noremap <C-H> <C-W>h
 noremap <C-L> <C-W>l
+noremap <C-P> <C-W>p
 
 
 " highlight the current line only on the active buffer
@@ -265,7 +276,6 @@ endif
 "let g:airline_theme='bubblegum'
 let g:airline_theme='gruvbox'
 let g:airline_powerline_fonts = 1
-"set t_Co=256
 
 
 " ale
@@ -345,12 +355,19 @@ imap <C-l> <Plug>(coc-snippets-expand)
 
 " quick-ui
 call quickui#menu#reset()
-call quickui#menu#install("&Goto", [
+call quickui#menu#install("&File", [
     \ [ "LeaderF &Mru", 'Leaderf mru --regexMode', 'Open recently accessed files'],
     \ [ "LeaderF &SearchHistory", 'Leaderf searchHistory', 'List search history'],
     \ [ "LeaderF &CmdHistory", 'Leaderf cmdHistory', 'List cmd history'],
     \ [ "LeaderF &BufTag", 'Leaderf bufTag', 'List tag in current buffer'],
     \ [ "LeaderF Li&ne", 'Leaderf line', 'List line in current buffer'],
+    \ ])
+call quickui#menu#install("&Git", [
+    \ ['&Git', 'Git', ''],
+    \ ['Git &Blame', 'Gblame', ''],
+    \ ['Git &Diff', 'Git diff -p', ''],
+    \ ['Git Diff &Split', 'Gdiffsplit', ''],
+    \ ['Git L&og', 'Git log', ''],
     \ ])
 call quickui#menu#install("F&ormat", [
     \ ['Show &Indent', 'IndentGuidesToggle', 'highlight indent'],
@@ -370,23 +387,36 @@ call quickui#menu#install("&Config", [
     \ ['&CocConfig', ':CocConfig', ''],
     \ ['C&ocLocalConfig', ':CocLocalConfig', ''],
     \ ])
+call quickui#menu#install("&Window", [
+    \ ['&Horizontal<->Vertical', 'call ToggleWindowHorizontalVerticalSplit()', 'Horizontal to Vertical, vise versa'],
+    \ [ "--", ],
+    \ ['&Tagbar', 'TagbarToggle', ''],
+    \ ])
+
 nnoremap <silent><space><space> :call quickui#menu#open()<cr>
 "
 let g:context_menu_1= [
+    \ ['&Lack', 'exec "Lack! -s -w " . expand("<cword>")'],
+    \ [ "--", ],
     \ ["&Show Doc", "call CocAction('doHover')", "coc action doHover"],
     \ ["&Vim help", 'exec "h " . expand("<cword>")'],
     \ ]
 nnoremap <silent>K :call quickui#context#open(g:context_menu_1, {})<cr>
+nnoremap <silent><tab>m :call quickui#context#open(g:context_menu_1, {})<cr>
 "
 let g:quickui_show_tip = 1
 let g:quickui_color_scheme = 'gruvbox'
+let g:quickui_preview_w = 100
+let g:quickui_preview_h = 15
 augroup MyQuickfixPreview
   au!
   au FileType qf noremap <silent><buffer> ` :call quickui#tools#preview_quickfix()<cr>
 augroup END
 
 
-"""""""""""|front-end|""""""""""""
+"===============================================================================
+" front-end
+"===============================================================================
 
 autocmd FileType *.jsx,*.js,*.html,*.css,*.json,*.yaml  set tabstop=2 shiftwidth=2
 
@@ -395,19 +425,25 @@ let g:prettier#autoformat = 0
 autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.vue,*.yaml Prettier
 
 
-"""""""""""|neovim|""""""""""""
+"===============================================================================
+" neovim
+"===============================================================================
 let g:python3_host_prog = '/usr/local/opt/python@3.8/bin/python3.8'
 if exists(':tnoremap')
     tnoremap <Esc> <C-\><C-n>
 endif
 
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"                       Ethan Vim Function                                     "
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"===============================================================================
+"                       Ethan's Vim Function
+"===============================================================================
 
 
-""" fold/unfold python docstring """
+
+"-------------------------------------------------------------------------------
+" fold/unfold python docstring
+"-------------------------------------------------------------------------------
 function! PyFoldDocString()
     setlocal foldmethod=manual
 pythonx << EOF
@@ -462,7 +498,9 @@ endfunction
 nnoremap <F9> :call TogglePyDocString()<CR>
 
 
-""" toggle my tips in preview window """ 
+"-------------------------------------------------------------------------------
+" toggle my tips in preview window 
+"-------------------------------------------------------------------------------
 let g:MyVimTips="off"
 function! ToggleVimTips()
   if g:MyVimTips == "on"
@@ -476,7 +514,9 @@ endfunction
 nnoremap <F8> :call ToggleVimTips()<CR>
 
 
-""" go to next ([{< in current line """
+"-------------------------------------------------------------------------------
+" go to next ([{< in current line 
+"-------------------------------------------------------------------------------
 let g:enclosure = [["(", "[", "{", "<"], [")", "]", "}", ">"]]
 function! GotoEnclosure(direction, side)
     let line=getline('.')
