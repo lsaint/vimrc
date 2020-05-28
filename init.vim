@@ -22,7 +22,7 @@
 "===============================================================================
 call plug#begin('~/.vim/plugged')
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'mbbill/undotree'
+Plug 'mbbill/undotree', {'on': 'UndotreeToggle'}
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'dense-analysis/ale'
 Plug 'yssl/QFEnter'
@@ -32,7 +32,7 @@ Plug 'vim-scripts/CmdlineComplete'
 Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
 Plug 'preservim/nerdtree'
 Plug 'terryma/vim-smooth-scroll'
-Plug 'majutsushi/tagbar'
+Plug 'majutsushi/tagbar', {'on': 'TagbarToggle'}
 Plug 'mileszs/ack.vim'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdcommenter'
@@ -133,7 +133,7 @@ let g:Lf_WildIgnore = {
   \}
 
 
-" NERDTree
+" nerdtree
 "let g:NERDTreeWinPos = "right"
 let NERDTreeIgnore=['\~$', '\.pyc$', 'node_modules']
 noremap <leader>z :NERDTreeFind<cr>
@@ -159,9 +159,9 @@ nnoremap <silent> <expr> <F1> Highlighting()
 noremap <F2> :NERDTreeToggle<CR>
 let g:maximizer_default_mapping_key = '<F3>'
 nnoremap <F4> :UndotreeToggle<cr>
-nnoremap <Leader><F5> <Plug>(qf_loc_toggle)
-nnoremap <F5> <Plug>(qf_qf_toggle)
-nnoremap <F7> <Plug>(qf_shorten_path_toggle)
+nmap <Leader><F5> <Plug>(qf_loc_toggle)
+nmap <F5> <Plug>(qf_qf_toggle)
+nmap <F7> <Plug>(qf_shorten_path_toggle)
 set pastetoggle=<F6>
 
 " <leader> number
@@ -356,6 +356,8 @@ imap <C-l> <Plug>(coc-snippets-expand)
 " quick-ui
 call quickui#menu#reset()
 call quickui#menu#install("&File", [
+    \ [ "Search &File", 'exec input("", ":AckFile! ")'],
+    \ [ "--", ],
     \ [ "LeaderF &Mru", 'Leaderf mru --regexMode', 'Open recently accessed files'],
     \ [ "LeaderF &SearchHistory", 'Leaderf searchHistory', 'List search history'],
     \ [ "LeaderF &CmdHistory", 'Leaderf cmdHistory', 'List cmd history'],
@@ -540,5 +542,13 @@ function! GotoEnclosureDual(direction)
         call GotoEnclosure(a:direction, another_side)
     endif
 endfunction
-map <silent> <tab>l :call GotoEnclosureDual(0)<CR>
-map <silent> <tab>h :call GotoEnclosureDual(1)<CR>
+nmap <silent> <tab>l :call GotoEnclosureDual(0)<CR>
+nmap <silent> <tab>h :call GotoEnclosureDual(1)<CR>
+
+
+"-------------------------------------------------------------------------------
+" test
+"-------------------------------------------------------------------------------
+function! Test()
+endfunction
+nmap <F12> :call Test()<CR>
