@@ -487,14 +487,14 @@ function! MarkdownFoldText()
 endfunction
 setlocal foldtext=MarkdownFoldText()
 
-let g:PyDocString="off"
+let g:PyDocString={} " {'bufname': 1 ...}
 function! TogglePyDocString()
-    if g:PyDocString == "off"
+    if get(g:PyDocString, bufname(), 0) == 0
         call PyFoldDocString()
-        let g:PyDocString = "on"
+        let g:PyDocString[bufname()] = 1
     else
         normal! zr
-        let g:PyDocString="off"
+        let g:PyDocString[bufname()] = 0
     endif
 endfunction
 nnoremap <F9> :call TogglePyDocString()<CR>
