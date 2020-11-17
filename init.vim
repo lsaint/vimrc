@@ -102,7 +102,7 @@ if exists('+termguicolors')
 endif
 
 " quit 
-noremap <C-C> <ESC>:q<CR>
+noremap <C-C> <ESC>:q!<CR>
 " last file
 map <leader>` :e#<CR>
 
@@ -118,15 +118,15 @@ noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 9, 4)<CR>
 
 " LeaderF
 noremap <leader>F :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
+noremap <leader>l :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
 noremap <leader>hm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
 noremap <leader>ht :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
-noremap <leader>hl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
 noremap <leader>hs :<C-U><C-R>=printf("Leaderf searchHistory %s", "")<CR><CR>
 let g:Lf_CommandMap = {'<C-X>': ['<C-S>'], '<C-]>': ['<C-V>'], '<C-P>': ['<C-H>'], '<C-V>': ['<C-P>']}
 let g:Lf_WindowPosition = 'popup'
 let g:Lf_PopupPosition = [30, 0]
 let g:Lf_PreviewInPopup = 1
-let g:Lf_PreviewResult = {'Function': 1, 'BufTag': 1, 'Buffer': 1}
+let g:Lf_PreviewResult = {'Function': 1, 'BufTag': 1}
 let g:Lf_WildIgnore = {
   \ 'dir': ['.svn','.git','.hg', 'node_modules', 'tmp', 'bin'],
   \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.bson','*.exe','*.swp']
@@ -135,7 +135,7 @@ let g:Lf_WildIgnore = {
 
 " nerdtree
 "let g:NERDTreeWinPos = "right"
-let NERDTreeIgnore=['\~$', '\.pyc$', 'node_modules']
+let NERDTreeIgnore=['\~$', '\.pyc$', 'node_modules', '__pycache__', '\.sqlite3']
 noremap <leader>z :NERDTreeFind<cr>
 let g:NERDTreeMapOpenSplit="s"
 let g:NERDTreeMapOpenVSplit="v"
@@ -148,6 +148,7 @@ let g:qfenter_keymap = {}
 let g:qfenter_keymap.open = ['<CR>', '<2-LeftMouse>']
 let g:qfenter_keymap.vopen = ['<C-v>']
 let g:qfenter_keymap.hopen = ['<C-s>']
+let g:qfenter_exclude_filetypes = ['nerdtree', 'tagbar']
 
 
 " vim-qf
@@ -160,7 +161,7 @@ noremap <F2> :NERDTreeToggle<CR>
 let g:maximizer_default_mapping_key = '<F3>'
 nnoremap <F4> :UndotreeToggle<cr>
 nmap <Leader><F5> <Plug>(qf_loc_toggle)
-nmap <F5> <Plug>(qf_qf_toggle)
+nmap <F5> :NERDTreeClose<CR>\|<Plug>(qf_qf_toggle)
 nmap <F7> <Plug>(qf_shorten_path_toggle)
 set pastetoggle=<F6>
 
@@ -287,7 +288,7 @@ nmap <Leader>ww <Plug>(ale_next_wrap)
 nmap <Leader>ad :ALEDetail<CR>
 let g:airline#extensions#ale#enabled = 1
 
-autocmd BufWritePre *.py :CocCommand python.sortImports
+autocmd BufWritePost *.py :CocCommand python.sortImports
 
 
 " coc.nvim
@@ -480,7 +481,7 @@ endfunction
 " show nextline in foldtext
 function! MarkdownFoldText()
     let line = getline(v:foldstart)
-    if len(trim(line)) > 3
+    if len(trim(line)) > 4
         return line
     endif
     return getline(v:foldstart+1)
