@@ -32,7 +32,7 @@ Plug 'vim-scripts/CmdlineComplete'
 Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
 Plug 'preservim/nerdtree'
 Plug 'terryma/vim-smooth-scroll'
-Plug 'majutsushi/tagbar', {'on': 'TagbarToggle'}
+Plug 'liuchengxu/vista.vim'
 Plug 'mileszs/ack.vim'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdcommenter'
@@ -51,7 +51,7 @@ Plug 'tbastos/vim-lua', {'for': 'lua'}
 " front-end
 Plug 'prettier/vim-prettier'
 Plug 'pangloss/vim-javascript', {'for': ['js', 'jsx']}
-Plug 'mxw/vim-jsx', {'for': ['js', 'jsx']}
+Plug 'maxmellon/vim-jsx-pretty'
 Plug 'HerringtonDarkholme/yats.vim', {'for': ['js', 'jsx', 'ts', 'tsx']}
 " themes
 Plug 'vim-airline/vim-airline-themes'
@@ -79,9 +79,13 @@ set nocompatible
 set splitright
 set splitbelow
 syntax on
-colorscheme gruvbox
 filetype plugin indent on
 let mapleader = "\<Space>"
+
+colorscheme gruvbox
+highlight Normal     ctermbg=NONE guibg=NONE
+highlight LineNr     ctermbg=NONE guibg=NONE
+highlight SignColumn ctermbg=NONE guibg=NONE
 
 autocmd bufenter * execute "let g:extension = expand('%:e')"
 
@@ -103,8 +107,12 @@ endif
 
 " quit 
 noremap <C-C> <ESC>:q!<CR>
-" last file
+" go to last file
 map <leader>` :e#<CR>
+" go to last edit
+" g; or `.
+" go to last edit & enter insert mode
+" gi
 
 " vim-indent-guides
 map <leader>t :IndentGuidesToggle<CR>
@@ -114,45 +122,6 @@ noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 9, 2)<CR>
 noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 9, 2)<CR>
 noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 9, 4)<CR>
 noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 9, 4)<CR>
-
-
-" LeaderF
-noremap <leader>F :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
-noremap <leader>l :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
-noremap <leader>hm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
-noremap <leader>ht :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
-noremap <leader>hs :<C-U><C-R>=printf("Leaderf searchHistory %s", "")<CR><CR>
-let g:Lf_CommandMap = {'<C-X>': ['<C-S>'], '<C-]>': ['<C-V>'], '<C-P>': ['<C-H>'], '<C-V>': ['<C-P>']}
-let g:Lf_WindowPosition = 'popup'
-let g:Lf_PopupPosition = [30, 0]
-let g:Lf_PreviewInPopup = 1
-let g:Lf_PreviewResult = {'Function': 1, 'BufTag': 1}
-let g:Lf_WildIgnore = {
-  \ 'dir': ['.svn','.git','.hg', 'node_modules', 'tmp', 'bin'],
-  \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.bson','*.exe','*.swp']
-  \}
-
-
-" nerdtree
-"let g:NERDTreeWinPos = "right"
-let NERDTreeIgnore=['\~$', '\.pyc$', 'node_modules', '__pycache__', '\.sqlite3']
-noremap <leader>z :NERDTreeFind<cr>
-let g:NERDTreeMapOpenSplit="s"
-let g:NERDTreeMapOpenVSplit="v"
-" exit vim when nerdtree window only
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-
-
-" QFEnter
-let g:qfenter_keymap = {}
-let g:qfenter_keymap.open = ['<CR>', '<2-LeftMouse>']
-let g:qfenter_keymap.vopen = ['<C-v>']
-let g:qfenter_keymap.hopen = ['<C-s>']
-let g:qfenter_exclude_filetypes = ['nerdtree', 'tagbar']
-
-
-" vim-qf
-let g:qf_shorten_path = 0
 
 
 " F
@@ -171,8 +140,12 @@ nmap <leader>2 :Lack! -s -w <C-r><C-w><cr>
 nmap <leader>3 :Ack! --ignore "/*test/*" --ignore-dir "node_modules" -s -w <C-r><C-w>
 nmap <leader>4 :AckFile! 
 
+" Vita
+let g:vista_default_executive = "coc"
+
 " <leader> F
-map <leader><F2> :TagbarToggle<cr> 
+"map <leader><F2> :TagbarToggle<cr> 
+nmap <leader><F2> :Vista!!<cr> 
 nmap <Leader><F5> <Plug>(qf_loc_toggle)
 nmap <leader><F10> :bufdo! e<cr>
 nnoremap <leader><F11> :vsplit $MYVIMRC<cr>
@@ -256,42 +229,103 @@ endfunction
 command! Wswap :call WinBufSwap()
 map <Leader>sw :call WinBufSwap()<CR>
 
+"-------------------------------------------------------------------------------
+" LeaderF
+"-------------------------------------------------------------------------------
+"noremap <leader>F :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
+noremap <leader>F :<C-U><C-R>=printf("Leaderf file --no-ignore %s", "")<CR><CR>
+noremap <leader>l :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
+noremap <leader>hm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
+noremap <leader>ht :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
+noremap <leader>hs :<C-U><C-R>=printf("Leaderf searchHistory %s", "")<CR><CR>
+let g:Lf_CommandMap = {'<C-X>': ['<C-S>'], '<C-]>': ['<C-V>'], '<C-P>': ['<C-H>'], '<C-V>': ['<C-P>']}
+let g:Lf_WindowPosition = 'popup'
+let g:Lf_PopupPosition = [30, 0]
+let g:Lf_PreviewInPopup = 1
+let g:Lf_PreviewResult = {'Function': 1, 'BufTag': 1}
+let g:Lf_WildIgnore = {
+  \ 'dir': ['.svn','.git','.hg', 'node_modules', 'tmp', 'bin'],
+  \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.bson','*.exe','*.swp']
+  \}
 
+
+"-------------------------------------------------------------------------------
+" nerdtree
+"-------------------------------------------------------------------------------
+"let g:NERDTreeWinPos = "right"
+let NERDTreeIgnore=['\~$', '\.pyc$', 'node_modules', '__pycache__', '\.sqlite3']
+noremap <leader>z :NERDTreeFind<cr>
+let g:NERDTreeMapOpenSplit="s"
+let g:NERDTreeMapOpenVSplit="v"
+" exit vim when nerdtree window only
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+
+"-------------------------------------------------------------------------------
+" QFEnter
+"-------------------------------------------------------------------------------
+let g:qfenter_keymap = {}
+let g:qfenter_keymap.open = ['<CR>', '<2-LeftMouse>']
+let g:qfenter_keymap.vopen = ['<C-v>']
+let g:qfenter_keymap.hopen = ['<C-s>']
+let g:qfenter_exclude_filetypes = ['nerdtree', 'tagbar']
+
+
+"-------------------------------------------------------------------------------
+" vim-qf
+"-------------------------------------------------------------------------------
+let g:qf_shorten_path = 0
+
+
+
+"-------------------------------------------------------------------------------
 " vim-go
+"-------------------------------------------------------------------------------
 au FileType go nmap <Leader>i <Plug>(go-info)
 au FileType go nmap <Leader>doc <Plug>(go-doc)
 au FileType go nmap gd <Plug>(go-def)
 let g:go_fmt_command = "goimports"
 
+
+"-------------------------------------------------------------------------------
 " java getsetter
+"-------------------------------------------------------------------------------
 autocmd FileType java map <Leader>gs :InsertBothGetterSetter<CR>
 
+
+
+"-------------------------------------------------------------------------------
 " ack.vim
+"-------------------------------------------------------------------------------
 if executable('ag')
   let g:ackprg = 'ag --vimgrep'
 endif
 "let g:ackhighlight = 1
 
 
+"-------------------------------------------------------------------------------
 " vim-airline
-"let g:airline_theme='bubblegum'
+"-------------------------------------------------------------------------------
 let g:airline_theme='gruvbox'
+"let g:airline_theme='bubblegum'
 let g:airline_powerline_fonts = 1
 
 
+"-------------------------------------------------------------------------------
 " ale
+"-------------------------------------------------------------------------------
 "let g:ale_enabled = 0
 "let g:ale_sign_error = '>'
 "let g:ale_sign_warning = '-'
-nmap <Leader>qq <Plug>(ale_previous_wrap)
-nmap <Leader>ww <Plug>(ale_next_wrap)
-nmap <Leader>ad :ALEDetail<CR>
+nmap <Leader>[ <Plug>(ale_previous_wrap)
+nmap <Leader>] <Plug>(ale_next_wrap)
 let g:airline#extensions#ale#enabled = 1
 
-autocmd BufWritePost *.py :CocCommand python.sortImports
 
 
+"-------------------------------------------------------------------------------
 " coc.nvim
+"-------------------------------------------------------------------------------
 " coc detects acceptable new version of installed extension everyday (by default) the first time it starts. 
 " When it finds a new version of an extension, it will update it for you automatically.
 let g:coc_global_extensions = [
@@ -299,7 +333,7 @@ let g:coc_global_extensions = [
   \ 'coc-eslint',
   \ 'coc-html',
   \ 'coc-css',
-  \ 'coc-python',
+  \ 'coc-pyright',
   \ 'coc-lua',
   \ 'coc-go',
   \ 'coc-java',
@@ -335,14 +369,17 @@ endfunction
 inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 " navigate diagnostics
-nmap <silent> <leader>[ <Plug>(coc-diagnostic-prev)
-nmap <silent> <leader>] <Plug>(coc-diagnostic-next)
+nmap <silent> <leader>qq <Plug>(coc-diagnostic-prev)
+nmap <silent> <leader>ww <Plug>(coc-diagnostic-next)
 
 " Remap keys for gotos
 nmap <silent> <leader>j <Plug>(coc-definition)
 nmap <silent> <leader>r <Plug>(coc-references)
 "nmap <silent> <leader>y <Plug>(coc-type-definition)
 "nmap <silent> <leader>i <Plug>(coc-implementation)
+
+nmap <silent> <leader>ac <Plug>(coc-codeaction)
+nmap <silent> <leader>qf <Plug>(coc-fix-current)
 
 autocmd FileType json syntax match Comment +\/\/.\+$+
 
@@ -353,8 +390,12 @@ nmap <silent> <leader>cof :CocConfig<cr>
 nmap <silent> <leader>coF :CocLocalConfig<cr>
 imap <C-l> <Plug>(coc-snippets-expand)
 
+autocmd BufWritePost *.py :CocCommand python.sortImports
 
+
+"-------------------------------------------------------------------------------
 " quick-ui
+"-------------------------------------------------------------------------------
 call quickui#menu#reset()
 call quickui#menu#install("&File", [
     \ [ "Search &File", 'exec input("", ":AckFile! ")'],
