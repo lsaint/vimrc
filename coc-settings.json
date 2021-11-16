@@ -9,21 +9,13 @@
     "coc.preferences.formatOnType": true,
     "coc.preferences.formatOnSaveFiletypes": ["python"],
 
-    "diagnostic.displayByAle": false,
+    "diagnostic.displayByAle": true,
+    "diagnostic.hintSign": "➤",
 
     "python.formatting.provider": "black",
     "python.formatting.blackPath": "/usr/local/bin/black",
 
-    "pyright.disableSelfClsNotAccessed": true,
-
     "tsserver.log": "normal",
-
-    "eslint.filetypes": [
-        "javascript",
-        "javascriptreact",
-        "typescript",
-        "typescriptreact"
-    ],
 
     "java.jdt.ls.vmargs": "-javaagent:/Users/lsaint/Coffee/lib/lombok.jar  -Xbootclasspath/a:/Users/lsaint/Coffee/lib/lombok.jar"
 }

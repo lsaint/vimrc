@@ -86,6 +86,7 @@ colorscheme gruvbox
 highlight Normal     ctermbg=NONE guibg=NONE
 highlight LineNr     ctermbg=NONE guibg=NONE
 highlight SignColumn ctermbg=NONE guibg=NONE
+"highlight Pmenu     ctermbg=NONE guibg=NONE
 
 autocmd bufenter * execute "let g:extension = expand('%:e')"
 
@@ -315,11 +316,13 @@ let g:airline_powerline_fonts = 1
 " ale
 "-------------------------------------------------------------------------------
 "let g:ale_enabled = 0
-"let g:ale_sign_error = '>'
-"let g:ale_sign_warning = '-'
+let g:ale_sign_error = '💀'
+let g:ale_sign_warning = '👀'
 nmap <Leader>[ <Plug>(ale_previous_wrap)
 nmap <Leader>] <Plug>(ale_next_wrap)
 let g:airline#extensions#ale#enabled = 1
+let g:ale_disable_lsp = 1
+call ale#Set('python_flake8_options', '--config=$HOME/.config/flake8')
 
 
 
@@ -427,7 +430,7 @@ call quickui#menu#install("&Run", [
     \ ])
 call quickui#menu#install("&Config", [
     \ ['&Vimrc', ':e $MYVIMRC', ''],
-    \ ['Vim&Tips', ':e ~/Dropbox/vimtips.txt', ''],
+    \ ['Vim&Tips', ':e ~/Dropbox/vim/vimtips.txt', ''],
     \ ['&CocConfig', ':CocConfig', ''],
     \ ['C&ocLocalConfig', ':CocLocalConfig', ''],
     \ ])
