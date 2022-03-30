@@ -316,8 +316,8 @@ let g:airline_powerline_fonts = 1
 " ale
 "-------------------------------------------------------------------------------
 "let g:ale_enabled = 0
-let g:ale_sign_error = '💀'
-let g:ale_sign_warning = '👀'
+let g:ale_sign_error = '➣➣'
+let g:ale_sign_warning = '··'
 nmap <Leader>[ <Plug>(ale_previous_wrap)
 nmap <Leader>] <Plug>(ale_next_wrap)
 let g:airline#extensions#ale#enabled = 1
@@ -437,7 +437,7 @@ call quickui#menu#install("&Config", [
 call quickui#menu#install("&Window", [
     \ ['&Horizontal<->Vertical', 'call ToggleWindowHorizontalVerticalSplit()', 'Horizontal to Vertical, vise versa'],
     \ [ "--", ],
-    \ ['&Tagbar', 'TagbarToggle', ''],
+    \ ['&Tagbar', 'Vista!!', ''],
     \ ])
 
 nnoremap <silent><space><space> :call quickui#menu#open()<cr>
@@ -475,7 +475,7 @@ autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.gra
 "===============================================================================
 " neovim
 "===============================================================================
-let g:python3_host_prog = '/usr/local/opt/python@3.8/bin/python3.8'
+let g:python3_host_prog = '/usr/local/opt/python@3.10/bin/python3.10'
 if exists(':tnoremap')
     tnoremap <Esc> <C-\><C-n>
 endif
