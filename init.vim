@@ -138,7 +138,7 @@ set pastetoggle=<F6>
 " <leader> number
 nmap <leader>1 :Ack! --python --ignore "/*test/*" -s -w <C-r><C-w><cr>
 nmap <leader>2 :Lack! -s -w <C-r><C-w><cr>
-nmap <leader>3 :Ack! --ignore "/*test/*" --ignore-dir "node_modules" -s -w <C-r><C-w>
+nmap <leader>3 :Ack! --ignore "/*test/*" --ignore node_modules --ignore builds -s -w <C-r><C-w>
 nmap <leader>4 :AckFile! 
 
 " Vita
@@ -316,12 +316,12 @@ let g:airline_powerline_fonts = 1
 " ale
 "-------------------------------------------------------------------------------
 "let g:ale_enabled = 0
+let g:ale_disable_lsp = 1
 let g:ale_sign_error = '➣➣'
 let g:ale_sign_warning = '··'
 nmap <Leader>[ <Plug>(ale_previous_wrap)
 nmap <Leader>] <Plug>(ale_next_wrap)
 let g:airline#extensions#ale#enabled = 1
-let g:ale_disable_lsp = 1
 call ale#Set('python_flake8_options', '--config=$HOME/.config/flake8')
 
 
@@ -435,6 +435,7 @@ call quickui#menu#install("&Config", [
     \ ['C&ocLocalConfig', ':CocLocalConfig', ''],
     \ ])
 call quickui#menu#install("&Window", [
+    \ ['&Shell', 'terminal', ''],
     \ ['&Horizontal<->Vertical', 'call ToggleWindowHorizontalVerticalSplit()', 'Horizontal to Vertical, vise versa'],
     \ [ "--", ],
     \ ['&Tagbar', 'Vista!!', ''],
@@ -443,9 +444,11 @@ call quickui#menu#install("&Window", [
 nnoremap <silent><space><space> :call quickui#menu#open()<cr>
 "
 let g:context_menu_1= [
-    \ ['&Lack', 'exec "Lack! -s -w " . expand("<cword>")'],
+    \ ["&Diagnostics", "CocDiagnostics", "CocDiagnostics"],
+    \ ["&Tip", "call CocAction('doHover')", "CocAction doHover"],
+    \ ["&Fix", "CocFix", "CocFix"],
     \ [ "--", ],
-    \ ["&Show Doc", "call CocAction('doHover')", "coc action doHover"],
+    \ ['&Lack', 'exec "Lack! -s -w " . expand("<cword>")'],
     \ ["&Vim help", 'exec "h " . expand("<cword>")'],
     \ ]
 nnoremap <silent>K :call quickui#context#open(g:context_menu_1, {})<cr>

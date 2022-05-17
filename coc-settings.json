@@ -17,5 +17,23 @@
 
     "tsserver.log": "normal",
 
-    "java.jdt.ls.vmargs": "-javaagent:/Users/lsaint/Coffee/lib/lombok.jar  -Xbootclasspath/a:/Users/lsaint/Coffee/lib/lombok.jar"
+    "java.jdt.ls.vmargs": "-javaagent:/Users/lsaint/Coffee/lib/lombok.jar  -Xbootclasspath/a:/Users/lsaint/Coffee/lib/lombok.jar",
+
+    "languageserver": {
+        "sourcery": {
+            "command": "/usr/local/lib/python3.10/site-packages/sourcery_cli/sourcery",
+            "args": ["lsp"],
+            "filetypes": ["python"],
+            "initializationOptions": {
+                "token": "user_PRqerFOxYyQzswXnGoc1_qKMyiPHAMseD_o4yjJfoOztS4NT_zHZP9dfNtg",
+                "extension_version": "coc.vim",
+                "editor_version": "vim"
+            },
+            "settings": {
+                "sourcery": {
+                    "metricsEnabled": true
+                }
+            }
+        }
+    }
 }
