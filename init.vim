@@ -22,7 +22,6 @@
 "===============================================================================
 call plug#begin('~/.vim/plugged')
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'mbbill/undotree', {'on': 'UndotreeToggle'}
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'dense-analysis/ale'
 Plug 'yssl/QFEnter'
@@ -33,7 +32,7 @@ Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
 Plug 'preservim/nerdtree'
 Plug 'terryma/vim-smooth-scroll'
 Plug 'liuchengxu/vista.vim'
-Plug 'mileszs/ack.vim'
+Plug 'dyng/ctrlsf.vim'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdcommenter'
 Plug 'vim-airline/vim-airline'
@@ -43,6 +42,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'unblevable/quick-scope'
 Plug 'wincent/ferret'
 Plug 'skywind3000/vim-quickui'
+Plug 'andymass/vim-matchup'
 " language
 Plug 'stephpy/vim-yaml', {'for': 'yaml'}
 Plug 'fatih/vim-go', {'for': 'go'}
@@ -129,7 +129,7 @@ noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 9, 4)<CR>
 nnoremap <silent> <expr> <F1> Highlighting()
 noremap <F2> :NERDTreeToggle<CR>
 let g:maximizer_default_mapping_key = '<F3>'
-nnoremap <F4> :UndotreeToggle<cr>
+nnoremap <F4> :CtrlSFToggle<CR>
 nmap <Leader><F5> <Plug>(qf_loc_toggle)
 nmap <F5> :NERDTreeClose<CR>\|<Plug>(qf_qf_toggle)
 nmap <F7> <Plug>(qf_shorten_path_toggle)
@@ -137,15 +137,14 @@ set pastetoggle=<F6>
 
 " <leader> number
 nmap <leader>1 :Ack! --python --ignore "/*test/*" -s -w <C-r><C-w><cr>
-nmap <leader>2 :Lack! -s -w <C-r><C-w><cr>
-nmap <leader>3 :Ack! --ignore "/*test/*" --ignore node_modules --ignore builds -s -w <C-r><C-w>
+nmap <leader>2 :CtrlSF -S -W <C-r><C-w>
+nmap <leader>3 :Ack! --ignore tests --ignore static/ --ignore node_modules --ignore builds -s -w <C-r><C-w>
 nmap <leader>4 :AckFile! 
 
 " Vita
 let g:vista_default_executive = "coc"
 
 " <leader> F
-"map <leader><F2> :TagbarToggle<cr> 
 nmap <leader><F2> :Vista!!<cr> 
 nmap <Leader><F5> <Plug>(qf_loc_toggle)
 nmap <leader><F10> :bufdo! e<cr>
@@ -231,6 +230,14 @@ command! Wswap :call WinBufSwap()
 map <Leader>sw :call WinBufSwap()<CR>
 
 "-------------------------------------------------------------------------------
+" vim-matchup
+"-------------------------------------------------------------------------------
+nmap <leader>n z%
+let g:matchup_matchparen_deferred = 1
+let g:matchup_matchparen_hi_surround_always = 1
+
+
+"-------------------------------------------------------------------------------
 " LeaderF
 "-------------------------------------------------------------------------------
 "noremap <leader>F :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
@@ -296,12 +303,17 @@ autocmd FileType java map <Leader>gs :InsertBothGetterSetter<CR>
 
 
 "-------------------------------------------------------------------------------
-" ack.vim
+" ctrlsf
 "-------------------------------------------------------------------------------
-if executable('ag')
-  let g:ackprg = 'ag --vimgrep'
-endif
-"let g:ackhighlight = 1
+"let g:ctrlsf_default_view_mode = 'compact'
+"let g:ctrlsf_populate_qflist = 1 "feed quickfix and location list with search result
+let g:ctrlsf_auto_focus = {"at": "start" }
+let g:ctrlsf_auto_close = {"normal": 0, "compact": 0 }
+let g:ctrlsf_mapping = {                               
+    \ "quit": ["<C-C>", "q"],
+    \ "next": "n",
+    \ "prev": "N",
+    \ }
 
 
 "-------------------------------------------------------------------------------
@@ -383,6 +395,7 @@ nmap <silent> <leader>r <Plug>(coc-references)
 
 nmap <silent> <leader>ac <Plug>(coc-codeaction)
 nmap <silent> <leader>qf <Plug>(coc-fix-current)
+nmap <silent> <leader>ho :call CocAction('doHover')<cr>
 
 autocmd FileType json syntax match Comment +\/\/.\+$+
 
@@ -422,11 +435,13 @@ call quickui#menu#install("F&ormat", [
     \ ['Format &Json', '%!python3 -m json.tool', 'format json file using python3 module json.tool'],
     \ ['Format &Xml', '%!xmllint % --format', 'format xml using xmlint'],
     \ ['Format &Prettier', 'Prettier', 'format current buffer using Prettier'],
+    \ ['Format &Black', '!black %', 'format pyhton file with Black'],
     \ ])
 call quickui#menu#install("&Run", [
     \ ['Run &Python', '!python3 %', ''],
     \ ['Run &Go', '!go run %', ''],
     \ ['Run &Shell', '!sh %', ''],
+    \ ['Run &Django', '!python manage.py shell < %', ''],
     \ ])
 call quickui#menu#install("&Config", [
     \ ['&Vimrc', ':e $MYVIMRC', ''],
@@ -444,9 +459,9 @@ call quickui#menu#install("&Window", [
 nnoremap <silent><space><space> :call quickui#menu#open()<cr>
 "
 let g:context_menu_1= [
-    \ ["&Diagnostics", "CocDiagnostics", "CocDiagnostics"],
     \ ["&Tip", "call CocAction('doHover')", "CocAction doHover"],
     \ ["&Fix", "CocFix", "CocFix"],
+    \ ["&Diagnostics", "CocDiagnostics", "CocDiagnostics"],
     \ [ "--", ],
     \ ['&Lack', 'exec "Lack! -s -w " . expand("<cword>")'],
     \ ["&Vim help", 'exec "h " . expand("<cword>")'],

@@ -6,14 +6,14 @@
         ".projections.json"
     ],
 
-    "coc.preferences.formatOnType": true,
-    "coc.preferences.formatOnSaveFiletypes": ["python"],
-
     "diagnostic.displayByAle": true,
     "diagnostic.hintSign": "➤",
 
     "python.formatting.provider": "black",
     "python.formatting.blackPath": "/usr/local/bin/black",
+
+    "coc.preferences.formatOnType": true,
+    "coc.preferences.formatOnSaveFiletypes": ["python"],
 
     "tsserver.log": "normal",
 
@@ -25,13 +25,13 @@
             "args": ["lsp"],
             "filetypes": ["python"],
             "initializationOptions": {
-                "token": "user_PRqerFOxYyQzswXnGoc1_qKMyiPHAMseD_o4yjJfoOztS4NT_zHZP9dfNtg",
+                "token": "user_70Iu0e_MRFlAVLZu2n_7TPm0LdByn2W5bXJr1p49QCfRbC3q07nI8my1d8I",
                 "extension_version": "coc.vim",
                 "editor_version": "vim"
             },
             "settings": {
                 "sourcery": {
-                    "metricsEnabled": true
+                    "metricsEnabled": false
                 }
             }
         }
