@@ -12,6 +12,8 @@
     "python.formatting.provider": "black",
     "python.formatting.blackPath": "/usr/local/bin/black",
 
+    "python.linting.flake8Path": "/usr/local/bin/flake8",
+
     "coc.preferences.formatOnType": true,
     "coc.preferences.formatOnSaveFiletypes": ["python"],
 

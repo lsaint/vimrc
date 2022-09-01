@@ -135,14 +135,19 @@ nmap <F5> :NERDTreeClose<CR>\|<Plug>(qf_qf_toggle)
 nmap <F7> <Plug>(qf_shorten_path_toggle)
 set pastetoggle=<F6>
 
+" Vita
+let g:vista_default_executive = "coc"
+
 " <leader> number
 nmap <leader>1 :Ack! --python --ignore "/*test/*" -s -w <C-r><C-w><cr>
 nmap <leader>2 :CtrlSF -S -W <C-r><C-w>
 nmap <leader>3 :Ack! --ignore tests --ignore static/ --ignore node_modules --ignore builds -s -w <C-r><C-w>
-nmap <leader>4 :AckFile! 
+nmap <leader>4 :Ack! --ignore static/ --ignore node_modules --ignore builds -s -w <C-r><C-w>
 
-" Vita
-let g:vista_default_executive = "coc"
+nmap <leader>kk :K 
+nmap <leader>kj :Rej test
+nmap <leader>kl :Res<cr>
+
 
 " <leader> F
 nmap <leader><F2> :Vista!!<cr> 
@@ -243,7 +248,7 @@ let g:matchup_matchparen_hi_surround_always = 1
 "noremap <leader>F :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
 noremap <leader>F :<C-U><C-R>=printf("Leaderf file --no-ignore %s", "")<CR><CR>
 noremap <leader>l :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
-noremap <leader>hm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
+noremap <leader>m :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
 noremap <leader>ht :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
 noremap <leader>hs :<C-U><C-R>=printf("Leaderf searchHistory %s", "")<CR><CR>
 let g:Lf_CommandMap = {'<C-X>': ['<C-S>'], '<C-]>': ['<C-V>'], '<C-P>': ['<C-H>'], '<C-V>': ['<C-P>']}
@@ -283,6 +288,8 @@ let g:qfenter_exclude_filetypes = ['nerdtree', 'tagbar']
 " vim-qf
 "-------------------------------------------------------------------------------
 let g:qf_shorten_path = 0
+nnoremap , <Plug>(qf_older)
+nnoremap . <Plug>(qf_newer)
 
 
 
@@ -366,22 +373,26 @@ set updatetime=300
 " don't give |ins-completion-menu| messages.
 set shortmess+=c
 " Use tab for trigger completion with characters ahead and navigate.
-" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+" NOTE: There's always complete item selected by default, you may want to enable
+" no select by `"suggest.noselect": true` in your configuration file.
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config.
+"inoremap <silent><expr> <TAB>
+      "\ coc#pum#visible() ? coc#pum#next(1) :
+      "\ CheckBackspace() ? "\<Tab>" :
+      "\ coc#refresh()
+"inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+" Make <CR> to accept selected completion item or notify coc.nvim to format
+" <C-g>u breaks current undo, please make your own choice.
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 function! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
-
-" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
-" Coc only does snippet and additional edit on confirm.
-inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 " navigate diagnostics
 nmap <silent> <leader>qq <Plug>(coc-diagnostic-prev)
@@ -406,7 +417,7 @@ nmap <silent> <leader>cof :CocConfig<cr>
 nmap <silent> <leader>coF :CocLocalConfig<cr>
 imap <C-l> <Plug>(coc-snippets-expand)
 
-autocmd BufWritePost *.py :CocCommand python.sortImports
+autocmd BufWritePre *.py silent! :call CocAction('runCommand', 'python.sortImports')
 
 
 "-------------------------------------------------------------------------------
