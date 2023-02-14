@@ -1,18 +1,21 @@
 {
-    "coc.preferences.rootPatterns": [
-        ".vim",
-        ".git",
-        ".hg",
-        ".projections.json"
-    ],
+    "workspace.rootPatterns": [".vim", ".git", ".hg", ".projections.json"],
 
     "diagnostic.displayByAle": true,
     "diagnostic.hintSign": "➤",
 
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportGeneralTypeIssues": "none"
+    },
+    //"python.linting.flake8Path": "/usr/local/bin/flake8",
+    //"python.linting.flake8Args": [
+    //    "--append-config /Users/lsaint/.config/flake8"
+    //],
+
     "python.formatting.provider": "black",
     "python.formatting.blackPath": "/usr/local/bin/black",
 
-    "python.linting.flake8Path": "/usr/local/bin/flake8",
+    "pyright.inlayHints.variableTypes": false,
 
     "coc.preferences.formatOnType": true,
     "coc.preferences.formatOnSaveFiletypes": ["python"],
@@ -23,7 +26,7 @@
 
     "languageserver": {
         "sourcery": {
-            "command": "/usr/local/lib/python3.10/site-packages/sourcery_cli/sourcery",
+            "command": "/usr/local/lib/python3.11/site-packages/sourcery_cli/sourcery",
             "args": ["lsp"],
             "filetypes": ["python"],
             "initializationOptions": {
@@ -37,5 +40,6 @@
                 }
             }
         }
-    }
+    },
+    "snippets.ultisnips.pythonPrompt": false
 }

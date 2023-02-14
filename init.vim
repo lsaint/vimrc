@@ -48,6 +48,9 @@ Plug 'stephpy/vim-yaml', {'for': 'yaml'}
 Plug 'fatih/vim-go', {'for': 'go'}
 Plug 'vim-scripts/java_getset.vim',{'for': 'java'}
 Plug 'tbastos/vim-lua', {'for': 'lua'}
+Plug 'preservim/vim-markdown'
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
+Plug 'mracos/mermaid.vim'
 " front-end
 Plug 'prettier/vim-prettier'
 Plug 'pangloss/vim-javascript', {'for': ['js', 'jsx']}
@@ -233,6 +236,19 @@ function! WinBufSwap()
 endfunction
 command! Wswap :call WinBufSwap()
 map <Leader>sw :call WinBufSwap()<CR>
+
+
+"-------------------------------------------------------------------------------
+" markdown-preview
+"-------------------------------------------------------------------------------
+nmap <C-m> <Plug>MarkdownPreviewToggle
+
+
+"-------------------------------------------------------------------------------
+" preservim/vim-markdown
+"-------------------------------------------------------------------------------
+let g:vim_markdown_folding_disabled = 1
+
 
 "-------------------------------------------------------------------------------
 " vim-matchup
@@ -420,6 +436,16 @@ imap <C-l> <Plug>(coc-snippets-expand)
 autocmd BufWritePre *.py silent! :call CocAction('runCommand', 'python.sortImports')
 
 
+
+"-------------------------------------------------------------------------------
+" quick-scope
+"-------------------------------------------------------------------------------
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
+highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline
+
+
+
 "-------------------------------------------------------------------------------
 " quick-ui
 "-------------------------------------------------------------------------------
@@ -504,7 +530,7 @@ autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.gra
 "===============================================================================
 " neovim
 "===============================================================================
-let g:python3_host_prog = '/usr/local/opt/python@3.10/bin/python3.10'
+let g:python3_host_prog = '/opt/homebrew/bin/python3'
 if exists(':tnoremap')
     tnoremap <Esc> <C-\><C-n>
 endif
