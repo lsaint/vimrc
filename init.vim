@@ -21,6 +21,7 @@
 " PlugSnapshot[!] [output path]	Generate script for restoring the current snapshot of the plugins
 "===============================================================================
 call plug#begin('~/.vim/plugged')
+Plug 'github/copilot.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'dense-analysis/ale'
@@ -482,7 +483,7 @@ call quickui#menu#install("&Run", [
     \ ])
 call quickui#menu#install("&Config", [
     \ ['&Vimrc', ':e $MYVIMRC', ''],
-    \ ['Vim&Tips', ':e ~/Dropbox/vim/vimtips.txt', ''],
+    \ ['Vim&Tips', ':e ~/Library/CloudStorage/Dropbox/vim/vimtips.txt', ''],
     \ ['&CocConfig', ':CocConfig', ''],
     \ ['C&ocLocalConfig', ':CocLocalConfig', ''],
     \ ])
@@ -610,7 +611,7 @@ function! ToggleVimTips()
     pclose
   else
     let g:MyVimTips="on"
-    pedit ~/Dropbox/vimtips.txt
+    pedit ~/Library/CloudStorage/Dropbox/vim/vimtips.txt
   endif
 endfunction
 nnoremap <F8> :call ToggleVimTips()<CR>

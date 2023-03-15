@@ -1,4 +1,5 @@
 {
+    "npm.binPath": "/opt/homebrew/bin/yarn",
     "workspace.rootPatterns": [".vim", ".git", ".hg", ".projections.json"],
 
     "diagnostic.displayByAle": true,
@@ -7,13 +8,9 @@
     "python.analysis.diagnosticSeverityOverrides": {
         "reportGeneralTypeIssues": "none"
     },
-    //"python.linting.flake8Path": "/usr/local/bin/flake8",
-    //"python.linting.flake8Args": [
-    //    "--append-config /Users/lsaint/.config/flake8"
-    //],
 
     "python.formatting.provider": "black",
-    "python.formatting.blackPath": "/usr/local/bin/black",
+    "python.formatting.blackPath": "/opt/homebrew/bin/black",
 
     "pyright.inlayHints.variableTypes": false,
 
@@ -22,11 +19,11 @@
 
     "tsserver.log": "normal",
 
-    "java.jdt.ls.vmargs": "-javaagent:/Users/lsaint/Coffee/lib/lombok.jar  -Xbootclasspath/a:/Users/lsaint/Coffee/lib/lombok.jar",
+    //"java.jdt.ls.vmargs": "-javaagent:/Users/lsaint/Coffee/lib/lombok.jar  -Xbootclasspath/a:/Users/lsaint/Coffee/lib/lombok.jar",
 
     "languageserver": {
         "sourcery": {
-            "command": "/usr/local/lib/python3.11/site-packages/sourcery_cli/sourcery",
+            "command": "/opt/homebrew/lib/python3.11/site-packages/sourcery/sourcery",
             "args": ["lsp"],
             "filetypes": ["python"],
             "initializationOptions": {
