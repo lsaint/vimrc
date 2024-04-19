@@ -3,11 +3,12 @@
     "workspace.rootPatterns": [".vim", ".git", ".hg", ".projections.json"],
 
     "diagnostic.displayByAle": true,
-    "diagnostic.hintSign": "➤",
 
     "python.analysis.diagnosticSeverityOverrides": {
         "reportGeneralTypeIssues": "none"
     },
+
+    "python.analysis.diagnosticMode": "workspace",
 
     "python.formatting.provider": "black",
     "python.formatting.blackPath": "/opt/homebrew/bin/black",
@@ -15,7 +16,7 @@
     "pyright.inlayHints.variableTypes": false,
 
     "coc.preferences.formatOnType": true,
-    "coc.preferences.formatOnSaveFiletypes": ["python"],
+    "coc.preferences.formatOnSaveFiletypes": ["python", "dart"],
 
     "tsserver.log": "normal",
 

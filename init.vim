@@ -47,13 +47,13 @@ Plug 'andymass/vim-matchup'
 " language
 Plug 'stephpy/vim-yaml', {'for': 'yaml'}
 Plug 'fatih/vim-go', {'for': 'go'}
-Plug 'vim-scripts/java_getset.vim',{'for': 'java'}
 Plug 'tbastos/vim-lua', {'for': 'lua'}
 Plug 'preservim/vim-markdown'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
 Plug 'mracos/mermaid.vim'
+Plug 'dart-lang/dart-vim-plugin'
 " front-end
-Plug 'prettier/vim-prettier'
+Plug 'prettier/vim-prettier', { 'do': 'yarn install --frozen-lockfile --production' }
 Plug 'pangloss/vim-javascript', {'for': ['js', 'jsx']}
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'HerringtonDarkholme/yats.vim', {'for': ['js', 'jsx', 'ts', 'tsx']}
@@ -62,6 +62,13 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'morhetz/gruvbox'
 call plug#end()
 
+
+colorscheme gruvbox
+highlight Normal     ctermbg=NONE guibg=NONE
+highlight LineNr     ctermbg=NONE guibg=NONE
+highlight SignColumn ctermbg=NONE guibg=NONE
+highlight VertSplit  ctermbg=NONE guibg=NONE
+"highlight Pmenu     ctermbg=NONE guibg=NONE
 
 
 "===============================================================================
@@ -82,15 +89,12 @@ set encoding=utf-8
 set nocompatible
 set splitright
 set splitbelow
+"set fillchars=eob:▒
+set fillchars=eob:\ 
+"set fillchars+=vert:║
 syntax on
 filetype plugin indent on
 let mapleader = "\<Space>"
-
-colorscheme gruvbox
-highlight Normal     ctermbg=NONE guibg=NONE
-highlight LineNr     ctermbg=NONE guibg=NONE
-highlight SignColumn ctermbg=NONE guibg=NONE
-"highlight Pmenu     ctermbg=NONE guibg=NONE
 
 autocmd bufenter * execute "let g:extension = expand('%:e')"
 
@@ -103,6 +107,7 @@ vnoremap <leader>y "*y
 nnoremap <tab>j }
 nnoremap <tab>k {
 
+
 " true color setting
 if exists('+termguicolors')
   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
@@ -112,12 +117,8 @@ endif
 
 " quit 
 noremap <C-C> <ESC>:q!<CR>
-" go to last file
+" go to last file pos
 map <leader>` :e#<CR>
-" go to last edit
-" g; or `.
-" go to last edit & enter insert mode
-" gi
 
 " vim-indent-guides
 map <leader>t :IndentGuidesToggle<CR>
@@ -143,14 +144,13 @@ set pastetoggle=<F6>
 let g:vista_default_executive = "coc"
 
 " <leader> number
-nmap <leader>1 :Ack! --python --ignore "/*test/*" -s -w <C-r><C-w><cr>
+nmap <leader>1 :Ack! --python --ignore tests -s -w <C-r><C-w><cr>
 nmap <leader>2 :CtrlSF -S -W <C-r><C-w>
-nmap <leader>3 :Ack! --ignore tests --ignore static/ --ignore node_modules --ignore builds -s -w <C-r><C-w>
-nmap <leader>4 :Ack! --ignore static/ --ignore node_modules --ignore builds -s -w <C-r><C-w>
+nmap <leader>4 :Ack! --ignore tests --ignore static/ --ignore node_modules --ignore builds -s -w <C-r><C-w>
 
-nmap <leader>kk :K 
-nmap <leader>kj :Rej test
-nmap <leader>kl :Res<cr>
+"nmap <leader>kk :K 
+"nmap <leader>kj :Rej test
+"nmap <leader>kl :Res<cr>
 
 
 " <leader> F
@@ -184,11 +184,29 @@ noremap <C-L> <C-W>l
 noremap <C-P> <C-W>p
 
 
-" highlight the current line only on the active buffer
+"" highlight the current line only on the active buffer
 augroup CursorLine
     au!
-    au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
-    au WinLeave * setlocal nocursorline
+    "au VimEnter,WinEnter,BufWinEnter * setlocal cursorline 
+    au WinLeave * setlocal nocursorline nocursorcolumn
+augroup END
+
+" highlight the current column & line when cursor is moved
+function! SetCursorCross()
+    if exists('s:cursor_timer')
+        call timer_stop(s:cursor_timer)
+    endif
+    setlocal cursorcolumn cursorline
+    let s:cursor_timer = timer_start(2000, 'UnsetCursorCross')
+endfunction
+
+function! UnsetCursorCross(timer)
+    setlocal nocursorcolumn nocursorline
+endfunction
+
+augroup CursorColumn
+    au!
+    au CursorMoved * call SetCursorCross()
 augroup END
 
 
@@ -240,9 +258,37 @@ map <Leader>sw :call WinBufSwap()<CR>
 
 
 "-------------------------------------------------------------------------------
+" github copilot
+"-------------------------------------------------------------------------------
+imap <C-l> <Plug>(copilot-next)
+imap <C-h> <Plug>(copilot-previous)
+imap <C-;> <Plug>(copilot-dismiss)
+let g:copilot_filetypes = {
+    \ 'gitcommit': v:true,
+    \ 'markdown': v:true,
+    \ 'yaml': v:true
+    \ }
+" disables Copilot for files larger than 200KB
+autocmd BufReadPre *
+    \ let f=getfsize(expand("<afile>"))
+    \ | if f > 200000 || f == -2
+    \ | let b:copilot_enabled = v:false
+    \ | endif
+" complete next word
+function! CompleteOneWord()
+    let suggestion = copilot#Accept("")
+    let bar = copilot#TextQueuedForInsertion()
+    return split(bar, '[ .]\zs')[0]
+endfunction
+
+imap <script><expr> <C-k> CompleteOneWord()
+
+
+"-------------------------------------------------------------------------------
 " markdown-preview
 "-------------------------------------------------------------------------------
 nmap <C-m> <Plug>MarkdownPreviewToggle
+
 
 
 "-------------------------------------------------------------------------------
@@ -262,10 +308,10 @@ let g:matchup_matchparen_hi_surround_always = 1
 "-------------------------------------------------------------------------------
 " LeaderF
 "-------------------------------------------------------------------------------
-"noremap <leader>F :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
 noremap <leader>F :<C-U><C-R>=printf("Leaderf file --no-ignore %s", "")<CR><CR>
-noremap <leader>l :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
 noremap <leader>m :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
+"noremap <leader>F :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
+"noremap <leader>d :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
 noremap <leader>ht :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
 noremap <leader>hs :<C-U><C-R>=printf("Leaderf searchHistory %s", "")<CR><CR>
 let g:Lf_CommandMap = {'<C-X>': ['<C-S>'], '<C-]>': ['<C-V>'], '<C-P>': ['<C-H>'], '<C-V>': ['<C-P>']}
@@ -289,6 +335,10 @@ let g:NERDTreeMapOpenSplit="s"
 let g:NERDTreeMapOpenVSplit="v"
 " exit vim when nerdtree window only
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
+autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
+    \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
 
 
 "-------------------------------------------------------------------------------
@@ -322,7 +372,7 @@ let g:go_fmt_command = "goimports"
 "-------------------------------------------------------------------------------
 " java getsetter
 "-------------------------------------------------------------------------------
-autocmd FileType java map <Leader>gs :InsertBothGetterSetter<CR>
+"autocmd FileType java map <Leader>gs :InsertBothGetterSetter<CR>
 
 
 
@@ -344,7 +394,6 @@ let g:ctrlsf_mapping = {
 " vim-airline
 "-------------------------------------------------------------------------------
 let g:airline_theme='gruvbox'
-"let g:airline_theme='bubblegum'
 let g:airline_powerline_fonts = 1
 
 
@@ -353,12 +402,15 @@ let g:airline_powerline_fonts = 1
 "-------------------------------------------------------------------------------
 "let g:ale_enabled = 0
 let g:ale_disable_lsp = 1
-let g:ale_sign_error = '➣➣'
-let g:ale_sign_warning = '··'
+"let g:ale_sign_error = '☠️'
+"let g:ale_sign_warning = '🔥'
+"highlight clear ALEErrorSign
+"highlight clear ALEWarningSign
 nmap <Leader>[ <Plug>(ale_previous_wrap)
 nmap <Leader>] <Plug>(ale_next_wrap)
 let g:airline#extensions#ale#enabled = 1
 call ale#Set('python_flake8_options', '--config=$HOME/.config/flake8')
+nnoremap <leader>d :ALEToggle<CR>:e<CR>
 
 
 
@@ -379,6 +431,7 @@ let g:coc_global_extensions = [
   \ 'coc-yaml',
   \ 'coc-json',
   \ 'coc-snippets',
+  \ 'coc-flutter',
   \ ]
 " Some servers have issues with backup files, see #649
 set nobackup
@@ -417,8 +470,8 @@ nmap <silent> <leader>ww <Plug>(coc-diagnostic-next)
 
 " Remap keys for gotos
 nmap <silent> <leader>j <Plug>(coc-definition)
-nmap <silent> <leader>r <Plug>(coc-references)
-"nmap <silent> <leader>y <Plug>(coc-type-definition)
+nmap <silent> <leader>k <Plug>(coc-type-definition)
+nmap <silent> <leader>l <Plug>(coc-references)
 "nmap <silent> <leader>i <Plug>(coc-implementation)
 
 nmap <silent> <leader>ac <Plug>(coc-codeaction)
@@ -432,7 +485,7 @@ nmap <silent> <leader>coc :CocCommand<cr>
 nmap <silent> <leader>col :CocList<cr>
 nmap <silent> <leader>cof :CocConfig<cr>
 nmap <silent> <leader>coF :CocLocalConfig<cr>
-imap <C-l> <Plug>(coc-snippets-expand)
+"imap <C-l> <Plug>(coc-snippets-expand)
 
 autocmd BufWritePre *.py silent! :call CocAction('runCommand', 'python.sortImports')
 
@@ -521,17 +574,18 @@ augroup END
 " front-end
 "===============================================================================
 
-autocmd FileType *.jsx,*.js,*.html,*.css,*.json,*.yaml  set tabstop=2 shiftwidth=2
+autocmd FileType *.dart,*.ts,*.tsx,*.jsx,*.js,*.html,*.css,*.json,*.yaml  set tabstop=2 shiftwidth=2
 
 " Prettier
-let g:prettier#autoformat = 0
-autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.vue,*.yaml Prettier
+let g:prettier#autoformat = 1
+let g:prettier#autoformat_require_pragma = 0
+"autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.vue,*.yaml Prettier
 
 
 "===============================================================================
 " neovim
 "===============================================================================
-let g:python3_host_prog = '/opt/homebrew/bin/python3'
+let g:python_host_prog = '/opt/homebrew/bin/python3'
 if exists(':tnoremap')
     tnoremap <Esc> <C-\><C-n>
 endif
