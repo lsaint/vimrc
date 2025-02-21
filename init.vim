@@ -44,6 +44,11 @@ Plug 'unblevable/quick-scope'
 Plug 'wincent/ferret'
 Plug 'skywind3000/vim-quickui'
 Plug 'andymass/vim-matchup'
+" dap debug
+Plug 'mfussenegger/nvim-dap'
+Plug 'mfussenegger/nvim-dap-python'
+Plug 'nvim-neotest/nvim-nio'
+Plug 'rcarriga/nvim-dap-ui'
 " language
 Plug 'stephpy/vim-yaml', {'for': 'yaml'}
 Plug 'fatih/vim-go', {'for': 'go'}
@@ -99,8 +104,8 @@ let mapleader = "\<Space>"
 autocmd bufenter * execute "let g:extension = expand('%:e')"
 
 " delete without copy
-nnoremap <leader>d "_d
-vnoremap <leader>d "_d
+"nnoremap <leader>d "_d
+"vnoremap <leader>d "_d
 " copy to system clipboard
 vnoremap <leader>y "*y
 
@@ -135,10 +140,10 @@ nnoremap <silent> <expr> <F1> Highlighting()
 noremap <F2> :NERDTreeToggle<CR>
 let g:maximizer_default_mapping_key = '<F3>'
 nnoremap <F4> :CtrlSFToggle<CR>
-nmap <Leader><F5> <Plug>(qf_loc_toggle)
-nmap <F5> :NERDTreeClose<CR>\|<Plug>(qf_qf_toggle)
+nmap <F5> <Plug>(qf_loc_toggle)
+nmap <F6> :NERDTreeClose<CR>\|<Plug>(qf_qf_toggle)
 nmap <F7> <Plug>(qf_shorten_path_toggle)
-set pastetoggle=<F6>
+set pastetoggle=<F11>
 
 " Vita
 let g:vista_default_executive = "coc"
@@ -146,7 +151,7 @@ let g:vista_default_executive = "coc"
 " <leader> number
 nmap <leader>1 :Ack! --python --ignore tests -s -w <C-r><C-w><cr>
 nmap <leader>2 :CtrlSF -S -W <C-r><C-w>
-nmap <leader>4 :Ack! --ignore tests --ignore static/ --ignore node_modules --ignore builds -s -w <C-r><C-w>
+nmap <leader>4 :Ack! --ignore static/ --ignore node_modules --ignore builds --ignore tests -s -w <C-r><C-w>
 
 "nmap <leader>kk :K 
 "nmap <leader>kj :Rej test
@@ -355,8 +360,8 @@ let g:qfenter_exclude_filetypes = ['nerdtree', 'tagbar']
 " vim-qf
 "-------------------------------------------------------------------------------
 let g:qf_shorten_path = 0
-nnoremap , <Plug>(qf_older)
-nnoremap . <Plug>(qf_newer)
+"nnoremap , <Plug>(qf_older)
+"nnoremap . <Plug>(qf_newer)
 
 
 
@@ -400,17 +405,17 @@ let g:airline_powerline_fonts = 1
 "-------------------------------------------------------------------------------
 " ale
 "-------------------------------------------------------------------------------
-"let g:ale_enabled = 0
-let g:ale_disable_lsp = 1
-"let g:ale_sign_error = '☠️'
-"let g:ale_sign_warning = '🔥'
+let g:ale_enabled = 1
+"let g:ale_disable_lsp = 1
 "highlight clear ALEErrorSign
 "highlight clear ALEWarningSign
-nmap <Leader>[ <Plug>(ale_previous_wrap)
-nmap <Leader>] <Plug>(ale_next_wrap)
+nmap <Leader>ww <Plug>(ale_next_wrap)
+nmap <Leader>qq <Plug>(ale_previous_wrap)
 let g:airline#extensions#ale#enabled = 1
 call ale#Set('python_flake8_options', '--config=$HOME/.config/flake8')
-nnoremap <leader>d :ALEToggle<CR>:e<CR>
+let g:ale_echo_msg_format = '[%linter%] %s'
+"nnoremap <leader>d :ALEToggle<CR>:e<CR>
+
 
 
 
@@ -432,6 +437,7 @@ let g:coc_global_extensions = [
   \ 'coc-json',
   \ 'coc-snippets',
   \ 'coc-flutter',
+  \ 'coc-toml',
   \ ]
 " Some servers have issues with backup files, see #649
 set nobackup
@@ -462,11 +468,6 @@ function! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
-
-
-" navigate diagnostics
-nmap <silent> <leader>qq <Plug>(coc-diagnostic-prev)
-nmap <silent> <leader>ww <Plug>(coc-diagnostic-next)
 
 " Remap keys for gotos
 nmap <silent> <leader>j <Plug>(coc-definition)
@@ -652,7 +653,7 @@ function! TogglePyDocString()
         let g:PyDocString[bufname()] = 0
     endif
 endfunction
-nnoremap <F9> :call TogglePyDocString()<CR>
+nnoremap <leader><F9> :call TogglePyDocString()<CR>
 
 
 "-------------------------------------------------------------------------------
@@ -668,7 +669,7 @@ function! ToggleVimTips()
     pedit ~/Library/CloudStorage/Dropbox/vim/vimtips.txt
   endif
 endfunction
-nnoremap <F8> :call ToggleVimTips()<CR>
+nnoremap <leader><F8> :call ToggleVimTips()<CR>
 
 
 "-------------------------------------------------------------------------------
@@ -699,6 +700,33 @@ function! GotoEnclosureDual(direction)
 endfunction
 nmap <silent> <tab>l :call GotoEnclosureDual(0)<CR>
 nmap <silent> <tab>h :call GotoEnclosureDual(1)<CR>
+
+
+" dap
+nnoremap <silent> <leader>dn :lua require('dap').continue()<CR>
+nnoremap <silent> <F8> :lua require('dap').step_over()<CR>
+nnoremap <silent> <leader>di :lua require('dap').step_into()<CR>
+nnoremap <silent> <leader>do :lua require('dap').step_out()<CR>
+nnoremap <silent> <leader>dt :lua require('dap').toggle_breakpoint()<CR>
+
+lua << EOF
+require('dap-python').setup('uv')
+require("dapui").setup()
+
+local dap, dapui = require("dap"), require("dapui")
+dap.listeners.before.attach.dapui_config = function()
+  dapui.open()
+end
+dap.listeners.before.launch.dapui_config = function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated.dapui_config = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited.dapui_config = function()
+  dapui.close()
+end
+EOF
 
 
 "-------------------------------------------------------------------------------
