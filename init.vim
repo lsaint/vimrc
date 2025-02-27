@@ -19,8 +19,8 @@ Plug 'unblevable/quick-scope'
 Plug 'wincent/ferret'
 Plug 'skywind3000/vim-quickui'
 Plug 'andymass/vim-matchup'
+Plug 'RRethy/vim-illuminate'
 Plug 'echasnovski/mini.animate'
-Plug 'karb94/neoscroll.nvim'
 " dap debug
 Plug 'mfussenegger/nvim-dap'
 Plug 'mfussenegger/nvim-dap-python', {'for': 'python'}
@@ -71,7 +71,6 @@ set encoding=utf-8
 set nocompatible
 set splitright
 set splitbelow
-"set fillchars=eob:▒
 set fillchars=eob:\ 
 "set fillchars+=vert:║
 syntax on
@@ -145,11 +144,7 @@ nmap <leader><F6> :NERDTreeClose<CR>\|<Plug>(qf_qf_toggle)
 nmap <leader><F7> <Plug>(qf_shorten_path_toggle)
 nmap <leader><F10> :bufdo! e<cr>
 nnoremap <leader><F11> :vsplit $MYVIMRC<cr>
-if has("nvim")
-    nmap <leader><F12> :source ~/.config/nvim/init.vim<cr>
-else
-    nmap <leader><F12> :source ~/.vimrc<cr>
-endif
+nmap <leader><F12> :source ~/.config/nvim/init.vim<cr>
 
 
 " win style save
@@ -172,11 +167,11 @@ noremap <C-P> <C-W>p
 
 
 "" highlight the current line only on the active buffer
-augroup CursorLine
-    au!
-    "au VimEnter,WinEnter,BufWinEnter * setlocal cursorline 
-    au WinLeave * setlocal nocursorline nocursorcolumn
-augroup END
+"augroup CursorLine
+    "au!
+    ""au VimEnter,WinEnter,BufWinEnter * setlocal cursorline 
+    "au WinLeave * setlocal nocursorline nocursorcolumn
+"augroup END
 
 " highlight the current column & line when cursor is moved
 function! SetCursorCross()
@@ -191,10 +186,14 @@ function! UnsetCursorCross(timer)
     setlocal nocursorcolumn nocursorline
 endfunction
 
-augroup CursorColumn
-    au!
-    au CursorMoved * call SetCursorCross()
-augroup END
+"augroup CursorColumn
+    "au!
+    "au CursorMoved * call SetCursorCross()
+"augroup END
+"
+
+
+
 
 
 " highlight cur word
@@ -533,6 +532,22 @@ augroup MyQuickfixPreview
   au FileType qf noremap <silent><buffer> ` :call quickui#tools#preview_quickfix()<cr>
 augroup END
 
+"-------------------------------------------------------------------------------
+" dap
+"-------------------------------------------------------------------------------
+" press e in locals window to edit local value
+nnoremap <silent> <F6> :lua require('dap').continue()<CR>
+nnoremap <silent> <F7> :lua require('dap').toggle_breakpoint()<CR>
+nnoremap <silent> <F8> :lua require('dap').step_over()<CR>
+nnoremap <silent> <F9> :lua require('dap').step_into()<CR>
+nnoremap <silent> <leader><F5> :lua require('dap').step_out()<CR>
+nnoremap <silent> <F5> :lua require("dapui").toggle({ reset = true })<CR>
+nnoremap <silent> <leader>dh :lua require('dap.ui.widgets').hover()<CR>
+vnoremap <silent> <leader>ds <ESC>:lua require('dap-python').debug_selection()<CR>
+nnoremap <silent> <leader>df :lua require('dapui').float_element()<CR>
+
+
+
 
 "===============================================================================
 " front-end
@@ -665,95 +680,7 @@ nmap <silent> <tab>l :call GotoEnclosureDual(0)<CR>
 nmap <silent> <tab>h :call GotoEnclosureDual(1)<CR>
 
 
-"-------------------------------------------------------------------------------
-" dap
-"-------------------------------------------------------------------------------
-" press e in locals window to edit local value
-nnoremap <silent> <F6> :lua require('dap').continue()<CR>
-nnoremap <silent> <F7> :lua require('dap').toggle_breakpoint()<CR>
-nnoremap <silent> <F8> :lua require('dap').step_over()<CR>
-nnoremap <silent> <F9> :lua require('dap').step_into()<CR>
-nnoremap <silent> <leader><F5> :lua require('dap').step_out()<CR>
-nnoremap <silent> <F5> :lua require("dapui").toggle({ reset = true })<CR>
-nnoremap <silent> <leader>dh :lua require('dap.ui.widgets').hover()<CR>
-vnoremap <silent> <leader>ds <ESC>:lua require('dap-python').debug_selection()<CR>
-nnoremap <silent> <leader>df :lua require('dapui').float_element()<CR>
-
 
 lua << EOF
-require('dap-python').setup('uv')
-require("dapui").setup( 
-{
-    layouts = { 
-      {
-        elements = { {
-            id = "repl",
-          } },
-        position = "bottom",
-        size = 10
-      },
-
-      {
-        elements = { {
-            id = "scopes",
-            size = 0.25
-          }, {
-            id = "breakpoints",
-            size = 0.25
-          },  {
-            id = "watches",
-            size = 0.25
-          } },
-        position = "left",
-        size = 40
-      }, 
-
-   },
-}
-)
-
-table.insert(require('dap').configurations.python, {
-  type = 'python',
-  request = 'launch',
-  name = 'DoxTurbo Uvicorn',
-  program = '/Users/lsaint/com/doxturbo/run_uvicorn.py',
-})
-
-table.insert(require('dap').configurations.python, {
-  type = 'python',
-  request = 'launch',
-  name = 'DoxTurbo Celery',
-  program = '/Users/lsaint/com/doxturbo/run_celery.py',
-})
-
-local dap, dapui = require("dap"), require("dapui")
-dap.listeners.before.attach.dapui_config = function()
-  dapui.open()
-end
-dap.listeners.before.launch.dapui_config = function()
-  dapui.open()
-end
-vim.fn.sign_define('DapBreakpoint',{ text ='🔴', texthl ='', linehl ='', numhl =''})
-vim.fn.sign_define('DapStopped',{ text ='▶️', texthl ='', linehl ='', numhl =''})
-
-require('neoscroll').setup({
-    duration_multiplier = 0.7,
-    easing = 'quadratic'
-})
-
-require('mini.animate').setup(
-{
-    cursor = { enable = false },
-    open = { enable = false },
-    close = { enable = false },
-    scroll = { enable = false },
-}
-)
+require('config')
 EOF
-
-"-------------------------------------------------------------------------------
-" test
-"-------------------------------------------------------------------------------
-function! Test()
-endfunction
-nmap <F12> :call Test()<CR>

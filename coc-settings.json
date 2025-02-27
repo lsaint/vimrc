@@ -17,6 +17,8 @@
     "python.formatting.blackPath": "/Users/lsaint/com/doxturbo/.venv/bin/black",
     "pyright.inlayHints.variableTypes": false,
     "pyright.inlayHints.parameterTypes": false,
+    "Lua.diagnostics.globals": ["vim", "ngx"],
+    "Lua.diagnostics.disable": ["lowercase-global"],
     "coc.preferences.formatOnType": true,
     "coc.preferences.formatOnSaveFiletypes": [
         "python",
