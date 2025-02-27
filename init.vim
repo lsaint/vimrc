@@ -1,25 +1,3 @@
-"===============================================================================
-"
-" start from 0
-"
-"curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-"curl -fLo ~/.vimrc https://raw.githubusercontent.com/lsaint/vimrc/master/init.vim
-":PlugInstall
-"===============================================================================
-
-
-"===============================================================================
-" 
-" vim-plug
-"
-" PlugInstall [name ...] [#threads]	Install plugins
-" PlugUpdate [name ...] [#threads]	Install or update plugins
-" PlugClean[!]	Remove unlisted plugins (bang version will clean without prompt)
-" PlugUpgrade	Upgrade vim-plug itself
-" PlugStatus	    Check the status of plugins
-" PlugDiff	    Examine changes from the previous update and the pending changes
-" PlugSnapshot[!] [output path]	Generate script for restoring the current snapshot of the plugins
-"===============================================================================
 call plug#begin('~/.vim/plugged')
 Plug 'github/copilot.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -31,22 +9,21 @@ Plug 'markonm/traces.vim'
 Plug 'vim-scripts/CmdlineComplete'
 Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
 Plug 'preservim/nerdtree'
-Plug 'terryma/vim-smooth-scroll'
 Plug 'liuchengxu/vista.vim'
-Plug 'dyng/ctrlsf.vim'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdcommenter'
 Plug 'vim-airline/vim-airline'
 Plug 'romainl/vim-qf'
-Plug 'szw/vim-maximizer'
 Plug 'tpope/vim-fugitive'
 Plug 'unblevable/quick-scope'
 Plug 'wincent/ferret'
 Plug 'skywind3000/vim-quickui'
 Plug 'andymass/vim-matchup'
+Plug 'echasnovski/mini.animate'
+Plug 'karb94/neoscroll.nvim'
 " dap debug
 Plug 'mfussenegger/nvim-dap'
-Plug 'mfussenegger/nvim-dap-python'
+Plug 'mfussenegger/nvim-dap-python', {'for': 'python'}
 Plug 'nvim-neotest/nvim-nio'
 Plug 'rcarriga/nvim-dap-ui'
 " language
@@ -128,22 +105,25 @@ map <leader>` :e#<CR>
 " vim-indent-guides
 map <leader>t :IndentGuidesToggle<CR>
 
-" scroll
-noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 9, 2)<CR>
-noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 9, 2)<CR>
-noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 9, 4)<CR>
-noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 9, 4)<CR>
-
-
 " F
 nnoremap <silent> <expr> <F1> Highlighting()
 noremap <F2> :NERDTreeToggle<CR>
-let g:maximizer_default_mapping_key = '<F3>'
 nnoremap <F4> :CtrlSFToggle<CR>
-nmap <F5> <Plug>(qf_loc_toggle)
-nmap <F6> :NERDTreeClose<CR>\|<Plug>(qf_qf_toggle)
-nmap <F7> <Plug>(qf_shorten_path_toggle)
 set pastetoggle=<F11>
+
+function! s:ZoomToggle() abort
+    if exists('t:zoomed') && t:zoomed
+        execute t:zoom_winrestcmd
+        let t:zoomed = 0
+    else
+        let t:zoom_winrestcmd = winrestcmd()
+        resize
+        vertical resize
+        let t:zoomed = 1
+    endif
+endfunction
+command! ZoomToggle call s:ZoomToggle()
+nnoremap <silent> <F3> :ZoomToggle<CR>
 
 " Vita
 let g:vista_default_executive = "coc"
@@ -160,7 +140,9 @@ nmap <leader>4 :Ack! --ignore static/ --ignore node_modules --ignore builds --ig
 
 " <leader> F
 nmap <leader><F2> :Vista!!<cr> 
-nmap <Leader><F5> <Plug>(qf_loc_toggle)
+"nmap <Leader><F5> <Plug>(qf_loc_toggle)
+nmap <leader><F6> :NERDTreeClose<CR>\|<Plug>(qf_qf_toggle)
+nmap <leader><F7> <Plug>(qf_shorten_path_toggle)
 nmap <leader><F10> :bufdo! e<cr>
 nnoremap <leader><F11> :vsplit $MYVIMRC<cr>
 if has("nvim")
@@ -265,9 +247,11 @@ map <Leader>sw :call WinBufSwap()<CR>
 "-------------------------------------------------------------------------------
 " github copilot
 "-------------------------------------------------------------------------------
+imap <C-j> <Plug>(copilot-suggest)
 imap <C-l> <Plug>(copilot-next)
 imap <C-h> <Plug>(copilot-previous)
 imap <C-;> <Plug>(copilot-dismiss)
+imap <C-K> <Plug>(copilot-accept-word)
 let g:copilot_filetypes = {
     \ 'gitcommit': v:true,
     \ 'markdown': v:true,
@@ -279,14 +263,7 @@ autocmd BufReadPre *
     \ | if f > 200000 || f == -2
     \ | let b:copilot_enabled = v:false
     \ | endif
-" complete next word
-function! CompleteOneWord()
-    let suggestion = copilot#Accept("")
-    let bar = copilot#TextQueuedForInsertion()
-    return split(bar, '[ .]\zs')[0]
-endfunction
 
-imap <script><expr> <C-k> CompleteOneWord()
 
 
 "-------------------------------------------------------------------------------
@@ -379,20 +356,6 @@ let g:go_fmt_command = "goimports"
 "-------------------------------------------------------------------------------
 "autocmd FileType java map <Leader>gs :InsertBothGetterSetter<CR>
 
-
-
-"-------------------------------------------------------------------------------
-" ctrlsf
-"-------------------------------------------------------------------------------
-"let g:ctrlsf_default_view_mode = 'compact'
-"let g:ctrlsf_populate_qflist = 1 "feed quickfix and location list with search result
-let g:ctrlsf_auto_focus = {"at": "start" }
-let g:ctrlsf_auto_close = {"normal": 0, "compact": 0 }
-let g:ctrlsf_mapping = {                               
-    \ "quit": ["<C-C>", "q"],
-    \ "next": "n",
-    \ "prev": "N",
-    \ }
 
 
 "-------------------------------------------------------------------------------
@@ -702,16 +665,66 @@ nmap <silent> <tab>l :call GotoEnclosureDual(0)<CR>
 nmap <silent> <tab>h :call GotoEnclosureDual(1)<CR>
 
 
+"-------------------------------------------------------------------------------
 " dap
-nnoremap <silent> <leader>dn :lua require('dap').continue()<CR>
+"-------------------------------------------------------------------------------
+" press e in locals window to edit local value
+nnoremap <silent> <F6> :lua require('dap').continue()<CR>
+nnoremap <silent> <F7> :lua require('dap').toggle_breakpoint()<CR>
 nnoremap <silent> <F8> :lua require('dap').step_over()<CR>
-nnoremap <silent> <leader>di :lua require('dap').step_into()<CR>
-nnoremap <silent> <leader>do :lua require('dap').step_out()<CR>
-nnoremap <silent> <leader>dt :lua require('dap').toggle_breakpoint()<CR>
+nnoremap <silent> <F9> :lua require('dap').step_into()<CR>
+nnoremap <silent> <leader><F5> :lua require('dap').step_out()<CR>
+nnoremap <silent> <F5> :lua require("dapui").toggle({ reset = true })<CR>
+nnoremap <silent> <leader>dh :lua require('dap.ui.widgets').hover()<CR>
+vnoremap <silent> <leader>ds <ESC>:lua require('dap-python').debug_selection()<CR>
+nnoremap <silent> <leader>df :lua require('dapui').float_element()<CR>
+
 
 lua << EOF
 require('dap-python').setup('uv')
-require("dapui").setup()
+require("dapui").setup( 
+{
+    layouts = { 
+      {
+        elements = { {
+            id = "repl",
+          } },
+        position = "bottom",
+        size = 10
+      },
+
+      {
+        elements = { {
+            id = "scopes",
+            size = 0.25
+          }, {
+            id = "breakpoints",
+            size = 0.25
+          },  {
+            id = "watches",
+            size = 0.25
+          } },
+        position = "left",
+        size = 40
+      }, 
+
+   },
+}
+)
+
+table.insert(require('dap').configurations.python, {
+  type = 'python',
+  request = 'launch',
+  name = 'DoxTurbo Uvicorn',
+  program = '/Users/lsaint/com/doxturbo/run_uvicorn.py',
+})
+
+table.insert(require('dap').configurations.python, {
+  type = 'python',
+  request = 'launch',
+  name = 'DoxTurbo Celery',
+  program = '/Users/lsaint/com/doxturbo/run_celery.py',
+})
 
 local dap, dapui = require("dap"), require("dapui")
 dap.listeners.before.attach.dapui_config = function()
@@ -720,14 +733,23 @@ end
 dap.listeners.before.launch.dapui_config = function()
   dapui.open()
 end
-dap.listeners.before.event_terminated.dapui_config = function()
-  dapui.close()
-end
-dap.listeners.before.event_exited.dapui_config = function()
-  dapui.close()
-end
-EOF
+vim.fn.sign_define('DapBreakpoint',{ text ='🔴', texthl ='', linehl ='', numhl =''})
+vim.fn.sign_define('DapStopped',{ text ='▶️', texthl ='', linehl ='', numhl =''})
 
+require('neoscroll').setup({
+    duration_multiplier = 0.7,
+    easing = 'quadratic'
+})
+
+require('mini.animate').setup(
+{
+    cursor = { enable = false },
+    open = { enable = false },
+    close = { enable = false },
+    scroll = { enable = false },
+}
+)
+EOF
 
 "-------------------------------------------------------------------------------
 " test
