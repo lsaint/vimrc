@@ -1,3 +1,6 @@
+-------------------------------------------------------------------------------
+--- dap
+-------------------------------------------------------------------------------
 require('dap-python').setup('uv')
 
 require("dapui").setup({
@@ -45,6 +48,10 @@ end
 vim.fn.sign_define('DapBreakpoint', { text = '🔴', texthl = '', linehl = '', numhl = '' })
 vim.fn.sign_define('DapStopped', { text = '▶️', texthl = '', linehl = '', numhl = '' })
 
+
+-------------------------------------------------------------------------------
+--- mini.animate
+-------------------------------------------------------------------------------
 require('mini.animate').setup({
     cursor = { enable = false },
     open = { enable = false },
@@ -52,8 +59,9 @@ require('mini.animate').setup({
     --    scroll = { enable = false },
 })
 
----------------------------------------------------------------------------------
--- Highlight the word while cursor is moving on it
+
+-------------------------------------------------------------------------------
+--- Highlight the word while cursor is moving on it
 -------------------------------------------------------------------------------
 function highlight_cursor_area()
     local winid = vim.api.nvim_get_current_win()
@@ -87,11 +95,66 @@ vim.api.nvim_command [[
 ]]
 
 
----------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+--- toggle my tips in preview window
+-------------------------------------------------------------------------------
+vim.g.MyVimTips = "off"
+local function toggle_vim_tips()
+    if vim.g.MyVimTips == "on" then
+        vim.g.MyVimTips = "off"
+        vim.cmd("pclose")
+    else
+        vim.g.MyVimTips = "on"
+        vim.cmd("pedit ~/Library/CloudStorage/Dropbox/vim/vimtips.txt")
+    end
+end
+vim.keymap.set('n', '<leader><F8>', toggle_vim_tips, { noremap = true })
+
+
+-------------------------------------------------------------------------------
+--- go to next ([{< in current line
+-------------------------------------------------------------------------------
+local enclosure = {
+    left = { "(", "[", "{", "<" },
+    right = { ")", "]", "}", ">" }
+}
+
+-- Move cursor to next/previous enclosure symbol
+local function goto_enclosure(direction, side)
+    local line = vim.api.nvim_get_current_line()
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    col = col + 1 -- Convert to 1-based index
+    local enc = (side == 0) and enclosure.left or enclosure.right
+    local step = (direction == 0) and 1 or -1
+    local start = (direction == 0) and (col + 1) or (col - 1)
+    local stop = (direction == 0) and #line or 1
+    for i = start, stop, step do
+        local c = line:sub(i, i)
+        if vim.tbl_contains(enc, c) then
+            vim.api.nvim_win_set_cursor(0, { row, i - 1 }) -- Convert back to 0-based index
+            return true
+        end
+    end
+    return false
+end
+
+-- Try moving cursor to enclosure on both sides
+local function goto_enclosure_dual(direction)
+    local another_side = (direction == 0) and 1 or 0
+    if not goto_enclosure(direction, 0) then
+        goto_enclosure(direction, another_side)
+    end
+end
+
+-- Set key mappings
+vim.keymap.set('n', '<tab>l', function() goto_enclosure_dual(0) end, { silent = true })
+vim.keymap.set('n', '<tab>h', function() goto_enclosure_dual(1) end, { silent = true })
+
+
+-------------------------------------------------------------------------------
 --- test
 -------------------------------------------------------------------------------
 local function test()
     print("Hello World!")
 end
-
 vim.keymap.set('n', '<F12>', test, { noremap = true, silent = true })

@@ -96,8 +96,6 @@ if exists('+termguicolors')
   set termguicolors
 endif
 
-" quit 
-noremap <C-C> <ESC>:q!<CR>
 " go to last file pos
 map <leader>` :e#<CR>
 
@@ -164,6 +162,9 @@ noremap <C-K> <C-W>k
 noremap <C-H> <C-W>h
 noremap <C-L> <C-W>l
 noremap <C-P> <C-W>p
+
+" quit 
+noremap <C-C> <ESC>:q!<CR>
 
 
 "" highlight the current line only on the active buffer
@@ -633,51 +634,6 @@ function! TogglePyDocString()
 endfunction
 nnoremap <leader><F9> :call TogglePyDocString()<CR>
 
-
-"-------------------------------------------------------------------------------
-" toggle my tips in preview window 
-"-------------------------------------------------------------------------------
-let g:MyVimTips="off"
-function! ToggleVimTips()
-  if g:MyVimTips == "on"
-    let g:MyVimTips="off"
-    pclose
-  else
-    let g:MyVimTips="on"
-    pedit ~/Library/CloudStorage/Dropbox/vim/vimtips.txt
-  endif
-endfunction
-nnoremap <leader><F8> :call ToggleVimTips()<CR>
-
-
-"-------------------------------------------------------------------------------
-" go to next ([{< in current line 
-"-------------------------------------------------------------------------------
-let g:enclosure = [["(", "[", "{", "<"], [")", "]", "}", ">"]]
-function! GotoEnclosure(direction, side)
-    let line=getline('.')
-    let colidx = col('.') - 1
-    let enc = (a:side == 0) ? g:enclosure[0] : g:enclosure[1]
-    let f = a:direction == 0 ? 'f' : "F"
-    let r = a:direction == 0 ? range(1, len(line) - colidx) : map(range(1, colidx), {k, v -> -v})
-    for i in r
-        let c = line[colidx + i]
-        let w = index(enc, c)
-        if w != -1
-            execute "normal! " . f . enc[w]
-            return 1
-        endif
-    endfor
-    return 0
-endfunction
-function! GotoEnclosureDual(direction)
-    let another_side = (a:direction == 0) ? 1 : 0
-    if GotoEnclosure(a:direction, 0) == 0
-        call GotoEnclosure(a:direction, another_side)
-    endif
-endfunction
-nmap <silent> <tab>l :call GotoEnclosureDual(0)<CR>
-nmap <silent> <tab>h :call GotoEnclosureDual(1)<CR>
 
 
 
