@@ -152,6 +152,54 @@ vim.keymap.set('n', '<tab>h', function() goto_enclosure_dual(1) end, { silent = 
 
 
 -------------------------------------------------------------------------------
+--- fold/unfold python docstring
+-------------------------------------------------------------------------------
+function PyFoldDocString()
+    vim.opt_local.foldmethod = "manual"
+    vim.cmd([[
+python3 << EOF
+import vim
+import ast
+
+lines = vim.current.buffer[:]
+docstring_start_lines = []
+root = ast.parse("\n".join(lines))
+for node in ast.walk(root):
+    if isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.Module)):
+        if (node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Str)):
+            start = node.body[0].value.lineno
+            docstring_start_lines.append(start)
+docstring_end_lines = []
+for start_line in docstring_start_lines:
+    offset = 0
+    for line in lines[start_line:]:
+        offset += 1
+        if '"""' in line or "'''" in line:
+            docstring_end_lines.append(start_line + offset)
+            break
+docstrings = list(zip(docstring_start_lines, docstring_end_lines))
+for start, end in docstrings:
+    vim.command("%d,%dfold" % (start, end))
+EOF
+]])
+end
+
+function TogglePyDocString()
+    if vim.b.py_docstring_state == nil or vim.b.py_docstring_state == 0 then
+        PyFoldDocString()
+        vim.b.py_docstring_state = 1
+    else
+        vim.cmd("normal! zr")
+        vim.b.py_docstring_state = 0
+    end
+end
+
+vim.api.nvim_set_keymap("n", "<leader><F9>", ":lua TogglePyDocString()<CR>", { noremap = true, silent = true })
+
+
+
+
+-------------------------------------------------------------------------------
 --- test
 -------------------------------------------------------------------------------
 local function test()
