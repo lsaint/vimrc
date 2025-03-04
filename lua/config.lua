@@ -1,4 +1,15 @@
 -------------------------------------------------------------------------------
+--- common
+-------------------------------------------------------------------------------
+vim.g.python_host_prog = '/opt/homebrew/bin/python3'
+
+-- exit terminal mode by pressing ESC
+if vim.fn.exists(':tnoremap') == 2 then
+    vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
+end
+
+
+-------------------------------------------------------------------------------
 --- dap
 -------------------------------------------------------------------------------
 require('dap-python').setup('uv')
@@ -13,10 +24,13 @@ require("dapui").setup({
     }, {
         elements = { {
             id = "scopes",
+            size = 0.34,
         }, {
             id = "breakpoints",
+            size = 0.33,
         }, {
             id = "watches",
+            size = 0.33,
         } },
         position = "left",
         size = 40
@@ -48,6 +62,16 @@ end
 vim.fn.sign_define('DapBreakpoint', { text = '🔴', texthl = '', linehl = '', numhl = '' })
 vim.fn.sign_define('DapStopped', { text = '▶️', texthl = '', linehl = '', numhl = '' })
 
+vim.keymap.set("n", "<F6>", function() require("dap").continue() end, { silent = true })
+vim.keymap.set("n", "<F7>", function() require("dap").toggle_breakpoint() end, { silent = true })
+vim.keymap.set("n", "<F8>", function() require("dap").step_over() end, { silent = true })
+vim.keymap.set("n", "<F9>", function() require("dap").step_into() end, { silent = true })
+vim.keymap.set("n", "<leader><F5>", function() require("dap").step_out() end, { silent = true })
+vim.keymap.set("n", "<F5>", function() require("dapui").toggle({ reset = true }) end, { silent = true })
+vim.keymap.set("n", "<leader>dh", function() require("dap.ui.widgets").hover() end, { silent = true })
+vim.keymap.set("v", "<leader>ds", function() require("dap-python").debug_selection() end, { silent = true })
+vim.keymap.set("n", "<leader>df", function() require("dapui").float_element() end, { silent = true })
+
 
 -------------------------------------------------------------------------------
 --- mini.animate
@@ -58,6 +82,29 @@ require('mini.animate').setup({
     close = { enable = false },
     --    scroll = { enable = false },
 })
+
+
+-------------------------------------------------------------------------------
+--- front-end
+-------------------------------------------------------------------------------
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "dart", "ts", "tsx", "jsx", "js", "html", "css", "json", "yaml" },
+    callback = function()
+        vim.opt.tabstop = 2
+        vim.opt.shiftwidth = 2
+    end,
+})
+
+-- Prettier
+vim.g["prettier#autoformat"] = 1
+vim.g["prettier#autoformat_require_pragma"] = 0
+
+
+
+--↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+--                       Custom Functions
+--↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
 
 
 -------------------------------------------------------------------------------
@@ -122,7 +169,8 @@ local enclosure = {
 -- Move cursor to next/previous enclosure symbol
 local function goto_enclosure(direction, side)
     local line = vim.api.nvim_get_current_line()
-    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local row, col = cursor[1], cursor[2]
     col = col + 1 -- Convert to 1-based index
     local enc = (side == 0) and enclosure.left or enclosure.right
     local step = (direction == 0) and 1 or -1
@@ -146,7 +194,6 @@ local function goto_enclosure_dual(direction)
     end
 end
 
--- Set key mappings
 vim.keymap.set('n', '<tab>l', function() goto_enclosure_dual(0) end, { silent = true })
 vim.keymap.set('n', '<tab>h', function() goto_enclosure_dual(1) end, { silent = true })
 
@@ -195,8 +242,6 @@ function TogglePyDocString()
 end
 
 vim.api.nvim_set_keymap("n", "<leader><F9>", ":lua TogglePyDocString()<CR>", { noremap = true, silent = true })
-
-
 
 
 -------------------------------------------------------------------------------

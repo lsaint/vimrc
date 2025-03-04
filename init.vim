@@ -533,42 +533,6 @@ augroup MyQuickfixPreview
   au FileType qf noremap <silent><buffer> ` :call quickui#tools#preview_quickfix()<cr>
 augroup END
 
-"-------------------------------------------------------------------------------
-" dap
-"-------------------------------------------------------------------------------
-" press e in locals window to edit local value
-nnoremap <silent> <F6> :lua require('dap').continue()<CR>
-nnoremap <silent> <F7> :lua require('dap').toggle_breakpoint()<CR>
-nnoremap <silent> <F8> :lua require('dap').step_over()<CR>
-nnoremap <silent> <F9> :lua require('dap').step_into()<CR>
-nnoremap <silent> <leader><F5> :lua require('dap').step_out()<CR>
-nnoremap <silent> <F5> :lua require("dapui").toggle({ reset = true })<CR>
-nnoremap <silent> <leader>dh :lua require('dap.ui.widgets').hover()<CR>
-vnoremap <silent> <leader>ds <ESC>:lua require('dap-python').debug_selection()<CR>
-nnoremap <silent> <leader>df :lua require('dapui').float_element()<CR>
-
-
-
-
-"===============================================================================
-" front-end
-"===============================================================================
-
-autocmd FileType *.dart,*.ts,*.tsx,*.jsx,*.js,*.html,*.css,*.json,*.yaml  set tabstop=2 shiftwidth=2
-
-" Prettier
-let g:prettier#autoformat = 1
-let g:prettier#autoformat_require_pragma = 0
-"autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.vue,*.yaml Prettier
-
-
-"===============================================================================
-" neovim
-"===============================================================================
-let g:python_host_prog = '/opt/homebrew/bin/python3'
-if exists(':tnoremap')
-    tnoremap <Esc> <C-\><C-n>
-endif
 
 
 
