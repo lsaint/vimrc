@@ -1,6 +1,29 @@
 -------------------------------------------------------------------------------
 --- common
 -------------------------------------------------------------------------------
+
+
+-- win style save
+vim.keymap.set("n", "<C-S>", ":update<CR>", { silent = true })
+vim.keymap.set("v", "<C-S>", "<C-c>:update<CR>", { silent = true })
+vim.keymap.set("i", "<C-S>", "<ESC>:update<CR>", { silent = true })
+
+-- resize windows
+vim.keymap.set("n", "<S-Down>", "<C-W>-", { silent = true })
+vim.keymap.set("n", "<S-Up>", "<C-W>+", { silent = true })
+vim.keymap.set("n", "<S-Left>", "<C-W><", { silent = true })
+vim.keymap.set("n", "<S-Right>", "<C-W>>", { silent = true })
+
+-- windows navigation
+vim.keymap.set("n", "<C-J>", "<C-W>j", { silent = true })
+vim.keymap.set("n", "<C-K>", "<C-W>k", { silent = true })
+vim.keymap.set("n", "<C-H>", "<C-W>h", { silent = true })
+vim.keymap.set("n", "<C-L>", "<C-W>l", { silent = true })
+vim.keymap.set("n", "<C-P>", "<C-W>p", { silent = true })
+
+-- quit
+vim.keymap.set("n", "<C-C>", "<ESC>:q!<CR>", { silent = true })
+
 vim.g.python_host_prog = '/opt/homebrew/bin/python3'
 
 -- exit terminal mode by pressing ESC
@@ -76,11 +99,15 @@ vim.keymap.set("n", "<leader>df", function() require("dapui").float_element() en
 -------------------------------------------------------------------------------
 --- mini.animate
 -------------------------------------------------------------------------------
+local animate = require('mini.animate')
 require('mini.animate').setup({
-    cursor = { enable = false },
     open = { enable = false },
     close = { enable = false },
-    --    scroll = { enable = false },
+    cursor = { enable = false },
+    scroll = {
+        enable = true,
+        timing = animate.gen_timing.linear({ duration = 200, unit = 'total' }),
+    },
 })
 
 
@@ -242,6 +269,45 @@ function TogglePyDocString()
 end
 
 vim.api.nvim_set_keymap("n", "<leader><F9>", ":lua TogglePyDocString()<CR>", { noremap = true, silent = true })
+
+
+-------------------------------------------------------------------------------
+--- ZoomToggle for current window
+-------------------------------------------------------------------------------
+function ZoomToggle()
+    if vim.t.zoomed and vim.t.zoomed == 1 then
+        vim.cmd(vim.t.zoom_winrestcmd)
+        vim.t.zoomed = 0
+    else
+        vim.t.zoom_winrestcmd = vim.fn.winrestcmd()
+        vim.cmd("resize")
+        vim.cmd("vertical resize")
+        vim.t.zoomed = 1
+    end
+end
+
+-- :lua ZoomToggle()<CR>
+vim.keymap.set("n", "<F3>", ZoomToggle, { silent = true })
+
+
+
+-------------------------------------------------------------------------------
+--- swap last two buffers
+-------------------------------------------------------------------------------
+function win_buf_swap()
+    local thiswin = vim.fn.winnr()           -- Get the current window number
+    local thisbuf = vim.fn.bufnr("%")        -- Get the current buffer number
+    local lastwin = vim.fn.winnr('#')        -- Get the last window number
+    local lastbuf = vim.fn.winbufnr(lastwin) -- Get the buffer number in the last window
+
+    -- Execute commands to swap buffers
+    vim.cmd(lastwin .. " wincmd w | buffer " .. thisbuf) -- Switch to the last window and open the current buffer
+    vim.cmd(thiswin .. " wincmd w | buffer " .. lastbuf) -- Switch back to the current window and open the last window's buffer
+
+    vim.opt.number = false
+end
+
+vim.keymap.set('n', '<Leader>sw', win_buf_swap, { silent = true })
 
 
 -------------------------------------------------------------------------------

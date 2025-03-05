@@ -108,20 +108,6 @@ noremap <F2> :NERDTreeToggle<CR>
 nnoremap <F4> :CtrlSFToggle<CR>
 set pastetoggle=<F11>
 
-function! s:ZoomToggle() abort
-    if exists('t:zoomed') && t:zoomed
-        execute t:zoom_winrestcmd
-        let t:zoomed = 0
-    else
-        let t:zoom_winrestcmd = winrestcmd()
-        resize
-        vertical resize
-        let t:zoomed = 1
-    endif
-endfunction
-command! ZoomToggle call s:ZoomToggle()
-nnoremap <silent> <F3> :ZoomToggle<CR>
-
 " Vita
 let g:vista_default_executive = "coc"
 
@@ -143,28 +129,6 @@ nmap <leader><F7> <Plug>(qf_shorten_path_toggle)
 nmap <leader><F10> :bufdo! e<cr>
 nnoremap <leader><F11> :vsplit $MYVIMRC<cr>
 nmap <leader><F12> :source ~/.config/nvim/init.vim<cr>
-
-
-" win style save
-noremap <C-S> :update<CR>
-vnoremap <C-S> <C-c>:update<CR>
-inoremap <C-S> <C-o>:update<CR>
-
-" resize windows
-noremap <S-Down>  <C-W>-
-noremap <S-Up>    <C-W>+
-noremap <S-Left>  <C-W><
-noremap <S-Right> <C-W>>
-
-" move windows
-noremap <C-J> <C-W>j
-noremap <C-K> <C-W>k
-noremap <C-H> <C-W>h
-noremap <C-L> <C-W>l
-noremap <C-P> <C-W>p
-
-" quit 
-noremap <C-C> <ESC>:q!<CR>
 
 
 "" highlight the current line only on the active buffer
@@ -227,21 +191,6 @@ function! ToggleWindowHorizontalVerticalSplit()
 endfunction
 nnoremap <silent> <leader>hv :call ToggleWindowHorizontalVerticalSplit()<cr>
 
-
-" Swap the position of two windows
-function! WinBufSwap()
-  let thiswin = winnr()
-  let thisbuf = bufnr("%")
-  let lastwin = winnr("#")
-  let lastbuf = winbufnr(lastwin)
-
-  exec  lastwin . " wincmd w" ."|".
-      \ "buffer ". thisbuf ."|".
-      \ thiswin ." wincmd w" ."|".
-      \ "buffer ". lastbuf
-endfunction
-command! Wswap :call WinBufSwap()
-map <Leader>sw :call WinBufSwap()<CR>
 
 
 "-------------------------------------------------------------------------------
