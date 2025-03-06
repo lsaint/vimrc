@@ -1,7 +1,8 @@
 call plug#begin('~/.vim/plugged')
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'github/copilot.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'nathanaelkane/vim-indent-guides'
+Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'dense-analysis/ale'
 Plug 'yssl/QFEnter'
 Plug 'editorconfig/editorconfig-vim'
@@ -44,13 +45,38 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'morhetz/gruvbox'
 call plug#end()
 
-
 colorscheme gruvbox
+
 highlight Normal     ctermbg=NONE guibg=NONE
 highlight LineNr     ctermbg=NONE guibg=NONE
 highlight SignColumn ctermbg=NONE guibg=NONE
 highlight VertSplit  ctermbg=NONE guibg=NONE
-"highlight Pmenu     ctermbg=NONE guibg=NONE
+
+" win style save
+noremap <C-S> :update<CR>
+vnoremap <C-S> <C-c>:update<CR>
+inoremap <C-S> <C-o>:update<CR>
+
+" resize windows
+noremap <S-Down>  <C-W>-
+noremap <S-Up>    <C-W>+
+noremap <S-Left>  <C-W><
+noremap <S-Right> <C-W>>
+
+" move windows
+noremap <C-J> <C-W>j
+noremap <C-K> <C-W>k
+noremap <C-H> <C-W>h
+noremap <C-L> <C-W>l
+noremap <C-P> <C-W>p
+
+" quit 
+noremap <C-C> <ESC>:q!<CR>
+
+"underline color for cursor word
+hi def IlluminatedWordText gui=underline guisp=#7aa697 cterm=underline
+hi def IlluminatedWordRead gui=underline guisp=#7aa697 cterm=underline
+hi def IlluminatedWordWrite gui=underline guisp=#7aa697 cterm=underline
 
 
 "===============================================================================
@@ -90,17 +116,13 @@ nnoremap <tab>k {
 
 
 " true color setting
-if exists('+termguicolors')
-  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-  set termguicolors
-endif
+" make vim use the GUI colors setting (e.g. gui=Grey) in the terminal
+set termguicolors
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 
 " go to last file pos
 map <leader>` :e#<CR>
-
-" vim-indent-guides
-map <leader>t :IndentGuidesToggle<CR>
 
 " F
 nnoremap <silent> <expr> <F1> Highlighting()
@@ -129,35 +151,6 @@ nmap <leader><F7> <Plug>(qf_shorten_path_toggle)
 nmap <leader><F10> :bufdo! e<cr>
 nnoremap <leader><F11> :vsplit $MYVIMRC<cr>
 nmap <leader><F12> :source ~/.config/nvim/init.vim<cr>
-
-
-"" highlight the current line only on the active buffer
-"augroup CursorLine
-    "au!
-    ""au VimEnter,WinEnter,BufWinEnter * setlocal cursorline 
-    "au WinLeave * setlocal nocursorline nocursorcolumn
-"augroup END
-
-" highlight the current column & line when cursor is moved
-function! SetCursorCross()
-    if exists('s:cursor_timer')
-        call timer_stop(s:cursor_timer)
-    endif
-    setlocal cursorcolumn cursorline
-    let s:cursor_timer = timer_start(2000, 'UnsetCursorCross')
-endfunction
-
-function! UnsetCursorCross(timer)
-    setlocal nocursorcolumn nocursorline
-endfunction
-
-"augroup CursorColumn
-    "au!
-    "au CursorMoved * call SetCursorCross()
-"augroup END
-"
-
-
 
 
 
@@ -298,13 +291,6 @@ au FileType go nmap <Leader>i <Plug>(go-info)
 au FileType go nmap <Leader>doc <Plug>(go-doc)
 au FileType go nmap gd <Plug>(go-def)
 let g:go_fmt_command = "goimports"
-
-
-"-------------------------------------------------------------------------------
-" java getsetter
-"-------------------------------------------------------------------------------
-"autocmd FileType java map <Leader>gs :InsertBothGetterSetter<CR>
-
 
 
 "-------------------------------------------------------------------------------
@@ -481,8 +467,6 @@ augroup MyQuickfixPreview
   au!
   au FileType qf noremap <silent><buffer> ` :call quickui#tools#preview_quickfix()<cr>
 augroup END
-
-
 
 
 lua << EOF

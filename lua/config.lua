@@ -2,34 +2,52 @@
 --- common
 -------------------------------------------------------------------------------
 
-
--- win style save
-vim.keymap.set("n", "<C-S>", ":update<CR>", { silent = true })
-vim.keymap.set("v", "<C-S>", "<C-c>:update<CR>", { silent = true })
-vim.keymap.set("i", "<C-S>", "<ESC>:update<CR>", { silent = true })
-
--- resize windows
-vim.keymap.set("n", "<S-Down>", "<C-W>-", { silent = true })
-vim.keymap.set("n", "<S-Up>", "<C-W>+", { silent = true })
-vim.keymap.set("n", "<S-Left>", "<C-W><", { silent = true })
-vim.keymap.set("n", "<S-Right>", "<C-W>>", { silent = true })
-
--- windows navigation
-vim.keymap.set("n", "<C-J>", "<C-W>j", { silent = true })
-vim.keymap.set("n", "<C-K>", "<C-W>k", { silent = true })
-vim.keymap.set("n", "<C-H>", "<C-W>h", { silent = true })
-vim.keymap.set("n", "<C-L>", "<C-W>l", { silent = true })
-vim.keymap.set("n", "<C-P>", "<C-W>p", { silent = true })
-
--- quit
-vim.keymap.set("n", "<C-C>", "<ESC>:q!<CR>", { silent = true })
-
 vim.g.python_host_prog = '/opt/homebrew/bin/python3'
 
 -- exit terminal mode by pressing ESC
 if vim.fn.exists(':tnoremap') == 2 then
     vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
 end
+
+
+-------------------------------------------------------------------------------
+--- treesitter
+-------------------------------------------------------------------------------
+require('nvim-treesitter.configs').setup({
+    ensure_installed = {
+        "python", "c", "lua",
+        "typescript", "javascript",
+        "json", "toml", "yaml",
+        "vim", "vimdoc",
+        "markdown", "markdown_inline",
+    },
+})
+
+
+
+-------------------------------------------------------------------------------
+--- indent-blankline
+-------------------------------------------------------------------------------
+local hooks = require "ibl.hooks"
+hooks.register(
+    hooks.type.VIRTUAL_TEXT,
+    function(_, _, _, virt_text)
+        -- replace the first column indent with a whitespace character
+        if virt_text[1] and virt_text[1][1] == '▎' then
+            virt_text[1] = { ' ', { "@ibl.whitespace.char.1" } }
+        end
+        return virt_text
+    end
+)
+
+local ibl_enabled = true
+local ibl_config = { scope = { enabled = false } }
+require("ibl").setup(vim.tbl_extend("force", ibl_config, { enabled = ibl_enabled }))
+local function toggle_ibl()
+    ibl_enabled = not ibl_enabled
+    require("ibl").setup(vim.tbl_extend("force", ibl_config, { enabled = ibl_enabled }))
+end
+vim.keymap.set("n", "<leader><tab>", toggle_ibl, { silent = true })
 
 
 -------------------------------------------------------------------------------
