@@ -1,5 +1,4 @@
 call plug#begin('~/.vim/plugged')
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'github/copilot.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'lukas-reineke/indent-blankline.nvim'
@@ -28,16 +27,14 @@ Plug 'mfussenegger/nvim-dap-python', {'for': 'python'}
 Plug 'nvim-neotest/nvim-nio'
 Plug 'rcarriga/nvim-dap-ui'
 " language
-Plug 'stephpy/vim-yaml', {'for': 'yaml'}
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'fatih/vim-go', {'for': 'go'}
-Plug 'tbastos/vim-lua', {'for': 'lua'}
 Plug 'preservim/vim-markdown'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
 Plug 'mracos/mermaid.vim'
 Plug 'dart-lang/dart-vim-plugin'
 " front-end
 Plug 'prettier/vim-prettier', { 'do': 'yarn install --frozen-lockfile --production' }
-Plug 'pangloss/vim-javascript', {'for': ['js', 'jsx']}
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'HerringtonDarkholme/yats.vim', {'for': ['js', 'jsx', 'ts', 'tsx']}
 " themes
@@ -98,7 +95,7 @@ set nocompatible
 set splitright
 set splitbelow
 set fillchars=eob:\ 
-"set fillchars+=vert:║
+set fillchars+=vert:┃
 syntax on
 filetype plugin indent on
 let mapleader = "\<Space>"
@@ -125,7 +122,6 @@ let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 map <leader>` :e#<CR>
 
 " F
-nnoremap <silent> <expr> <F1> Highlighting()
 noremap <F2> :NERDTreeToggle<CR>
 nnoremap <F4> :CtrlSFToggle<CR>
 set pastetoggle=<F11>
@@ -152,19 +148,6 @@ nmap <leader><F10> :bufdo! e<cr>
 nnoremap <leader><F11> :vsplit $MYVIMRC<cr>
 nmap <leader><F12> :source ~/.config/nvim/init.vim<cr>
 
-
-
-" highlight cur word
-let g:highlighting = 0
-function! Highlighting()
-    if g:highlighting == 1 && @/ =~ '^\\<'.expand('<cword>').'\\>$'
-      let g:highlighting = 0
-      return ":silent nohlsearch\<CR>"
-    endif
-    let @/ = '\<'.expand('<cword>').'\>'
-    let g:highlighting = 1
-    return ":silent set hlsearch\<CR>"
-endfunction
 
 
 " Horizontal to Vertical, vise versa

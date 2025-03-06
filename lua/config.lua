@@ -15,14 +15,13 @@ end
 -------------------------------------------------------------------------------
 require('nvim-treesitter.configs').setup({
     ensure_installed = {
-        "python", "c", "lua",
-        "typescript", "javascript",
+        "python", "c", "lua", "bash",
+        "typescript", "javascript", "css", "html",
         "json", "toml", "yaml",
         "vim", "vimdoc",
         "markdown", "markdown_inline",
     },
 })
-
 
 
 -------------------------------------------------------------------------------
@@ -150,6 +149,27 @@ vim.g["prettier#autoformat_require_pragma"] = 0
 --                       Custom Functions
 --↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
+
+
+-------------------------------------------------------------------------------
+--- Highlight and ready to search current word
+-------------------------------------------------------------------------------
+local highlighting = false
+local function highlight_search()
+    local current_word = vim.fn.expand('<cword>')
+    local search_pattern = '\\<' .. current_word .. '\\>'
+    local current_search = vim.fn.getreg('/')
+
+    if highlighting and current_search == search_pattern then
+        highlighting = false
+        vim.cmd('silent nohlsearch')
+    else
+        vim.fn.setreg('/', search_pattern)
+        highlighting = true
+        vim.cmd('silent set hlsearch')
+    end
+end
+vim.keymap.set('n', '<F1>', highlight_search, { noremap = true, silent = true })
 
 
 -------------------------------------------------------------------------------
@@ -286,7 +306,7 @@ function TogglePyDocString()
     end
 end
 
-vim.api.nvim_set_keymap("n", "<leader><F9>", ":lua TogglePyDocString()<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader><F9>", TogglePyDocString, { noremap = true, silent = true })
 
 
 -------------------------------------------------------------------------------
@@ -306,7 +326,6 @@ end
 
 -- :lua ZoomToggle()<CR>
 vim.keymap.set("n", "<F3>", ZoomToggle, { silent = true })
-
 
 
 -------------------------------------------------------------------------------
