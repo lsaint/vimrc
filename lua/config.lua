@@ -348,6 +348,22 @@ vim.keymap.set('n', '<Leader>sw', win_buf_swap, { silent = true })
 
 
 -------------------------------------------------------------------------------
+--- Horizontal to Vertical, vise versa
+-------------------------------------------------------------------------------
+local split_type = 'vertical'
+
+local function swap_window_horizontal_vertical()
+    if split_type == 'vertical' then
+        vim.cmd('windo wincmd K')
+        split_type = 'horizontal'
+    else
+        vim.cmd('windo wincmd H')
+        split_type = 'vertical'
+    end
+end
+vim.keymap.set('n', '<Leader>hv', swap_window_horizontal_vertical, { silent = true })
+
+-------------------------------------------------------------------------------
 --- test
 -------------------------------------------------------------------------------
 local function test()

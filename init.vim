@@ -150,25 +150,6 @@ nmap <leader><F12> :source ~/.config/nvim/init.vim<cr>
 
 
 
-" Horizontal to Vertical, vise versa
-function! ToggleWindowHorizontalVerticalSplit()
-  if !exists('t:splitType')
-    let t:splitType = 'vertical'
-  endif
-
-  if t:splitType == 'vertical' " is vertical switch to horizontal
-    windo wincmd K
-    let t:splitType = 'horizontal'
-
-  else " is horizontal switch to vertical
-    windo wincmd H
-    let t:splitType = 'vertical'
-  endif
-endfunction
-nnoremap <silent> <leader>hv :call ToggleWindowHorizontalVerticalSplit()<cr>
-
-
-
 "-------------------------------------------------------------------------------
 " github copilot
 "-------------------------------------------------------------------------------
@@ -345,10 +326,10 @@ set shortmess+=c
 inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
+"function! s:check_back_space() abort
+  "let col = col('.') - 1
+  "return !col || getline('.')[col - 1]  =~# '\s'
+"endfunction
 
 " Remap keys for gotos
 nmap <silent> <leader>j <Plug>(coc-definition)
