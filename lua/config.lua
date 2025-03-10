@@ -1,7 +1,6 @@
 -------------------------------------------------------------------------------
 --- common
 -------------------------------------------------------------------------------
-
 vim.g.python_host_prog = '/opt/homebrew/bin/python3'
 
 -- exit terminal mode by pressing ESC
@@ -352,7 +351,7 @@ vim.keymap.set('n', '<Leader>sw', win_buf_swap, { silent = true })
 -------------------------------------------------------------------------------
 local split_type = 'vertical'
 
-local function swap_window_horizontal_vertical()
+function swap_window_horizontal_vertical()
     if split_type == 'vertical' then
         vim.cmd('windo wincmd K')
         split_type = 'horizontal'
@@ -361,7 +360,9 @@ local function swap_window_horizontal_vertical()
         split_type = 'vertical'
     end
 end
+
 vim.keymap.set('n', '<Leader>hv', swap_window_horizontal_vertical, { silent = true })
+
 
 -------------------------------------------------------------------------------
 --- test

@@ -76,9 +76,6 @@ hi def IlluminatedWordRead gui=underline guisp=#7aa697 cterm=underline
 hi def IlluminatedWordWrite gui=underline guisp=#7aa697 cterm=underline
 
 
-"===============================================================================
-" mapping
-"===============================================================================
 set title " Show file title in terminal tab
 set scrolloff=2 " Start scrolling slightly before the cursor reaches an edge
 set shortmess=a
@@ -405,7 +402,7 @@ call quickui#menu#install("&Config", [
     \ ])
 call quickui#menu#install("&Window", [
     \ ['&Shell', 'terminal', ''],
-    \ ['&Horizontal<->Vertical', 'call ToggleWindowHorizontalVerticalSplit()', 'Horizontal to Vertical, vise versa'],
+    \ ['&Horizontal<->Vertical', 'lua swap_window_horizontal_vertical()', 'Horizontal to Vertical, vise versa'],
     \ [ "--", ],
     \ ['&Tagbar', 'Vista!!', ''],
     \ ])
