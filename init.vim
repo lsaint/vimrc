@@ -9,7 +9,6 @@ Plug 'markonm/traces.vim'
 Plug 'vim-scripts/CmdlineComplete'
 Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
 Plug 'preservim/nerdtree'
-Plug 'liuchengxu/vista.vim'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdcommenter'
 Plug 'vim-airline/vim-airline'
@@ -21,6 +20,8 @@ Plug 'skywind3000/vim-quickui'
 Plug 'andymass/vim-matchup'
 Plug 'RRethy/vim-illuminate'
 Plug 'echasnovski/mini.animate'
+Plug 'stevearc/stickybuf.nvim'
+Plug 'stevearc/aerial.nvim'
 " dap debug
 Plug 'mfussenegger/nvim-dap'
 Plug 'mfussenegger/nvim-dap-python', {'for': 'python'}
@@ -42,12 +43,40 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'morhetz/gruvbox'
 call plug#end()
 
+
+
+"-------------------------------------------------------------------------------
+" color
+"-------------------------------------------------------------------------------
+
 colorscheme gruvbox
 
 highlight Normal     ctermbg=NONE guibg=NONE
 highlight LineNr     ctermbg=NONE guibg=NONE
 highlight SignColumn ctermbg=NONE guibg=NONE
 highlight VertSplit  ctermbg=NONE guibg=NONE
+
+" true color setting
+" make vim use the GUI colors setting (e.g. gui=Grey) in the terminal
+set termguicolors
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+
+"underline color for cursor word
+hi def IlluminatedWordText gui=underline guisp=#7aa697 cterm=underline
+hi def IlluminatedWordRead gui=underline guisp=#7aa697 cterm=underline
+hi def IlluminatedWordWrite gui=underline guisp=#7aa697 cterm=underline
+
+" quick-scope
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
+highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline
+
+
+"-------------------------------------------------------------------------------
+" common
+"-------------------------------------------------------------------------------
+
 
 " win style save
 noremap <C-S> :update<CR>
@@ -69,11 +98,6 @@ noremap <C-P> <C-W>p
 
 " quit 
 noremap <C-C> <ESC>:q!<CR>
-
-"underline color for cursor word
-hi def IlluminatedWordText gui=underline guisp=#7aa697 cterm=underline
-hi def IlluminatedWordRead gui=underline guisp=#7aa697 cterm=underline
-hi def IlluminatedWordWrite gui=underline guisp=#7aa697 cterm=underline
 
 
 set title " Show file title in terminal tab
@@ -104,16 +128,8 @@ autocmd bufenter * execute "let g:extension = expand('%:e')"
 "vnoremap <leader>d "_d
 " copy to system clipboard
 vnoremap <leader>y "*y
-
 nnoremap <tab>j }
 nnoremap <tab>k {
-
-
-" true color setting
-" make vim use the GUI colors setting (e.g. gui=Grey) in the terminal
-set termguicolors
-let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 
 " go to last file pos
 map <leader>` :e#<CR>
@@ -137,7 +153,7 @@ nmap <leader>4 :Ack! --ignore static/ --ignore node_modules --ignore builds --ig
 
 
 " <leader> F
-nmap <leader><F2> :Vista!!<cr> 
+nmap <leader><F2> :AerialToggle!<cr>
 "nmap <Leader><F5> <Plug>(qf_loc_toggle)
 nmap <leader><F6> :NERDTreeClose<CR>\|<Plug>(qf_qf_toggle)
 nmap <leader><F7> <Plug>(qf_shorten_path_toggle)
@@ -348,16 +364,6 @@ nmap <silent> <leader>coF :CocLocalConfig<cr>
 "imap <C-l> <Plug>(coc-snippets-expand)
 
 autocmd BufWritePre *.py silent! :call CocAction('runCommand', 'python.sortImports')
-
-
-
-"-------------------------------------------------------------------------------
-" quick-scope
-"-------------------------------------------------------------------------------
-let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
-highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
-highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline
-
 
 
 "-------------------------------------------------------------------------------
