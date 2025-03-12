@@ -1,4 +1,5 @@
 call plug#begin('~/.vim/plugged')
+Plug 'dstein64/vim-startuptime'
 Plug 'github/copilot.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'lukas-reineke/indent-blankline.nvim'
@@ -9,6 +10,7 @@ Plug 'markonm/traces.vim'
 Plug 'vim-scripts/CmdlineComplete'
 Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
 Plug 'preservim/nerdtree'
+Plug 'ryanoasis/vim-devicons'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdcommenter'
 Plug 'vim-airline/vim-airline'
@@ -190,6 +192,11 @@ autocmd BufReadPre *
 "-------------------------------------------------------------------------------
 nmap <C-m> <Plug>MarkdownPreviewToggle
 
+
+"-------------------------------------------------------------------------------
+" vim-devicons
+"-------------------------------------------------------------------------------
+let g:WebDevIconsOS = 'Darwin'
 
 
 "-------------------------------------------------------------------------------
