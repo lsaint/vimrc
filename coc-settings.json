@@ -1,51 +1,35 @@
 {
-    "npm.binPath": "/opt/homebrew/bin/yarn",
-    "workspace.rootPatterns": [
-        ".vim",
-        ".git",
-        ".hg",
-        ".projections.json",
-        "pyproject.toml"
-    ],
-    "diagnostic.displayByAle": true,
-    "pyright.disableDiagnostics": true,
-    "python.analysis.diagnosticSeverityOverrides": {
-        "reportGeneralTypeIssues": "none",
-        "reportUnknownParameterType": "none"
-    },
-    "python.formatting.provider": "black",
-    "python.formatting.blackPath": "/Users/lsaint/com/doxturbo/.venv/bin/black",
-    "pyright.inlayHints.variableTypes": false,
-    "pyright.inlayHints.parameterTypes": false,
-    "Lua.diagnostics.globals": ["vim", "ngx"],
-    "Lua.diagnostics.disable": ["lowercase-global"],
-    "coc.preferences.formatOnType": true,
-    "coc.preferences.formatOnSaveFiletypes": [
-        "python",
-        "lua",
-        "dart",
-        "toml",
-        "json",
-        "markdown"
-    ],
-    "tsserver.log": "normal",
-    //"java.jdt.ls.vmargs": "-javaagent:/Users/lsaint/Coffee/lib/lombok.jar  -Xbootclasspath/a:/Users/lsaint/Coffee/lib/lombok.jar",
-    "languageserver": {
+  "npm.binPath": "/opt/homebrew/bin/yarn",
+  "workspace.rootPatterns": [".vim", ".git", "pyproject.toml"],
+  "diagnostic.displayByAle": true,
+  // pyright
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportGeneralTypeIssues": "none",
+    "reportUnknownParameterType": "none"
+  },
+  "pyright.inlayHints.variableTypes": false,
+  "pyright.inlayHints.parameterTypes": false,
+  "pyright.testing.provider": "pytest",
+  //""
+  "Lua.diagnostics.globals": ["vim", "ngx"],
+  "Lua.diagnostics.disable": ["lowercase-global"],
+  "tsserver.log": "normal",
+  "languageserver": {
+    "sourcery": {
+      "command": "/opt/homebrew/lib/python3.12/site-packages/sourcery/sourcery",
+      "args": ["lsp"],
+      "filetypes": ["python"],
+      "initializationOptions": {
+        "token": "user_70Iu0e_MRFlAVLZu2n_7TPm0LdByn2W5bXJr1p49QCfRbC3q07nI8my1d8I",
+        "extension_version": "coc.vim",
+        "editor_version": "vim"
+      },
+      "settings": {
         "sourcery": {
-            "command": "/opt/homebrew/lib/python3.12/site-packages/sourcery/sourcery",
-            "args": ["lsp"],
-            "filetypes": ["python"],
-            "initializationOptions": {
-                "token": "user_70Iu0e_MRFlAVLZu2n_7TPm0LdByn2W5bXJr1p49QCfRbC3q07nI8my1d8I",
-                "extension_version": "coc.vim",
-                "editor_version": "vim"
-            },
-            "settings": {
-                "sourcery": {
-                    "metricsEnabled": false
-                }
-            }
+          "metricsEnabled": false
         }
-    },
-    "snippets.ultisnips.pythonPrompt": false
+      }
+    }
+  },
+  "snippets.ultisnips.pythonPrompt": false
 }

@@ -2,6 +2,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'dstein64/vim-startuptime'
 Plug 'github/copilot.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'yaegassy/coc-ruff', {'do': 'yarn install --frozen-lockfile'}
 Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'dense-analysis/ale'
 Plug 'yssl/QFEnter'
@@ -29,6 +30,10 @@ Plug 'mfussenegger/nvim-dap'
 Plug 'mfussenegger/nvim-dap-python', {'for': 'python'}
 Plug 'nvim-neotest/nvim-nio'
 Plug 'rcarriga/nvim-dap-ui'
+" efm-langserver
+Plug 'neovim/nvim-lspconfig'
+Plug 'creativenull/efmls-configs-nvim'
+Plug 'lukas-reineke/lsp-format.nvim'
 " language
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'fatih/vim-go', {'for': 'go'}
@@ -36,10 +41,6 @@ Plug 'preservim/vim-markdown'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
 Plug 'mracos/mermaid.vim'
 Plug 'dart-lang/dart-vim-plugin'
-" front-end
-Plug 'prettier/vim-prettier', { 'do': 'yarn install --frozen-lockfile --production' }
-Plug 'maxmellon/vim-jsx-pretty'
-Plug 'HerringtonDarkholme/yats.vim', {'for': ['js', 'jsx', 'ts', 'tsx']}
 " themes
 Plug 'vim-airline/vim-airline-themes'
 Plug 'morhetz/gruvbox'
@@ -244,10 +245,6 @@ let g:NERDTreeMapOpenVSplit="v"
 " exit vim when nerdtree window only
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
-autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
-    \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
-
 
 "-------------------------------------------------------------------------------
 " QFEnter
@@ -294,7 +291,6 @@ let g:ale_enabled = 1
 nmap <Leader>ww <Plug>(ale_next_wrap)
 nmap <Leader>qq <Plug>(ale_previous_wrap)
 let g:airline#extensions#ale#enabled = 1
-call ale#Set('python_flake8_options', '--config=$HOME/.config/flake8')
 let g:ale_echo_msg_format = '[%linter%] %s'
 "nnoremap <leader>d :ALEToggle<CR>:e<CR>
 
@@ -311,7 +307,6 @@ let g:coc_global_extensions = [
   \ 'coc-eslint',
   \ 'coc-html',
   \ 'coc-css',
-  \ 'coc-pyright',
   \ 'coc-lua',
   \ 'coc-go',
   \ 'coc-java',
@@ -370,8 +365,6 @@ nmap <silent> <leader>cof :CocConfig<cr>
 nmap <silent> <leader>coF :CocLocalConfig<cr>
 "imap <C-l> <Plug>(coc-snippets-expand)
 
-autocmd BufWritePre *.py silent! :call CocAction('runCommand', 'python.sortImports')
-
 
 "-------------------------------------------------------------------------------
 " quick-ui
@@ -399,7 +392,6 @@ call quickui#menu#install("F&ormat", [
     \ ['Format &Json', '%!python3 -m json.tool', 'format json file using python3 module json.tool'],
     \ ['Format &Xml', '%!xmllint % --format', 'format xml using xmlint'],
     \ ['Format &Prettier', 'Prettier', 'format current buffer using Prettier'],
-    \ ['Format &Black', '!black %', 'format pyhton file with Black'],
     \ ])
 call quickui#menu#install("&Run", [
     \ ['Run &Python', '!python3 %', ''],

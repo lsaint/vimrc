@@ -1,54 +1,84 @@
 -------------------------------------------------------------------------------
 --- common
 -------------------------------------------------------------------------------
-vim.g.python_host_prog = '/opt/homebrew/bin/python3'
+vim.g.python_host_prog = "/opt/homebrew/bin/python3"
 
 -- exit terminal mode by pressing ESC
-if vim.fn.exists(':tnoremap') == 2 then
-    vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
+if vim.fn.exists(":tnoremap") == 2 then
+    vim.keymap.set("t", "<Esc>", "<C-\\><C-n>")
 end
-
 
 -------------------------------------------------------------------------------
 --- treesitter
 -------------------------------------------------------------------------------
-require('nvim-treesitter.configs').setup({
+require("nvim-treesitter.configs").setup({
     ensure_installed = {
-        "python", "c", "lua", "bash",
-        "typescript", "javascript", "css", "html",
-        "json", "toml", "yaml",
-        "vim", "vimdoc",
-        "markdown", "markdown_inline",
+        "python",
+        "c",
+        "lua",
+        "bash",
+        "typescript",
+        "javascript",
+        "css",
+        "html",
+        "json",
+        "toml",
+        "yaml",
+        "vim",
+        "vimdoc",
+        "markdown",
+        "markdown_inline",
     },
 })
 
+-------------------------------------------------------------------------------
+--- efm-langserver
+-------------------------------------------------------------------------------
+-- https://github.com/creativenull/efmls-configs-nvim/blob/main/doc/SUPPORTED_LIST.md
+local default_settings = require("efmls-configs.defaults").languages()
+require("lspconfig").efm.setup({
+    init_options = { documentFormatting = true },
+    on_attach = require("lsp-format").on_attach,
+    settings = {
+        rootMarkers = { ".git/" },
+        languages = vim.tbl_extend("force", default_settings, {
+            -- lua: luacheck, stylua
+            -- css/scss/less/sass: stylelint, prettier
+            -- javascript/jsx typescript/tsx: eslint, prettier
+            -- override default settings
+            python = {
+                require("efmls-configs.linters.ruff"),
+                require("efmls-configs.formatters.ruff"),
+                require("efmls-configs.formatters.ruff_sort"),
+            },
+            markdown = {
+                require("efmls-configs.formatters.mdformat"),
+            },
+        }),
+    },
+})
 
 -------------------------------------------------------------------------------
 --- stickybuf: locking a buffer to a window
 -------------------------------------------------------------------------------
 require("stickybuf").setup()
 
-
 -------------------------------------------------------------------------------
 --- aerial.nvim: code outline
 -------------------------------------------------------------------------------
 require("aerial").setup()
 
-
 -------------------------------------------------------------------------------
 --- indent-blankline
 -------------------------------------------------------------------------------
-local hooks = require "ibl.hooks"
-hooks.register(
-    hooks.type.VIRTUAL_TEXT,
-    function(_, _, _, virt_text)
-        -- replace the first column indent with a whitespace character
-        if virt_text[1] and virt_text[1][1] == '▎' then
-            virt_text[1] = { ' ', { "@ibl.whitespace.char.1" } }
-        end
-        return virt_text
+local hooks = require("ibl.hooks")
+hooks.register(hooks.type.VIRTUAL_TEXT, function(_, _, _, virt_text)
+    -- replace the first column indent with a whitespace character
+    if virt_text[1] and virt_text[1][1] == "▎" then
+        virt_text[1] = { " ", { "@ibl.whitespace.char.1" } }
     end
-)
+    return virt_text
+end)
 
 local ibl_enabled = true
 local ibl_config = { scope = { enabled = false } }
@@ -59,48 +89,53 @@ local function toggle_ibl()
 end
 vim.keymap.set("n", "<leader><tab>", toggle_ibl, { silent = true })
 
-
 -------------------------------------------------------------------------------
 --- dap
 -------------------------------------------------------------------------------
-require('dap-python').setup('uv')
+require("dap-python").setup("uv")
 
 require("dapui").setup({
-    layouts = { {
-        elements = { {
-            id = "repl",
-        } },
-        position = "bottom",
-        size = 10
-    }, {
-        elements = { {
-            id = "scopes",
-            size = 0.34,
-        }, {
-            id = "breakpoints",
-            size = 0.33,
-        }, {
-            id = "watches",
-            size = 0.33,
-        } },
-        position = "left",
-        size = 40
-    },
+    layouts = {
+        {
+            elements = { {
+                id = "repl",
+            } },
+            position = "bottom",
+            size = 10,
+        },
+        {
+            elements = {
+                {
+                    id = "scopes",
+                    size = 0.34,
+                },
+                {
+                    id = "breakpoints",
+                    size = 0.33,
+                },
+                {
+                    id = "watches",
+                    size = 0.33,
+                },
+            },
+            position = "left",
+            size = 40,
+        },
     },
 })
 
-table.insert(require('dap').configurations.python, {
-    type = 'python',
-    request = 'launch',
-    name = 'DoxTurbo Uvicorn',
-    program = '/Users/lsaint/com/doxturbo/run_uvicorn.py',
+table.insert(require("dap").configurations.python, {
+    type = "python",
+    request = "launch",
+    name = "DoxTurbo Uvicorn",
+    program = "/Users/lsaint/com/doxturbo/run_uvicorn.py",
 })
 
-table.insert(require('dap').configurations.python, {
-    type = 'python',
-    request = 'launch',
-    name = 'DoxTurbo Celery',
-    program = '/Users/lsaint/com/doxturbo/run_celery.py',
+table.insert(require("dap").configurations.python, {
+    type = "python",
+    request = "launch",
+    name = "DoxTurbo Celery",
+    program = "/Users/lsaint/com/doxturbo/run_celery.py",
 })
 
 local dap, dapui = require("dap"), require("dapui")
@@ -110,34 +145,50 @@ end
 dap.listeners.before.launch.dapui_config = function()
     dapui.open()
 end
-vim.fn.sign_define('DapBreakpoint', { text = '🔴', texthl = '', linehl = '', numhl = '' })
-vim.fn.sign_define('DapStopped', { text = '▶️', texthl = '', linehl = '', numhl = '' })
+vim.fn.sign_define("DapBreakpoint", { text = "🔴", texthl = "", linehl = "", numhl = "" })
+vim.fn.sign_define("DapStopped", { text = "▶️", texthl = "", linehl = "", numhl = "" })
 
-vim.keymap.set("n", "<F6>", function() require("dap").continue() end, { silent = true })
-vim.keymap.set("n", "<F7>", function() require("dap").toggle_breakpoint() end, { silent = true })
-vim.keymap.set("n", "<F8>", function() require("dap").step_over() end, { silent = true })
-vim.keymap.set("n", "<F9>", function() require("dap").step_into() end, { silent = true })
-vim.keymap.set("n", "<leader><F5>", function() require("dap").step_out() end, { silent = true })
-vim.keymap.set("n", "<F5>", function() require("dapui").toggle({ reset = true }) end, { silent = true })
-vim.keymap.set("n", "<leader>dh", function() require("dap.ui.widgets").hover() end, { silent = true })
-vim.keymap.set("v", "<leader>ds", function() require("dap-python").debug_selection() end, { silent = true })
-vim.keymap.set("n", "<leader>df", function() require("dapui").float_element() end, { silent = true })
-
+vim.keymap.set("n", "<F6>", function()
+    require("dap").continue()
+end, { silent = true })
+vim.keymap.set("n", "<F7>", function()
+    require("dap").toggle_breakpoint()
+end, { silent = true })
+vim.keymap.set("n", "<F8>", function()
+    require("dap").step_over()
+end, { silent = true })
+vim.keymap.set("n", "<F9>", function()
+    require("dap").step_into()
+end, { silent = true })
+vim.keymap.set("n", "<leader><F5>", function()
+    require("dap").step_out()
+end, { silent = true })
+vim.keymap.set("n", "<F5>", function()
+    require("dapui").toggle({ reset = true })
+end, { silent = true })
+vim.keymap.set("n", "<leader>dh", function()
+    require("dap.ui.widgets").hover()
+end, { silent = true })
+vim.keymap.set("v", "<leader>ds", function()
+    require("dap-python").debug_selection()
+end, { silent = true })
+vim.keymap.set("n", "<leader>df", function()
+    require("dapui").float_element()
+end, { silent = true })
 
 -------------------------------------------------------------------------------
 --- mini.animate
 -------------------------------------------------------------------------------
-local animate = require('mini.animate')
-require('mini.animate').setup({
+local animate = require("mini.animate")
+require("mini.animate").setup({
     open = { enable = false },
     close = { enable = false },
     cursor = { enable = false },
     scroll = {
         enable = true,
-        timing = animate.gen_timing.linear({ duration = 200, unit = 'total' }),
+        timing = animate.gen_timing.linear({ duration = 200, unit = "total" }),
     },
 })
-
 
 -------------------------------------------------------------------------------
 --- front-end
@@ -154,34 +205,29 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.g["prettier#autoformat"] = 1
 vim.g["prettier#autoformat_require_pragma"] = 0
 
-
-
 --↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 --                       Custom Functions
 --↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-
-
 
 -------------------------------------------------------------------------------
 --- Highlight and ready to search current word
 -------------------------------------------------------------------------------
 local highlighting = false
 local function highlight_search()
-    local current_word = vim.fn.expand('<cword>')
-    local search_pattern = '\\<' .. current_word .. '\\>'
-    local current_search = vim.fn.getreg('/')
+    local current_word = vim.fn.expand("<cword>")
+    local search_pattern = "\\<" .. current_word .. "\\>"
+    local current_search = vim.fn.getreg("/")
 
     if highlighting and current_search == search_pattern then
         highlighting = false
-        vim.cmd('silent nohlsearch')
+        vim.cmd("silent nohlsearch")
     else
-        vim.fn.setreg('/', search_pattern)
+        vim.fn.setreg("/", search_pattern)
         highlighting = true
-        vim.cmd('silent set hlsearch')
+        vim.cmd("silent set hlsearch")
     end
 end
-vim.keymap.set('n', '<F1>', highlight_search, { noremap = true, silent = true })
-
+vim.keymap.set("n", "<F1>", highlight_search, { noremap = true, silent = true })
 
 -------------------------------------------------------------------------------
 --- Highlight the word while cursor is moving on it
@@ -192,10 +238,10 @@ function highlight_cursor_area()
     local cursor_pos = vim.api.nvim_win_get_cursor(winid)
     local row = cursor_pos[1] - 1 -- 0-based row index
 
-    local start_pos = vim.fn.searchpos('\\<', 'bcn')
-    local end_pos = vim.fn.searchpos('\\>', 'cn')
+    local start_pos = vim.fn.searchpos("\\<", "bcn")
+    local end_pos = vim.fn.searchpos("\\>", "cn")
 
-    local ns_id = vim.api.nvim_create_namespace('cursor_word')
+    local ns_id = vim.api.nvim_create_namespace("cursor_word")
 
     if start_pos[1] == row + 1 and end_pos[1] == row + 1 then
         local start_col = start_pos[2] - 1
@@ -203,20 +249,26 @@ function highlight_cursor_area()
 
         vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
 
-        local highlight_group = 'CursorWord'
-        vim.api.nvim_buf_add_highlight(bufnr, ns_id, highlight_group, row, start_col, end_col)
+        local highlight_group = "CursorWord"
+        vim.api.nvim_buf_add_highlight(
+            bufnr,
+            ns_id,
+            highlight_group,
+            row,
+            start_col,
+            end_col
+        )
     else
         vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
     end
 end
 
-vim.api.nvim_command [[
+vim.api.nvim_command([[
   highlight CursorWord guibg=#585858
-]]
-vim.api.nvim_command [[
+]])
+vim.api.nvim_command([[
   autocmd CursorMoved * call luaeval('highlight_cursor_area()')
-]]
-
+]])
 
 -------------------------------------------------------------------------------
 --- toggle my tips in preview window
@@ -231,15 +283,14 @@ local function toggle_vim_tips()
         vim.cmd("pedit ~/Library/CloudStorage/Dropbox/vim/vimtips.txt")
     end
 end
-vim.keymap.set('n', '<leader><F8>', toggle_vim_tips, { noremap = true })
-
+vim.keymap.set("n", "<leader><F8>", toggle_vim_tips, { noremap = true })
 
 -------------------------------------------------------------------------------
 --- go to next ([{< in current line
 -------------------------------------------------------------------------------
 local enclosure = {
     left = { "(", "[", "{", "<" },
-    right = { ")", "]", "}", ">" }
+    right = { ")", "]", "}", ">" },
 }
 
 -- Move cursor to next/previous enclosure symbol
@@ -270,9 +321,12 @@ local function goto_enclosure_dual(direction)
     end
 end
 
-vim.keymap.set('n', '<tab>l', function() goto_enclosure_dual(0) end, { silent = true })
-vim.keymap.set('n', '<tab>h', function() goto_enclosure_dual(1) end, { silent = true })
-
+vim.keymap.set("n", "<tab>l", function()
+    goto_enclosure_dual(0)
+end, { silent = true })
+vim.keymap.set("n", "<tab>h", function()
+    goto_enclosure_dual(1)
+end, { silent = true })
 
 -------------------------------------------------------------------------------
 --- fold/unfold python docstring
@@ -319,7 +373,6 @@ end
 
 vim.keymap.set("n", "<leader><F9>", TogglePyDocString, { noremap = true, silent = true })
 
-
 -------------------------------------------------------------------------------
 --- ZoomToggle for current window
 -------------------------------------------------------------------------------
@@ -338,14 +391,13 @@ end
 -- :lua ZoomToggle()<CR>
 vim.keymap.set("n", "<F3>", ZoomToggle, { silent = true })
 
-
 -------------------------------------------------------------------------------
 --- swap last two buffers
 -------------------------------------------------------------------------------
 function win_buf_swap()
-    local thiswin = vim.fn.winnr()           -- Get the current window number
-    local thisbuf = vim.fn.bufnr("%")        -- Get the current buffer number
-    local lastwin = vim.fn.winnr('#')        -- Get the last window number
+    local thiswin = vim.fn.winnr() -- Get the current window number
+    local thisbuf = vim.fn.bufnr("%") -- Get the current buffer number
+    local lastwin = vim.fn.winnr("#") -- Get the last window number
     local lastbuf = vim.fn.winbufnr(lastwin) -- Get the buffer number in the last window
 
     -- Execute commands to swap buffers
@@ -355,26 +407,24 @@ function win_buf_swap()
     vim.opt.number = false
 end
 
-vim.keymap.set('n', '<Leader>sw', win_buf_swap, { silent = true })
-
+vim.keymap.set("n", "<Leader>sw", win_buf_swap, { silent = true })
 
 -------------------------------------------------------------------------------
 --- Horizontal to Vertical, vise versa
 -------------------------------------------------------------------------------
-local split_type = 'vertical'
+local split_type = "vertical"
 
 function swap_window_horizontal_vertical()
-    if split_type == 'vertical' then
-        vim.cmd('windo wincmd K')
-        split_type = 'horizontal'
+    if split_type == "vertical" then
+        vim.cmd("windo wincmd K")
+        split_type = "horizontal"
     else
-        vim.cmd('windo wincmd H')
-        split_type = 'vertical'
+        vim.cmd("windo wincmd H")
+        split_type = "vertical"
     end
 end
 
-vim.keymap.set('n', '<Leader>hv', swap_window_horizontal_vertical, { silent = true })
-
+vim.keymap.set("n", "<Leader>hv", swap_window_horizontal_vertical, { silent = true })
 
 -------------------------------------------------------------------------------
 --- test
@@ -382,4 +432,4 @@ vim.keymap.set('n', '<Leader>hv', swap_window_horizontal_vertical, { silent = tr
 local function test()
     print("Hello World!")
 end
-vim.keymap.set('n', '<F12>', test, { noremap = true, silent = true })
+vim.keymap.set("n", "<F12>", test, { noremap = true, silent = true })
