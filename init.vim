@@ -150,10 +150,6 @@ nmap <leader>1 :Ack! --python --ignore tests -s -w <C-r><C-w><cr>
 nmap <leader>2 :CtrlSF -S -W <C-r><C-w>
 nmap <leader>4 :Ack! --ignore static/ --ignore node_modules --ignore builds --ignore tests -s -w <C-r><C-w>
 
-"nmap <leader>kk :K 
-"nmap <leader>kj :Rej test
-"nmap <leader>kl :Res<cr>
-
 
 " <leader> F
 nmap <leader><F2> :AerialToggle!<cr>
@@ -285,13 +281,13 @@ let g:airline_powerline_fonts = 1
 " ale
 "-------------------------------------------------------------------------------
 let g:ale_enabled = 1
-"let g:ale_disable_lsp = 1
 "highlight clear ALEErrorSign
 "highlight clear ALEWarningSign
 nmap <Leader>ww <Plug>(ale_next_wrap)
 nmap <Leader>qq <Plug>(ale_previous_wrap)
 let g:airline#extensions#ale#enabled = 1
-let g:ale_echo_msg_format = '[%linter%] %s'
+let g:ale_echo_msg_format = '[%linter%] %code%: %s'
+let g:ale_use_neovim_diagnostics_api = 1
 "nnoremap <leader>d :ALEToggle<CR>:e<CR>
 
 
@@ -307,7 +303,6 @@ let g:coc_global_extensions = [
   \ 'coc-eslint',
   \ 'coc-html',
   \ 'coc-css',
-  \ 'coc-lua',
   \ 'coc-go',
   \ 'coc-java',
   \ 'coc-yaml',

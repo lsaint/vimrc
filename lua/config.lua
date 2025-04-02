@@ -8,6 +8,27 @@ if vim.fn.exists(":tnoremap") == 2 then
     vim.keymap.set("t", "<Esc>", "<C-\\><C-n>")
 end
 
+-- always display diagnostic source
+vim.diagnostic.config({ virtual_text = { source = true } })
+
+vim.api.nvim_set_keymap(
+    "n",
+    "gD",
+    "<cmd>lua vim.lsp.buf.declaration()<CR>",
+    { noremap = true, silent = true }
+)
+vim.api.nvim_set_keymap(
+    "n",
+    "gd",
+    "<cmd>lua vim.lsp.buf.definition()<CR>",
+    { noremap = true, silent = true }
+)
+
+-------------------------------------------------------------------------------
+--- ruff
+-------------------------------------------------------------------------------
+require("lspconfig").ruff.setup({})
+
 -------------------------------------------------------------------------------
 --- treesitter
 -------------------------------------------------------------------------------
@@ -33,26 +54,38 @@ require("nvim-treesitter.configs").setup({
 
 -------------------------------------------------------------------------------
 --- efm-langserver
+--- only for formatting
 -------------------------------------------------------------------------------
 -- https://github.com/creativenull/efmls-configs-nvim/blob/main/doc/SUPPORTED_LIST.md
 local default_settings = require("efmls-configs.defaults").languages()
+require("lsp-format").setup({})
 require("lspconfig").efm.setup({
-    init_options = { documentFormatting = true },
+    init_options = { documentFormatting = true, documentRangeFormatting = true },
     on_attach = require("lsp-format").on_attach,
     settings = {
         rootMarkers = { ".git/" },
         languages = vim.tbl_extend("force", default_settings, {
-            -- lua: luacheck, stylua
             -- css/scss/less/sass: stylelint, prettier
             -- javascript/jsx typescript/tsx: eslint, prettier
             -- override default settings
             python = {
-                require("efmls-configs.linters.ruff"),
                 require("efmls-configs.formatters.ruff"),
                 require("efmls-configs.formatters.ruff_sort"),
             },
+            lua = {
+                require("efmls-configs.formatters.stylua"),
+            },
+            json = {
+                require("efmls-configs.formatters.prettier"),
+            },
             markdown = {
                 require("efmls-configs.formatters.mdformat"),
+            },
+            toml = {
+                require("efmls-configs.formatters.taplo"),
+            },
+            yaml = {
+                require("efmls-configs.formatters.prettier"),
             },
         }),
     },
@@ -232,7 +265,7 @@ vim.keymap.set("n", "<F1>", highlight_search, { noremap = true, silent = true })
 -------------------------------------------------------------------------------
 --- Highlight the word while cursor is moving on it
 -------------------------------------------------------------------------------
-function highlight_cursor_area()
+function highlight_cursor_area() -- luacheck: ignore
     local winid = vim.api.nvim_get_current_win()
     local bufnr = vim.api.nvim_win_get_buf(winid)
     local cursor_pos = vim.api.nvim_win_get_cursor(winid)
@@ -400,9 +433,10 @@ function win_buf_swap()
     local lastwin = vim.fn.winnr("#") -- Get the last window number
     local lastbuf = vim.fn.winbufnr(lastwin) -- Get the buffer number in the last window
 
-    -- Execute commands to swap buffers
-    vim.cmd(lastwin .. " wincmd w | buffer " .. thisbuf) -- Switch to the last window and open the current buffer
-    vim.cmd(thiswin .. " wincmd w | buffer " .. lastbuf) -- Switch back to the current window and open the last window's buffer
+    -- Switch to the last window and open the current buffer
+    vim.cmd(lastwin .. " wincmd w | buffer " .. thisbuf)
+    -- Switch back to the current window and open the last window's buffer
+    vim.cmd(thiswin .. " wincmd w | buffer " .. lastbuf)
 
     vim.opt.number = false
 end

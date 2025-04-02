@@ -2,18 +2,7 @@
   "npm.binPath": "/opt/homebrew/bin/yarn",
   "workspace.rootPatterns": [".vim", ".git", "pyproject.toml"],
   "diagnostic.displayByAle": true,
-  // pyright
-  "python.analysis.diagnosticSeverityOverrides": {
-    "reportGeneralTypeIssues": "none",
-    "reportUnknownParameterType": "none"
-  },
-  "pyright.inlayHints.variableTypes": false,
-  "pyright.inlayHints.parameterTypes": false,
-  "pyright.testing.provider": "pytest",
-  //""
-  "Lua.diagnostics.globals": ["vim", "ngx"],
-  "Lua.diagnostics.disable": ["lowercase-global"],
-  "tsserver.log": "normal",
+  //"tsserver.log": "normal",
   "languageserver": {
     "sourcery": {
       "command": "/opt/homebrew/lib/python3.12/site-packages/sourcery/sourcery",
