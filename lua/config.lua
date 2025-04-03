@@ -9,7 +9,11 @@ if vim.fn.exists(":tnoremap") == 2 then
 end
 
 -- always display diagnostic source
-vim.diagnostic.config({ virtual_text = { source = true, prefix = "●" } })
+vim.diagnostic.config({
+    --virtual_text = { source = true, prefix = "●" },
+    virtual_text = false,
+    float = { source = true, border = "rounded" },
+})
 
 local args = { noremap = true, silent = true }
 vim.keymap.set("n", "<leader>J", vim.lsp.buf.declaration, args)
@@ -30,10 +34,21 @@ vim.keymap.set("n", "<leader>l", vim.diagnostic.goto_next, args)
 --:MasonUninstall <package> ...
 require("mason").setup()
 require("mason-lspconfig").setup({
-    ensure_installed = { "basedpyright", "sourcery@1.3.0" },
+    ensure_installed = {
+        "taplo",
+        "vimls",
+        "vale_ls",
+        "basedpyright",
+        --"typescript-language-server",
+        --"oxlint",
+    },
 })
--- lsp config list
+-- lsp list
+-- https://mason-registry.dev/registry/list
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
+require("lspconfig").taplo.setup({})
+require("lspconfig").vimls.setup({})
+require("lspconfig").vale_ls.setup({})
 require("lspconfig").basedpyright.setup({})
 require("lspconfig").ruff.setup({
     init_options = {
@@ -42,6 +57,7 @@ require("lspconfig").ruff.setup({
         },
     },
 })
+-- pip3.13 install sourcery==1.3.0 --break-system-packages
 require("lspconfig").sourcery.setup({
     init_options = {
         token = "user_70Iu0e_MRFlAVLZu2n_7TPm0LdByn2W5bXJr1p49QCfRbC3q07nI8my1d8I",
@@ -49,6 +65,10 @@ require("lspconfig").sourcery.setup({
         editor_version = "nvim",
     },
 })
+-- brew install lua-language-server
+require("lspconfig").lua_ls.setup({})
+require("lspconfig").oxlint.setup({})
+require("lspconfig").ts_ls.setup({})
 
 -------------------------------------------------------------------------------
 --- treesitter
@@ -282,6 +302,7 @@ local function highlight_search()
         vim.cmd("silent set hlsearch")
     end
 end
+
 vim.keymap.set("n", "<F1>", highlight_search, { noremap = true, silent = true })
 
 -------------------------------------------------------------------------------

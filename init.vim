@@ -2,7 +2,6 @@ call plug#begin('~/.vim/plugged')
 Plug 'dstein64/vim-startuptime'
 Plug 'github/copilot.vim'
 Plug 'lukas-reineke/indent-blankline.nvim'
-Plug 'dense-analysis/ale'
 Plug 'yssl/QFEnter'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'markonm/traces.vim'
@@ -275,22 +274,21 @@ let g:airline_powerline_fonts = 1
 "-------------------------------------------------------------------------------
 " ale
 "-------------------------------------------------------------------------------
-let g:ale_enabled = 1
+"let g:ale_enabled = 0
 "highlight clear ALEErrorSign
 "highlight clear ALEWarningSign
 "nnoremap <leader>d :ALEToggle<CR>:e<CR>
 "nmap <Leader>ww <Plug>(ale_next_wrap)
 "nmap <Leader>qq <Plug>(ale_previous_wrap)
-let g:airline#extensions#ale#enabled = 1
-let g:ale_echo_msg_format = '[%linter%] %code%: %s'
-let g:ale_use_neovim_diagnostics_api = 1
-let g:ale_linters = {
-\   'python': [],     
-\}
-let g:ale_fixers = {
-\   'python': ['ruff'],
-\   '*': ["remove_trailing_lines", "trim_whitespace"],
-\}
+"let g:airline#extensions#ale#enabled = 1
+"let g:ale_echo_msg_format = '[%linter%] %code%: %s'
+"let g:ale_use_neovim_diagnostics_api = 1
+"let g:ale_linters = {
+"\   'python': [],     
+"\}
+"let g:ale_fixers = {
+"\   'python': ['ruff'],
+"\}
 
 
 
@@ -351,9 +349,10 @@ call quickui#menu#install("&Window", [
 call quickui#menu#install("&Mason", [
     \ ['&Mason', 'Mason', ''],
     \ ['Mason &Update', 'MasonUpdate', ''],
-    \ ['Mason &Install', 'MasonInstall', ''],
-    \ ['Mason U&ninstall', 'MasonUninstall', ''],
+    \ ['Mason &Install', 'exec input("", ":MasonInstall ")', ''],
+    \ ['Mason &Uninstall', 'exec input("", ":MasonUninstall ")', ''],
     \ ['Mason &Log', 'MasonLog', ''],
+    \ ['Mason &Bin', '!Open ~/.local/share/nvim/mason/bin', ''],
     \ ])
 call quickui#menu#install("&Lsp", [
     \ ['&LspInfo', 'LspInfo', ''],
