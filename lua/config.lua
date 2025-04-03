@@ -9,25 +9,46 @@ if vim.fn.exists(":tnoremap") == 2 then
 end
 
 -- always display diagnostic source
-vim.diagnostic.config({ virtual_text = { source = true } })
+vim.diagnostic.config({ virtual_text = { source = true, prefix = "●" } })
 
-vim.api.nvim_set_keymap(
-    "n",
-    "gD",
-    "<cmd>lua vim.lsp.buf.declaration()<CR>",
-    { noremap = true, silent = true }
-)
-vim.api.nvim_set_keymap(
-    "n",
-    "gd",
-    "<cmd>lua vim.lsp.buf.definition()<CR>",
-    { noremap = true, silent = true }
-)
+local args = { noremap = true, silent = true }
+vim.keymap.set("n", "<leader>J", vim.lsp.buf.declaration, args)
+vim.keymap.set("n", "<leader>j", vim.lsp.buf.definition, args)
+--vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, args)
+vim.keymap.set("n", "<leader>qf", vim.lsp.buf.code_action)
+vim.keymap.set("n", "<leader>h", vim.diagnostic.goto_prev, args)
+vim.keymap.set("n", "<leader>l", vim.diagnostic.goto_next, args)
 
 -------------------------------------------------------------------------------
---- ruff
+--- lsp
+--- manson
 -------------------------------------------------------------------------------
-require("lspconfig").ruff.setup({})
+--:Mason
+--:MasonLog
+--:MasonUpdate
+--:MasonInstall <package> ... - installs/re-installs @ ~/.local/share/nvim/mason/bin
+--:MasonUninstall <package> ...
+require("mason").setup()
+require("mason-lspconfig").setup({
+    ensure_installed = { "basedpyright", "sourcery@1.3.0" },
+})
+-- lsp config list
+-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
+require("lspconfig").basedpyright.setup({})
+require("lspconfig").ruff.setup({
+    init_options = {
+        settings = {
+            lint = { enable = true },
+        },
+    },
+})
+require("lspconfig").sourcery.setup({
+    init_options = {
+        token = "user_70Iu0e_MRFlAVLZu2n_7TPm0LdByn2W5bXJr1p49QCfRbC3q07nI8my1d8I",
+        extension_version = "vim.lsp",
+        editor_version = "nvim",
+    },
+})
 
 -------------------------------------------------------------------------------
 --- treesitter
@@ -54,11 +75,12 @@ require("nvim-treesitter.configs").setup({
 
 -------------------------------------------------------------------------------
 --- efm-langserver
---- only for formatting
+--- partial format with lsp-format
+--- https://www.reddit.com/r/neovim/comments/jvisg5/lets_talk_formatting_again/
 -------------------------------------------------------------------------------
--- https://github.com/creativenull/efmls-configs-nvim/blob/main/doc/SUPPORTED_LIST.md
 local default_settings = require("efmls-configs.defaults").languages()
 require("lsp-format").setup({})
+--- https://github.com/creativenull/efmls-configs-nvim/blob/main/doc/SUPPORTED_LIST.md
 require("lspconfig").efm.setup({
     init_options = { documentFormatting = true, documentRangeFormatting = true },
     on_attach = require("lsp-format").on_attach,
@@ -441,7 +463,7 @@ function win_buf_swap()
     vim.opt.number = false
 end
 
-vim.keymap.set("n", "<Leader>sw", win_buf_swap, { silent = true })
+vim.keymap.set("n", "<leader>sw", win_buf_swap, { silent = true })
 
 -------------------------------------------------------------------------------
 --- Horizontal to Vertical, vise versa
@@ -458,7 +480,7 @@ function swap_window_horizontal_vertical()
     end
 end
 
-vim.keymap.set("n", "<Leader>hv", swap_window_horizontal_vertical, { silent = true })
+vim.keymap.set("n", "<leader>vh", swap_window_horizontal_vertical, { silent = true })
 
 -------------------------------------------------------------------------------
 --- test

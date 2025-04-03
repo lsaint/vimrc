@@ -1,8 +1,6 @@
 call plug#begin('~/.vim/plugged')
 Plug 'dstein64/vim-startuptime'
 Plug 'github/copilot.vim'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'yaegassy/coc-ruff', {'do': 'yarn install --frozen-lockfile'}
 Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'dense-analysis/ale'
 Plug 'yssl/QFEnter'
@@ -30,10 +28,12 @@ Plug 'mfussenegger/nvim-dap'
 Plug 'mfussenegger/nvim-dap-python', {'for': 'python'}
 Plug 'nvim-neotest/nvim-nio'
 Plug 'rcarriga/nvim-dap-ui'
-" efm-langserver
+" lsp
 Plug 'neovim/nvim-lspconfig'
 Plug 'creativenull/efmls-configs-nvim'
 Plug 'lukas-reineke/lsp-format.nvim'
+Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
 " language
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'fatih/vim-go', {'for': 'go'}
@@ -142,9 +142,6 @@ noremap <F2> :NERDTreeToggle<CR>
 nnoremap <F4> :CtrlSFToggle<CR>
 set pastetoggle=<F11>
 
-" Vita
-let g:vista_default_executive = "coc"
-
 " <leader> number
 nmap <leader>1 :Ack! --python --ignore tests -s -w <C-r><C-w><cr>
 nmap <leader>2 :CtrlSF -S -W <C-r><C-w>
@@ -217,8 +214,6 @@ noremap <leader>F :<C-U><C-R>=printf("Leaderf file --no-ignore %s", "")<CR><CR>
 noremap <leader>m :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
 "noremap <leader>F :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
 "noremap <leader>d :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
-noremap <leader>ht :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
-noremap <leader>hs :<C-U><C-R>=printf("Leaderf searchHistory %s", "")<CR><CR>
 let g:Lf_CommandMap = {'<C-X>': ['<C-S>'], '<C-]>': ['<C-V>'], '<C-P>': ['<C-H>'], '<C-V>': ['<C-P>']}
 let g:Lf_WindowPosition = 'popup'
 let g:Lf_PopupPosition = [30, 0]
@@ -283,82 +278,33 @@ let g:airline_powerline_fonts = 1
 let g:ale_enabled = 1
 "highlight clear ALEErrorSign
 "highlight clear ALEWarningSign
-nmap <Leader>ww <Plug>(ale_next_wrap)
-nmap <Leader>qq <Plug>(ale_previous_wrap)
+"nnoremap <leader>d :ALEToggle<CR>:e<CR>
+"nmap <Leader>ww <Plug>(ale_next_wrap)
+"nmap <Leader>qq <Plug>(ale_previous_wrap)
 let g:airline#extensions#ale#enabled = 1
 let g:ale_echo_msg_format = '[%linter%] %code%: %s'
 let g:ale_use_neovim_diagnostics_api = 1
-"nnoremap <leader>d :ALEToggle<CR>:e<CR>
+let g:ale_linters = {
+\   'python': [],     
+\}
+let g:ale_fixers = {
+\   'python': ['ruff'],
+\   '*': ["remove_trailing_lines", "trim_whitespace"],
+\}
 
 
 
 
-"-------------------------------------------------------------------------------
-" coc.nvim
-"-------------------------------------------------------------------------------
-" coc detects acceptable new version of installed extension everyday (by default) the first time it starts. 
-" When it finds a new version of an extension, it will update it for you automatically.
-let g:coc_global_extensions = [
-  \ 'coc-tsserver',
-  \ 'coc-eslint',
-  \ 'coc-html',
-  \ 'coc-css',
-  \ 'coc-go',
-  \ 'coc-java',
-  \ 'coc-yaml',
-  \ 'coc-json',
-  \ 'coc-snippets',
-  \ 'coc-flutter',
-  \ 'coc-toml',
-  \ ]
-" Some servers have issues with backup files, see #649
-set nobackup
-set nowritebackup
-" Better display for messages
-set cmdheight=2
-" You will have bad experience for diagnostic messages when it's default 4000.
-set updatetime=300
-" don't give |ins-completion-menu| messages.
-set shortmess+=c
-" Use tab for trigger completion with characters ahead and navigate.
-" NOTE: There's always complete item selected by default, you may want to enable
-" no select by `"suggest.noselect": true` in your configuration file.
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-" other plugin before putting this into your config.
-"inoremap <silent><expr> <TAB>
-      "\ coc#pum#visible() ? coc#pum#next(1) :
-      "\ CheckBackspace() ? "\<Tab>" :
-      "\ coc#refresh()
-"inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+"nmap <silent> <leader>j <Plug>(coc-definition)
+"nmap <silent> <leader>l <Plug>(coc-references)
 
-" Make <CR> to accept selected completion item or notify coc.nvim to format
-" <C-g>u breaks current undo, please make your own choice.
-inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
-                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+"nmap <silent> <leader>ac <Plug>(coc-codeaction)
+"nmap <silent> <leader>qf <Plug>(coc-fix-current)
 
-"function! s:check_back_space() abort
-  "let col = col('.') - 1
-  "return !col || getline('.')[col - 1]  =~# '\s'
-"endfunction
+"autocmd FileType json syntax match Comment +\/\/.\+$+
+"
+"
 
-" Remap keys for gotos
-nmap <silent> <leader>j <Plug>(coc-definition)
-nmap <silent> <leader>k <Plug>(coc-type-definition)
-nmap <silent> <leader>l <Plug>(coc-references)
-"nmap <silent> <leader>i <Plug>(coc-implementation)
-
-nmap <silent> <leader>ac <Plug>(coc-codeaction)
-nmap <silent> <leader>qf <Plug>(coc-fix-current)
-nmap <silent> <leader>ho :call CocAction('doHover')<cr>
-
-autocmd FileType json syntax match Comment +\/\/.\+$+
-
-nmap <silent> <leader>cor :CocRestart<cr>
-nmap <silent> <leader>coc :CocCommand<cr>
-nmap <silent> <leader>col :CocList<cr>
-nmap <silent> <leader>cof :CocConfig<cr>
-nmap <silent> <leader>coF :CocLocalConfig<cr>
-"imap <C-l> <Plug>(coc-snippets-expand)
 
 
 "-------------------------------------------------------------------------------
@@ -382,7 +328,7 @@ call quickui#menu#install("&Git", [
     \ ['Git L&og', 'Git log', ''],
     \ ])
 call quickui#menu#install("F&ormat", [
-    \ ['Show &Indent', 'IndentGuidesToggle', 'highlight indent'],
+    \ ['Show &Indent', '<leader><tab>', 'highlight indent'],
     \ [ "--", ],
     \ ['Format &Json', '%!python3 -m json.tool', 'format json file using python3 module json.tool'],
     \ ['Format &Xml', '%!xmllint % --format', 'format xml using xmlint'],
@@ -397,28 +343,34 @@ call quickui#menu#install("&Run", [
 call quickui#menu#install("&Config", [
     \ ['&Vimrc', ':e $MYVIMRC', ''],
     \ ['Vim&Tips', ':e ~/Library/CloudStorage/Dropbox/vim/vimtips.txt', ''],
-    \ ['&CocConfig', ':CocConfig', ''],
-    \ ['C&ocLocalConfig', ':CocLocalConfig', ''],
     \ ])
 call quickui#menu#install("&Window", [
     \ ['&Shell', 'terminal', ''],
     \ ['&Horizontal<->Vertical', 'lua swap_window_horizontal_vertical()', 'Horizontal to Vertical, vise versa'],
-    \ [ "--", ],
-    \ ['&Tagbar', 'Vista!!', ''],
+    \ ])
+call quickui#menu#install("&Mason", [
+    \ ['&Mason', 'Mason', ''],
+    \ ['Mason &Update', 'MasonUpdate', ''],
+    \ ['Mason &Install', 'MasonInstall', ''],
+    \ ['Mason U&ninstall', 'MasonUninstall', ''],
+    \ ['Mason &Log', 'MasonLog', ''],
+    \ ])
+call quickui#menu#install("&Lsp", [
+    \ ['&LspInfo', 'LspInfo', ''],
+    \ ['LspLo&g', 'LspLog', ''],
+    \ ['&ALEInfo', 'ALEInfo', ''],
     \ ])
 
 nnoremap <silent><space><space> :call quickui#menu#open()<cr>
 "
 let g:context_menu_1= [
-    \ ["&Tip", "call CocAction('doHover')", "CocAction doHover"],
-    \ ["&Fix", "CocFix", "CocFix"],
-    \ ["&Diagnostics", "CocDiagnostics", "CocDiagnostics"],
+    \ ['&ALEFix', 'ALEFix', ''],
+    \ ['AL&EFixSuggest', 'ALEFixSuggest', ''],
     \ [ "--", ],
     \ ['&Lack', 'exec "Lack! -s -w " . expand("<cword>")'],
     \ ["&Vim help", 'exec "h " . expand("<cword>")'],
     \ ]
-nnoremap <silent>K :call quickui#context#open(g:context_menu_1, {})<cr>
-nnoremap <silent><tab>m :call quickui#context#open(g:context_menu_1, {})<cr>
+"nnoremap <silent>K :call quickui#context#open(g:context_menu_1, {})<cr>
 "
 let g:quickui_show_tip = 1
 let g:quickui_color_scheme = 'gruvbox'
