@@ -19,9 +19,12 @@ local args = { noremap = true, silent = true }
 vim.keymap.set("n", "<leader>J", vim.lsp.buf.declaration, args)
 vim.keymap.set("n", "<leader>j", vim.lsp.buf.definition, args)
 --vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, args)
-vim.keymap.set("n", "<leader>qf", vim.lsp.buf.code_action)
-vim.keymap.set("n", "<leader>h", vim.diagnostic.goto_prev, args)
+--vim.keymap.set("n", "<leader>qf", vim.lsp.buf.code_action)
+vim.keymap.set("n", "<leader>k", vim.diagnostic.goto_prev, args)
 vim.keymap.set("n", "<leader>l", vim.diagnostic.goto_next, args)
+vim.keymap.set("n", "<leader>i", function()
+    vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+end)
 
 -------------------------------------------------------------------------------
 --- lsp
@@ -35,10 +38,12 @@ vim.keymap.set("n", "<leader>l", vim.diagnostic.goto_next, args)
 require("mason").setup()
 require("mason-lspconfig").setup({
     ensure_installed = {
-        "taplo",
+        "efm",
+        "taplo", --toml
         "vimls",
-        "vale_ls",
+        "vale_ls", --markdown
         "basedpyright",
+        --"css-lsp",
         --"typescript-language-server",
         --"oxlint",
     },
@@ -69,6 +74,32 @@ require("lspconfig").sourcery.setup({
 require("lspconfig").lua_ls.setup({})
 require("lspconfig").oxlint.setup({})
 require("lspconfig").ts_ls.setup({})
+require("lspconfig").cssls.setup({})
+
+-------------------------------------------------------------------------------
+--- fzf-lua
+-------------------------------------------------------------------------------
+-- brew install fzf, fd
+require("fzf-lua").setup({
+    keymap = {
+        builtin = {
+            ["<C-U>"] = "preview-page-up",
+            ["<C-D>"] = "preview-page-down",
+        },
+    },
+    winopts = {
+        height = 0.65,
+        width = 0.80,
+        row = 0.75,
+        col = 0.60,
+    },
+})
+vim.api.nvim_set_keymap("n", "<leader>F", ":FzfLua builtin<cr>", args)
+vim.api.nvim_set_keymap("n", "<leader>f", ":FzfLua files<cr>", args)
+vim.api.nvim_set_keymap("n", "<leader>b", ":FzfLua buffers<cr>", args)
+vim.api.nvim_set_keymap("n", "<leader>m", ":FzfLua oldfiles<cr>", args)
+vim.api.nvim_set_keymap("n", "<leader>qf", ":FzfLua lsp_code_actions<cr>", args)
+vim.api.nvim_set_keymap("n", "<leader>gb", ":FzfLua git_blame<cr>", args)
 
 -------------------------------------------------------------------------------
 --- treesitter

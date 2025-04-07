@@ -1,4 +1,5 @@
 call plug#begin('~/.vim/plugged')
+Plug 'ibhagwan/fzf-lua'
 Plug 'dstein64/vim-startuptime'
 Plug 'github/copilot.vim'
 Plug 'lukas-reineke/indent-blankline.nvim'
@@ -6,7 +7,6 @@ Plug 'yssl/QFEnter'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'markonm/traces.vim'
 Plug 'vim-scripts/CmdlineComplete'
-Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
 Plug 'preservim/nerdtree'
 Plug 'ryanoasis/vim-devicons'
 Plug 'tpope/vim-surround'
@@ -207,24 +207,6 @@ let g:matchup_matchparen_hi_surround_always = 1
 
 
 "-------------------------------------------------------------------------------
-" LeaderF
-"-------------------------------------------------------------------------------
-noremap <leader>F :<C-U><C-R>=printf("Leaderf file --no-ignore %s", "")<CR><CR>
-noremap <leader>m :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
-"noremap <leader>F :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
-"noremap <leader>d :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
-let g:Lf_CommandMap = {'<C-X>': ['<C-S>'], '<C-]>': ['<C-V>'], '<C-P>': ['<C-H>'], '<C-V>': ['<C-P>']}
-let g:Lf_WindowPosition = 'popup'
-let g:Lf_PopupPosition = [30, 0]
-let g:Lf_PreviewInPopup = 1
-let g:Lf_PreviewResult = {'Function': 1, 'BufTag': 1}
-let g:Lf_WildIgnore = {
-  \ 'dir': ['.svn','.git','.hg', 'node_modules', 'tmp', 'bin'],
-  \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.bson','*.exe','*.swp']
-  \}
-
-
-"-------------------------------------------------------------------------------
 " nerdtree
 "-------------------------------------------------------------------------------
 "let g:NERDTreeWinPos = "right"
@@ -271,52 +253,18 @@ let g:airline_theme='gruvbox'
 let g:airline_powerline_fonts = 1
 
 
-"-------------------------------------------------------------------------------
-" ale
-"-------------------------------------------------------------------------------
-"let g:ale_enabled = 0
-"highlight clear ALEErrorSign
-"highlight clear ALEWarningSign
-"nnoremap <leader>d :ALEToggle<CR>:e<CR>
-"nmap <Leader>ww <Plug>(ale_next_wrap)
-"nmap <Leader>qq <Plug>(ale_previous_wrap)
-"let g:airline#extensions#ale#enabled = 1
-"let g:ale_echo_msg_format = '[%linter%] %code%: %s'
-"let g:ale_use_neovim_diagnostics_api = 1
-"let g:ale_linters = {
-"\   'python': [],     
-"\}
-"let g:ale_fixers = {
-"\   'python': ['ruff'],
-"\}
-
-
-
-
-"nmap <silent> <leader>j <Plug>(coc-definition)
-"nmap <silent> <leader>l <Plug>(coc-references)
-
-"nmap <silent> <leader>ac <Plug>(coc-codeaction)
-"nmap <silent> <leader>qf <Plug>(coc-fix-current)
 
 "autocmd FileType json syntax match Comment +\/\/.\+$+
-"
-"
-
 
 
 "-------------------------------------------------------------------------------
 " quick-ui
 "-------------------------------------------------------------------------------
 call quickui#menu#reset()
-call quickui#menu#install("&File", [
+call quickui#menu#install("&Find", [
     \ [ "Search &File", 'exec input("", ":AckFile! ")'],
     \ [ "--", ],
-    \ [ "LeaderF &Mru", 'Leaderf mru --regexMode', 'Open recently accessed files'],
-    \ [ "LeaderF &SearchHistory", 'Leaderf searchHistory', 'List search history'],
-    \ [ "LeaderF &CmdHistory", 'Leaderf cmdHistory', 'List cmd history'],
-    \ [ "LeaderF &BufTag", 'Leaderf bufTag', 'List tag in current buffer'],
-    \ [ "LeaderF Li&ne", 'Leaderf line', 'List line in current buffer'],
+    \ [ "Fzf &builtin", 'FzfLua builtin', ''],
     \ ])
 call quickui#menu#install("&Git", [
     \ ['&Git', 'Git', ''],
@@ -339,6 +287,7 @@ call quickui#menu#install("&Run", [
     \ ['Run &Django', '!python manage.py shell < %', ''],
     \ ])
 call quickui#menu#install("&Config", [
+    \ ['&StartupTime', ':StartupTime', 'Times are in milliseconds'],
     \ ['&Vimrc', ':e $MYVIMRC', ''],
     \ ['Vim&Tips', ':e ~/Library/CloudStorage/Dropbox/vim/vimtips.txt', ''],
     \ ])
@@ -355,21 +304,19 @@ call quickui#menu#install("&Mason", [
     \ ['Mason &Bin', '!Open ~/.local/share/nvim/mason/bin', ''],
     \ ])
 call quickui#menu#install("&Lsp", [
-    \ ['&LspInfo', 'LspInfo', ''],
+    \ ['L&spInfo', 'LspInfo', ''],
     \ ['LspLo&g', 'LspLog', ''],
-    \ ['&ALEInfo', 'ALEInfo', ''],
+    \ ['&InlayHint', 'lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())', ''],
     \ ])
 
 nnoremap <silent><space><space> :call quickui#menu#open()<cr>
 "
 let g:context_menu_1= [
-    \ ['&ALEFix', 'ALEFix', ''],
-    \ ['AL&EFixSuggest', 'ALEFixSuggest', ''],
-    \ [ "--", ],
     \ ['&Lack', 'exec "Lack! -s -w " . expand("<cword>")'],
+    \ [ "--", ],
     \ ["&Vim help", 'exec "h " . expand("<cword>")'],
     \ ]
-"nnoremap <silent>K :call quickui#context#open(g:context_menu_1, {})<cr>
+nnoremap <silent>qm :call quickui#context#open(g:context_menu_1, {})<cr>
 "
 let g:quickui_show_tip = 1
 let g:quickui_color_scheme = 'gruvbox'
