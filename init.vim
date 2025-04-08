@@ -1,5 +1,6 @@
 call plug#begin('~/.vim/plugged')
 Plug 'ibhagwan/fzf-lua'
+Plug 'nvim-tree/nvim-web-devicons'
 Plug 'dstein64/vim-startuptime'
 Plug 'github/copilot.vim'
 Plug 'lukas-reineke/indent-blankline.nvim'
@@ -22,6 +23,7 @@ Plug 'RRethy/vim-illuminate'
 Plug 'echasnovski/mini.animate'
 Plug 'stevearc/stickybuf.nvim'
 Plug 'stevearc/aerial.nvim'
+Plug 'folke/trouble.nvim'
 " dap debug
 Plug 'mfussenegger/nvim-dap'
 Plug 'mfussenegger/nvim-dap-python', {'for': 'python'}
@@ -36,8 +38,7 @@ Plug 'williamboman/mason-lspconfig.nvim'
 " language
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'fatih/vim-go', {'for': 'go'}
-Plug 'preservim/vim-markdown'
-Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
+Plug 'OXY2DEV/markview.nvim'
 Plug 'mracos/mermaid.vim'
 Plug 'dart-lang/dart-vim-plugin'
 " themes
@@ -181,21 +182,15 @@ autocmd BufReadPre *
 
 
 "-------------------------------------------------------------------------------
-" markdown-preview
+" markview.nvim
 "-------------------------------------------------------------------------------
-nmap <C-m> <Plug>MarkdownPreviewToggle
+nmap <leader>dd :Markview<cr>
 
 
 "-------------------------------------------------------------------------------
 " vim-devicons
 "-------------------------------------------------------------------------------
 let g:WebDevIconsOS = 'Darwin'
-
-
-"-------------------------------------------------------------------------------
-" preservim/vim-markdown
-"-------------------------------------------------------------------------------
-let g:vim_markdown_folding_disabled = 1
 
 
 "-------------------------------------------------------------------------------
@@ -208,8 +203,7 @@ let g:matchup_matchparen_hi_surround_always = 1
 
 "-------------------------------------------------------------------------------
 " nerdtree
-"-------------------------------------------------------------------------------
-"let g:NERDTreeWinPos = "right"
+"-------------------------------------------------------------------------------let g:NERDTreeWinPos = "right"
 let NERDTreeIgnore=['\~$', '\.pyc$', 'node_modules', '__pycache__', '\.sqlite3']
 noremap <leader>z :NERDTreeFind<cr>
 let g:NERDTreeMapOpenSplit="s"

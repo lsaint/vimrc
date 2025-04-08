@@ -43,9 +43,11 @@ require("mason-lspconfig").setup({
         "vimls",
         "vale_ls", --markdown
         "basedpyright",
+        --"json-lsp",
         --"css-lsp",
-        --"typescript-language-server",
         --"oxlint",
+        --"bash-language-server",
+        --"typescript-language-server",
     },
 })
 -- lsp list
@@ -70,17 +72,26 @@ require("lspconfig").sourcery.setup({
         editor_version = "nvim",
     },
 })
+require("lspconfig").jsonls.setup({
+    init_options = {
+        provideFormatter = false,
+    },
+})
 -- brew install lua-language-server
 require("lspconfig").lua_ls.setup({})
 require("lspconfig").oxlint.setup({})
 require("lspconfig").ts_ls.setup({})
 require("lspconfig").cssls.setup({})
+require("lspconfig").bashls.setup({})
 
 -------------------------------------------------------------------------------
 --- fzf-lua
 -------------------------------------------------------------------------------
 -- brew install fzf, fd
 require("fzf-lua").setup({
+    defaults = {
+        file_icons = "devicons",
+    },
     keymap = {
         builtin = {
             ["<C-U>"] = "preview-page-up",
@@ -94,12 +105,22 @@ require("fzf-lua").setup({
         col = 0.60,
     },
 })
-vim.api.nvim_set_keymap("n", "<leader>F", ":FzfLua builtin<cr>", args)
-vim.api.nvim_set_keymap("n", "<leader>f", ":FzfLua files<cr>", args)
-vim.api.nvim_set_keymap("n", "<leader>b", ":FzfLua buffers<cr>", args)
-vim.api.nvim_set_keymap("n", "<leader>m", ":FzfLua oldfiles<cr>", args)
-vim.api.nvim_set_keymap("n", "<leader>qf", ":FzfLua lsp_code_actions<cr>", args)
-vim.api.nvim_set_keymap("n", "<leader>gb", ":FzfLua git_blame<cr>", args)
+vim.keymap.set("n", "<leader>;", ":FzfLua builtin<cr>", args)
+vim.keymap.set("n", "<leader>f", ":FzfLua files<cr>", args)
+vim.keymap.set("n", "<leader>b", ":FzfLua buffers<cr>", args)
+vim.keymap.set("n", "<leader>m", ":FzfLua oldfiles<cr>", args)
+vim.keymap.set("n", "<leader>gb", ":FzfLua git_blame<cr>", args)
+vim.keymap.set("v", "<leader>gb", ":FzfLua git_blame<cr>", args)
+
+vim.keymap.set("n", "<leader>qf", ":FzfLua lsp_code_actions<cr>", args)
+vim.keymap.set("n", "<leader>qi", ":FzfLua lsp_incoming_calls<cr>", args)
+vim.keymap.set("n", "<leader>qo", ":FzfLua lsp_outgoing_calls<cr>", args)
+
+-------------------------------------------------------------------------------
+--- trouble.nvim
+-------------------------------------------------------------------------------
+require("trouble").setup({})
+vim.keymap.set("n", "<leader>t", "<cmd>Trouble diagnostics toggle<cr>", args)
 
 -------------------------------------------------------------------------------
 --- treesitter
@@ -136,7 +157,7 @@ require("lspconfig").efm.setup({
     init_options = { documentFormatting = true, documentRangeFormatting = true },
     on_attach = require("lsp-format").on_attach,
     settings = {
-        rootMarkers = { ".git/" },
+        rootMarkers = { ".git/", "package.json" },
         languages = vim.tbl_extend("force", default_settings, {
             -- css/scss/less/sass: stylelint, prettier
             -- javascript/jsx typescript/tsx: eslint, prettier
@@ -151,6 +172,9 @@ require("lspconfig").efm.setup({
             json = {
                 require("efmls-configs.formatters.prettier"),
             },
+            jsonc = {
+                require("efmls-configs.formatters.prettier"),
+            },
             markdown = {
                 require("efmls-configs.formatters.mdformat"),
             },
@@ -159,6 +183,9 @@ require("lspconfig").efm.setup({
             },
             yaml = {
                 require("efmls-configs.formatters.prettier"),
+            },
+            sh = {
+                require("efmls-configs.formatters.shfmt"),
             },
         }),
     },
