@@ -140,7 +140,7 @@ map <leader>` :e#<CR>
 " F
 noremap <F2> :NERDTreeToggle<CR>
 nnoremap <F4> :CtrlSFToggle<CR>
-set pastetoggle=<F11>
+"set pastetoggle=<F11>
 
 " <leader> number
 nmap <leader>1 :Ack! --python --ignore tests -s -w <C-r><C-w><cr>

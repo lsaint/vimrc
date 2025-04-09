@@ -91,43 +91,39 @@ require("lspconfig").bashls.setup({ filetypes = { "zsh", "bash", "sh" } })
 
 --------------------------------------------------------------------------------------------
 --- efm-langserver
---- partial format with lsp-format
+--- partial FORMAT with lsp-format
 --- https://www.reddit.com/r/neovim/comments/jvisg5/lets_talk_formatting_again/
 --- https://github.com/creativenull/efmls-configs-nvim/blob/main/doc/SUPPORTED_LIST.md
 --------------------------------------------------------------------------------------------
 local default_settings = require("efmls-configs.defaults").languages()
-local formatter_prettier = require("efmls-configs.formatters.prettier")
-local formatter_shfmt = require("efmls-configs.formatters.shfmt")
+local formatter_prettier = { require("efmls-configs.formatters.prettier") }
+local formatter_shfmt = { require("efmls-configs.formatters.shfmt") }
 require("lsp-format").setup({})
 require("lspconfig").efm.setup({
     init_options = { documentFormatting = true, documentRangeFormatting = true },
     on_attach = require("lsp-format").on_attach,
     settings = {
-        rootMarkers = { ".git/", "package.json" },
+        rootMarkers = { ".git/" },
         languages = vim.tbl_extend("force", default_settings, {
             -- css/scss/less/sass: stylelint, prettier
             -- javascript/jsx typescript/tsx: eslint, prettier
             -- override default settings
-            yaml = { formatter_prettier },
-            json = { formatter_prettier },
-            jsonc = { formatter_prettier },
+            yaml = formatter_prettier,
+            json = formatter_prettier,
+            jsonc = formatter_prettier,
+
+            -- brew install shfmt
+            -- using .editorconfig
+            sh = formatter_shfmt,
+            zsh = formatter_shfmt,
+
+            lua = { require("efmls-configs.formatters.stylua") },
+            toml = { require("efmls-configs.formatters.taplo") },
+            markdown = { require("efmls-configs.formatters.mdformat") },
             python = {
                 require("efmls-configs.formatters.ruff"),
                 require("efmls-configs.formatters.ruff_sort"),
             },
-            lua = {
-                require("efmls-configs.formatters.stylua"),
-            },
-            markdown = {
-                require("efmls-configs.formatters.mdformat"),
-            },
-            toml = {
-                require("efmls-configs.formatters.taplo"),
-            },
-            -- brew install shfmt
-            -- using .editorconfig
-            sh = { formatter_shfmt },
-            zsh = { formatter_shfmt },
         }),
     },
 })
@@ -329,7 +325,19 @@ require("mini.animate").setup({
 --- front-end
 --------------------------------------------------------------------------------------------
 vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "dart", "ts", "tsx", "jsx", "js", "html", "css", "json", "yaml" },
+    pattern = {
+        "ts",
+        "js",
+        "tsx",
+        "jsx",
+        "css",
+        "less",
+        "html",
+        "json",
+        "yaml",
+        "toml",
+        "dart",
+    },
     callback = function()
         vim.opt.tabstop = 2
         vim.opt.shiftwidth = 2
@@ -503,7 +511,7 @@ function TogglePyDocString()
     end
 end
 
-vim.keymap.set("n", "<leader><F9>", TogglePyDocString, { noremap = true, silent = true })
+vim.keymap.set("n", "<leader><F9>", TogglePyDocString, args)
 
 --------------------------------------------------------------------------------------------
 --- ZoomToggle for current window
@@ -521,7 +529,7 @@ function ZoomToggle()
 end
 
 -- :lua ZoomToggle()<CR>
-vim.keymap.set("n", "<F3>", ZoomToggle, { silent = true })
+vim.keymap.set("n", "<F3>", ZoomToggle, args)
 
 --------------------------------------------------------------------------------------------
 --- swap last two buffers
