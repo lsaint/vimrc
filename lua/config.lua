@@ -1,6 +1,6 @@
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- common
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 vim.g.python_host_prog = "/opt/homebrew/bin/python3"
 
 -- exit terminal mode by pressing ESC
@@ -16,6 +16,7 @@ vim.diagnostic.config({
 })
 
 local args = { noremap = true, silent = true }
+
 vim.keymap.set("n", "<leader>J", vim.lsp.buf.declaration, args)
 vim.keymap.set("n", "<leader>j", vim.lsp.buf.definition, args)
 --vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, args)
@@ -25,11 +26,12 @@ vim.keymap.set("n", "<leader>l", vim.diagnostic.goto_next, args)
 vim.keymap.set("n", "<leader>i", function()
     vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
 end)
+vim.keymap.set("n", "<leader>qh", vim.lsp.buf.signature_help, args)
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- lsp
 --- manson
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --:Mason
 --:MasonLog
 --:MasonUpdate
@@ -37,17 +39,20 @@ end)
 --:MasonUninstall <package> ...
 require("mason").setup()
 require("mason-lspconfig").setup({
+    -- name list: https://github.com/williamboman/mason-lspconfig.nvim
     ensure_installed = {
         "efm",
-        "taplo", --toml
+        "taplo", -- toml
         "vimls",
-        "vale_ls", --markdown
+        "lua_ls",
+        "vale_ls", -- markdown
         "basedpyright",
-        --"json-lsp",
-        --"css-lsp",
+        "jsonls",
+        "cssls",
+        "ts_ls",
+        "bashls", -- need `shellcheck` to lint
+        --"shellcheck",
         --"oxlint",
-        --"bash-language-server",
-        --"typescript-language-server",
     },
 })
 -- lsp list
@@ -65,9 +70,10 @@ require("lspconfig").ruff.setup({
     },
 })
 -- pip3.13 install sourcery==1.3.0 --break-system-packages
+local sourcery_token = os.getenv("SOURCERY_TOKEN")
 require("lspconfig").sourcery.setup({
     init_options = {
-        token = "user_70Iu0e_MRFlAVLZu2n_7TPm0LdByn2W5bXJr1p49QCfRbC3q07nI8my1d8I",
+        token = sourcery_token,
         extension_version = "vim.lsp",
         editor_version = "nvim",
     },
@@ -77,16 +83,58 @@ require("lspconfig").jsonls.setup({
         provideFormatter = false,
     },
 })
--- brew install lua-language-server
 require("lspconfig").lua_ls.setup({})
 require("lspconfig").oxlint.setup({})
 require("lspconfig").ts_ls.setup({})
 require("lspconfig").cssls.setup({})
-require("lspconfig").bashls.setup({})
+require("lspconfig").bashls.setup({ filetypes = { "zsh", "bash", "sh" } })
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+--- efm-langserver
+--- partial format with lsp-format
+--- https://www.reddit.com/r/neovim/comments/jvisg5/lets_talk_formatting_again/
+--- https://github.com/creativenull/efmls-configs-nvim/blob/main/doc/SUPPORTED_LIST.md
+--------------------------------------------------------------------------------------------
+local default_settings = require("efmls-configs.defaults").languages()
+local formatter_prettier = require("efmls-configs.formatters.prettier")
+local formatter_shfmt = require("efmls-configs.formatters.shfmt")
+require("lsp-format").setup({})
+require("lspconfig").efm.setup({
+    init_options = { documentFormatting = true, documentRangeFormatting = true },
+    on_attach = require("lsp-format").on_attach,
+    settings = {
+        rootMarkers = { ".git/", "package.json" },
+        languages = vim.tbl_extend("force", default_settings, {
+            -- css/scss/less/sass: stylelint, prettier
+            -- javascript/jsx typescript/tsx: eslint, prettier
+            -- override default settings
+            yaml = { formatter_prettier },
+            json = { formatter_prettier },
+            jsonc = { formatter_prettier },
+            python = {
+                require("efmls-configs.formatters.ruff"),
+                require("efmls-configs.formatters.ruff_sort"),
+            },
+            lua = {
+                require("efmls-configs.formatters.stylua"),
+            },
+            markdown = {
+                require("efmls-configs.formatters.mdformat"),
+            },
+            toml = {
+                require("efmls-configs.formatters.taplo"),
+            },
+            -- brew install shfmt
+            -- using .editorconfig
+            sh = { formatter_shfmt },
+            zsh = { formatter_shfmt },
+        }),
+    },
+})
+
+--------------------------------------------------------------------------------------------
 --- fzf-lua
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 -- brew install fzf, fd
 require("fzf-lua").setup({
     defaults = {
@@ -116,15 +164,15 @@ vim.keymap.set("n", "<leader>qf", ":FzfLua lsp_code_actions<cr>", args)
 vim.keymap.set("n", "<leader>qi", ":FzfLua lsp_incoming_calls<cr>", args)
 vim.keymap.set("n", "<leader>qo", ":FzfLua lsp_outgoing_calls<cr>", args)
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- trouble.nvim
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 require("trouble").setup({})
 vim.keymap.set("n", "<leader>t", "<cmd>Trouble diagnostics toggle<cr>", args)
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- treesitter
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 require("nvim-treesitter.configs").setup({
     ensure_installed = {
         "python",
@@ -145,65 +193,19 @@ require("nvim-treesitter.configs").setup({
     },
 })
 
--------------------------------------------------------------------------------
---- efm-langserver
---- partial format with lsp-format
---- https://www.reddit.com/r/neovim/comments/jvisg5/lets_talk_formatting_again/
--------------------------------------------------------------------------------
-local default_settings = require("efmls-configs.defaults").languages()
-require("lsp-format").setup({})
---- https://github.com/creativenull/efmls-configs-nvim/blob/main/doc/SUPPORTED_LIST.md
-require("lspconfig").efm.setup({
-    init_options = { documentFormatting = true, documentRangeFormatting = true },
-    on_attach = require("lsp-format").on_attach,
-    settings = {
-        rootMarkers = { ".git/", "package.json" },
-        languages = vim.tbl_extend("force", default_settings, {
-            -- css/scss/less/sass: stylelint, prettier
-            -- javascript/jsx typescript/tsx: eslint, prettier
-            -- override default settings
-            python = {
-                require("efmls-configs.formatters.ruff"),
-                require("efmls-configs.formatters.ruff_sort"),
-            },
-            lua = {
-                require("efmls-configs.formatters.stylua"),
-            },
-            json = {
-                require("efmls-configs.formatters.prettier"),
-            },
-            jsonc = {
-                require("efmls-configs.formatters.prettier"),
-            },
-            markdown = {
-                require("efmls-configs.formatters.mdformat"),
-            },
-            toml = {
-                require("efmls-configs.formatters.taplo"),
-            },
-            yaml = {
-                require("efmls-configs.formatters.prettier"),
-            },
-            sh = {
-                require("efmls-configs.formatters.shfmt"),
-            },
-        }),
-    },
-})
-
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- stickybuf: locking a buffer to a window
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 require("stickybuf").setup()
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- aerial.nvim: code outline
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 require("aerial").setup()
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- indent-blankline
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 local hooks = require("ibl.hooks")
 hooks.register(hooks.type.VIRTUAL_TEXT, function(_, _, _, virt_text)
     -- replace the first column indent with a whitespace character
@@ -222,9 +224,9 @@ local function toggle_ibl()
 end
 vim.keymap.set("n", "<leader><tab>", toggle_ibl, { silent = true })
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- dap
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 require("dap-python").setup("uv")
 
 require("dapui").setup({
@@ -283,35 +285,35 @@ vim.fn.sign_define("DapStopped", { text = "▶️", texthl = "", linehl = "", nu
 
 vim.keymap.set("n", "<F6>", function()
     require("dap").continue()
-end, { silent = true })
+end, args)
 vim.keymap.set("n", "<F7>", function()
     require("dap").toggle_breakpoint()
-end, { silent = true })
+end, args)
 vim.keymap.set("n", "<F8>", function()
     require("dap").step_over()
-end, { silent = true })
+end, args)
 vim.keymap.set("n", "<F9>", function()
     require("dap").step_into()
-end, { silent = true })
+end, args)
 vim.keymap.set("n", "<leader><F5>", function()
     require("dap").step_out()
-end, { silent = true })
+end, args)
 vim.keymap.set("n", "<F5>", function()
     require("dapui").toggle({ reset = true })
-end, { silent = true })
+end, args)
 vim.keymap.set("n", "<leader>dh", function()
     require("dap.ui.widgets").hover()
-end, { silent = true })
+end, args)
 vim.keymap.set("v", "<leader>ds", function()
     require("dap-python").debug_selection()
-end, { silent = true })
+end, args)
 vim.keymap.set("n", "<leader>df", function()
     require("dapui").float_element()
-end, { silent = true })
+end, args)
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- mini.animate
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 local animate = require("mini.animate")
 require("mini.animate").setup({
     open = { enable = false },
@@ -323,9 +325,9 @@ require("mini.animate").setup({
     },
 })
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- front-end
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 vim.api.nvim_create_autocmd("FileType", {
     pattern = { "dart", "ts", "tsx", "jsx", "js", "html", "css", "json", "yaml" },
     callback = function()
@@ -334,17 +336,13 @@ vim.api.nvim_create_autocmd("FileType", {
     end,
 })
 
--- Prettier
-vim.g["prettier#autoformat"] = 1
-vim.g["prettier#autoformat_require_pragma"] = 0
-
 --↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 --                       Custom Functions
 --↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- Highlight and ready to search current word
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 local highlighting = false
 local function highlight_search()
     local current_word = vim.fn.expand("<cword>")
@@ -363,9 +361,9 @@ end
 
 vim.keymap.set("n", "<F1>", highlight_search, { noremap = true, silent = true })
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- Highlight the word while cursor is moving on it
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 function highlight_cursor_area() -- luacheck: ignore
     local winid = vim.api.nvim_get_current_win()
     local bufnr = vim.api.nvim_win_get_buf(winid)
@@ -404,9 +402,9 @@ vim.api.nvim_command([[
   autocmd CursorMoved * call luaeval('highlight_cursor_area()')
 ]])
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- toggle my tips in preview window
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 vim.g.MyVimTips = "off"
 local function toggle_vim_tips()
     if vim.g.MyVimTips == "on" then
@@ -419,9 +417,9 @@ local function toggle_vim_tips()
 end
 vim.keymap.set("n", "<leader><F8>", toggle_vim_tips, { noremap = true })
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- go to next ([{< in current line
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 local enclosure = {
     left = { "(", "[", "{", "<" },
     right = { ")", "]", "}", ">" },
@@ -462,9 +460,9 @@ vim.keymap.set("n", "<tab>h", function()
     goto_enclosure_dual(1)
 end, { silent = true })
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- fold/unfold python docstring
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 function PyFoldDocString()
     vim.opt_local.foldmethod = "manual"
     vim.cmd([[
@@ -507,9 +505,9 @@ end
 
 vim.keymap.set("n", "<leader><F9>", TogglePyDocString, { noremap = true, silent = true })
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- ZoomToggle for current window
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 function ZoomToggle()
     if vim.t.zoomed and vim.t.zoomed == 1 then
         vim.cmd(vim.t.zoom_winrestcmd)
@@ -525,9 +523,9 @@ end
 -- :lua ZoomToggle()<CR>
 vim.keymap.set("n", "<F3>", ZoomToggle, { silent = true })
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- swap last two buffers
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 function win_buf_swap()
     local thiswin = vim.fn.winnr() -- Get the current window number
     local thisbuf = vim.fn.bufnr("%") -- Get the current buffer number
@@ -544,9 +542,9 @@ end
 
 vim.keymap.set("n", "<leader>sw", win_buf_swap, { silent = true })
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- Horizontal to Vertical, vise versa
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 local split_type = "vertical"
 
 function swap_window_horizontal_vertical()
@@ -561,9 +559,9 @@ end
 
 vim.keymap.set("n", "<leader>vh", swap_window_horizontal_vertical, { silent = true })
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 --- test
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 local function test()
     print("Hello World!")
 end
