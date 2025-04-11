@@ -137,16 +137,12 @@ nnoremap <tab>k {
 " go to last file pos
 map <leader>` :e#<CR>
 
-" F
-noremap <F2> :NERDTreeToggle<CR>
-nnoremap <F4> :CtrlSFToggle<CR>
-"set pastetoggle=<F11>
-
 " <leader> number
 nmap <leader>1 :Ack! --python --ignore tests -s -w <C-r><C-w><cr>
 nmap <leader>2 :CtrlSF -S -W <C-r><C-w>
 nmap <leader>4 :Ack! --ignore static/ --ignore node_modules --ignore builds --ignore tests -s -w <C-r><C-w>
 
+noremap <F2> :NERDTreeToggle<CR>
 
 " <leader> F
 nmap <leader><F2> :AerialToggle!<cr>
