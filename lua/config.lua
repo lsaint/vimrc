@@ -25,7 +25,7 @@ vim.keymap.set("n", "<leader>k", vim.diagnostic.goto_prev, args)
 vim.keymap.set("n", "<leader>l", vim.diagnostic.goto_next, args)
 vim.keymap.set("n", "<leader>i", function()
     vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-end)
+end, args)
 vim.keymap.set("n", "<leader>qh", vim.lsp.buf.signature_help, args)
 
 --------------------------------------------------------------------------------------------
@@ -89,6 +89,10 @@ require("lspconfig").ts_ls.setup({})
 require("lspconfig").cssls.setup({})
 require("lspconfig").bashls.setup({ filetypes = { "zsh", "bash", "sh" } })
 
+vim.keymap.set("n", "<leader>dt", function()
+    vim.diagnostic.enable(not vim.diagnostic.is_enabled())
+end, vim.tbl_extend("force", args, { desc = "toggle diagnostic" }))
+
 --------------------------------------------------------------------------------------------
 --- efm-langserver
 --- partial FORMAT with lsp-format
@@ -151,11 +155,16 @@ require("fzf-lua").setup({
 })
 vim.keymap.set("n", "<leader>;", ":FzfLua builtin<cr>", args)
 vim.keymap.set("n", "<leader>f", ":FzfLua files<cr>", args)
+vim.keymap.set(
+    "n",
+    "<leader>F",
+    ":FzfLua files hidden=false no_ignore=true follow=true<cr>",
+    args
+)
 vim.keymap.set("n", "<leader>b", ":FzfLua buffers<cr>", args)
 vim.keymap.set("n", "<leader>m", ":FzfLua oldfiles<cr>", args)
 vim.keymap.set("n", "<leader>gb", ":FzfLua git_blame<cr>", args)
 vim.keymap.set("v", "<leader>gb", ":FzfLua git_blame<cr>", args)
-
 vim.keymap.set("n", "<leader>qf", ":FzfLua lsp_code_actions<cr>", args)
 vim.keymap.set("n", "<leader>qi", ":FzfLua lsp_incoming_calls<cr>", args)
 vim.keymap.set("n", "<leader>qo", ":FzfLua lsp_outgoing_calls<cr>", args)
@@ -365,7 +374,7 @@ local function highlight_search()
     end
 end
 
-vim.keymap.set("n", "<F1>", highlight_search, { noremap = true, silent = true })
+vim.keymap.set("n", "<F1>", highlight_search, args)
 
 --------------------------------------------------------------------------------------------
 --- toggle quickfix window
@@ -433,7 +442,7 @@ local function toggle_vim_tips()
         vim.cmd("pedit ~/Library/CloudStorage/Dropbox/vim/vimtips.txt")
     end
 end
-vim.keymap.set("n", "<leader><F8>", toggle_vim_tips, { noremap = true })
+vim.keymap.set("n", "<leader><F8>", toggle_vim_tips, args)
 
 --------------------------------------------------------------------------------------------
 --- go to next ([{< in current line
@@ -558,7 +567,7 @@ function win_buf_swap()
     vim.opt.number = false
 end
 
-vim.keymap.set("n", "<leader>sw", win_buf_swap, { silent = true })
+vim.keymap.set("n", "<leader>sw", win_buf_swap, args)
 
 --------------------------------------------------------------------------------------------
 --- Horizontal to Vertical, vise versa
@@ -575,7 +584,7 @@ function swap_window_horizontal_vertical()
     end
 end
 
-vim.keymap.set("n", "<leader>vh", swap_window_horizontal_vertical, { silent = true })
+vim.keymap.set("n", "<leader>vh", swap_window_horizontal_vertical, args)
 
 --------------------------------------------------------------------------------------------
 --- test
@@ -583,4 +592,4 @@ vim.keymap.set("n", "<leader>vh", swap_window_horizontal_vertical, { silent = tr
 local function test()
     print("Hello World!")
 end
-vim.keymap.set("n", "<F12>", test, { noremap = true, silent = true })
+vim.keymap.set("n", "<F12>", test, args)

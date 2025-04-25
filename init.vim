@@ -114,7 +114,6 @@ set hlsearch
 set hidden
 set expandtab
 set backspace=indent,eol,start
-set encoding=utf-8
 set nocompatible
 set splitright
 set splitbelow
