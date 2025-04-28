@@ -1,6 +1,5 @@
 call plug#begin('~/.vim/plugged')
 Plug 'ibhagwan/fzf-lua'
-Plug 'nvim-tree/nvim-web-devicons'
 Plug 'dstein64/vim-startuptime'
 Plug 'github/copilot.vim'
 Plug 'lukas-reineke/indent-blankline.nvim'
@@ -9,10 +8,8 @@ Plug 'editorconfig/editorconfig-vim'
 Plug 'markonm/traces.vim'
 Plug 'vim-scripts/CmdlineComplete'
 Plug 'preservim/nerdtree'
-Plug 'ryanoasis/vim-devicons'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdcommenter'
-Plug 'vim-airline/vim-airline'
 Plug 'romainl/vim-qf'
 Plug 'tpope/vim-fugitive'
 Plug 'unblevable/quick-scope'
@@ -24,6 +21,7 @@ Plug 'echasnovski/mini.animate'
 Plug 'stevearc/stickybuf.nvim'
 Plug 'stevearc/aerial.nvim'
 Plug 'folke/trouble.nvim'
+Plug 'nvim-lualine/lualine.nvim'
 " dap debug
 Plug 'mfussenegger/nvim-dap'
 Plug 'mfussenegger/nvim-dap-python', {'for': 'python'}
@@ -42,8 +40,9 @@ Plug 'OXY2DEV/markview.nvim'
 Plug 'mracos/mermaid.vim'
 Plug 'dart-lang/dart-vim-plugin'
 " themes
-Plug 'vim-airline/vim-airline-themes'
 Plug 'morhetz/gruvbox'
+Plug 'ryanoasis/vim-devicons'
+Plug 'nvim-tree/nvim-web-devicons'
 call plug#end()
 
 
@@ -119,6 +118,7 @@ set splitright
 set splitbelow
 set fillchars=eob:\ 
 set fillchars+=vert:┃
+set fileencodings=ucs-bom,utf-8,gbk,latin1
 syntax on
 filetype plugin indent on
 let mapleader = "\<Space>"
@@ -198,7 +198,8 @@ let g:matchup_matchparen_hi_surround_always = 1
 
 "--------------------------------------------------------------------------------
 " nerdtree
-"--------------------------------------------------------------------------------let g:NERDTreeWinPos = "right"
+"--------------------------------------------------------------------------------
+"let g:NERDTreeWinPos = 'right'
 let NERDTreeIgnore=['\~$', '\.pyc$', 'node_modules', '__pycache__', '\.sqlite3']
 noremap <leader>z :NERDTreeFind<cr>
 let g:NERDTreeMapOpenSplit="s"
@@ -235,15 +236,6 @@ au FileType go nmap gd <Plug>(go-def)
 let g:go_fmt_command = "goimports"
 
 
-"--------------------------------------------------------------------------------
-" vim-airline
-"--------------------------------------------------------------------------------
-let g:airline_theme='gruvbox'
-let g:airline_powerline_fonts = 1
-
-
-
-"autocmd FileType json syntax match Comment +\/\/.\+$+
 
 
 "--------------------------------------------------------------------------------
