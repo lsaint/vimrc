@@ -15,6 +15,17 @@ vim.diagnostic.config({
     float = { source = true, border = "rounded" },
 })
 
+local hightlight_ignore_list = {
+    "NvimTree",
+    "help",
+    "aerial",
+    "trouble",
+    "dap-repl",
+    "dapui_scopes",
+    "dapui_stacks",
+    "dapui_watches",
+}
+
 local args = { noremap = true, silent = true }
 
 vim.keymap.set("n", "<leader>J", vim.lsp.buf.declaration, args)
@@ -392,6 +403,11 @@ require("mini.animate").setup({
 require("lualine").setup()
 
 --------------------------------------------------------------------------------------------
+--- vim-illuminate
+--------------------------------------------------------------------------------------------
+require("illuminate").configure({ filetypes_denylist = hightlight_ignore_list })
+
+--------------------------------------------------------------------------------------------
 --- front-end
 --------------------------------------------------------------------------------------------
 vim.api.nvim_create_autocmd("FileType", {
@@ -453,6 +469,10 @@ end, { desc = "Toggle Quickfix" }, args)
 --- Highlight the word while cursor is moving on it
 --------------------------------------------------------------------------------------------
 function highlight_cursor_area() -- luacheck: ignore
+    local current_filetype = vim.api.nvim_buf_get_option(0, "filetype")
+    if vim.list_contains(hightlight_ignore_list, current_filetype) then
+        return
+    end
     local winid = vim.api.nvim_get_current_win()
     local bufnr = vim.api.nvim_win_get_buf(winid)
     local cursor_pos = vim.api.nvim_win_get_cursor(winid)

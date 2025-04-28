@@ -180,12 +180,6 @@ nmap <leader>dd :Markview<cr>
 
 
 "--------------------------------------------------------------------------------
-" vim-devicons
-"--------------------------------------------------------------------------------
-let g:WebDevIconsOS = 'Darwin'
-
-
-"--------------------------------------------------------------------------------
 " vim-matchup
 "--------------------------------------------------------------------------------
 nmap <leader>n z%
@@ -200,7 +194,7 @@ let g:qfenter_keymap = {}
 let g:qfenter_keymap.open = ['<CR>', '<2-LeftMouse>']
 let g:qfenter_keymap.vopen = ['<C-v>']
 let g:qfenter_keymap.hopen = ['<C-s>']
-let g:qfenter_exclude_filetypes = ['nerdtree', 'tagbar']
+let g:qfenter_exclude_filetypes = ['NvimTree', 'aerial']
 
 
 "--------------------------------------------------------------------------------
