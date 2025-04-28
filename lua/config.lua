@@ -29,6 +29,62 @@ end, args)
 vim.keymap.set("n", "<leader>qh", vim.lsp.buf.signature_help, args)
 
 --------------------------------------------------------------------------------------------
+--- nvim-tree
+--------------------------------------------------------------------------------------------
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.keymap.set("n", "<leader>z", ":NvimTreeFindFile<cr>", args)
+vim.keymap.set("n", "<F2>", ":NvimTreeToggle<cr>", args)
+require("nvim-tree").setup({
+    on_attach = function(bufnr)
+        local api = require("nvim-tree.api")
+        local function opts(desc)
+            return {
+                desc = "nvim-tree: " .. desc,
+                buffer = bufnr,
+                noremap = true,
+                silent = true,
+                nowait = true,
+            }
+        end
+        -- load default mappings
+        api.config.mappings.default_on_attach(bufnr)
+        -- remove default mappings
+        local keys_to_delete = { "m", "M", "S", "s", "<C-v>", "<C-x>", "bmv" }
+        for _, key in ipairs(keys_to_delete) do
+            vim.keymap.del("n", key, { buffer = bufnr })
+        end
+        -- set custom mappings
+        vim.keymap.set(
+            "n",
+            "bo",
+            api.tree.toggle_no_bookmark_filter,
+            opts("Toggle Bookmark only")
+        )
+        vim.keymap.set("n", "bv", api.marks.bulk.move, opts("Move Bookmarked"))
+        vim.keymap.set("n", "bm", api.marks.toggle, opts("Toggle Bookmark"))
+        vim.keymap.set("n", "S", api.node.run.system, opts("Run System"))
+        vim.keymap.set("n", "v", api.node.open.vertical, opts("Open: Vertical Split"))
+        vim.keymap.set("n", "s", api.node.open.horizontal, opts("Open: Horizontal Split"))
+    end,
+
+    filters = {
+        dotfiles = true,
+    },
+})
+-- close nvim when nvim-tree is the last window
+vim.api.nvim_create_autocmd("BufEnter", {
+    nested = true,
+    callback = function()
+        if
+            #vim.api.nvim_list_wins() == 1 and require("nvim-tree.utils").is_nvim_tree_buf()
+        then
+            vim.cmd("quit")
+        end
+    end,
+})
+
+--------------------------------------------------------------------------------------------
 --- lsp
 --- manson
 --------------------------------------------------------------------------------------------

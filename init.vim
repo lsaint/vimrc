@@ -7,7 +7,7 @@ Plug 'yssl/QFEnter'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'markonm/traces.vim'
 Plug 'vim-scripts/CmdlineComplete'
-Plug 'preservim/nerdtree'
+Plug 'nvim-tree/nvim-tree.lua'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdcommenter'
 Plug 'romainl/vim-qf'
@@ -41,7 +41,6 @@ Plug 'mracos/mermaid.vim'
 Plug 'dart-lang/dart-vim-plugin'
 " themes
 Plug 'morhetz/gruvbox'
-Plug 'ryanoasis/vim-devicons'
 Plug 'nvim-tree/nvim-web-devicons'
 call plug#end()
 
@@ -141,8 +140,6 @@ nmap <leader>1 :Ack! --python --ignore tests -s -w <C-r><C-w><cr>
 nmap <leader>2 :CtrlSF -S -W <C-r><C-w>
 nmap <leader>4 :Ack! --ignore static/ --ignore node_modules --ignore builds --ignore tests -s -w <C-r><C-w>
 
-noremap <F2> :NERDTreeToggle<CR>
-
 " <leader> F
 nmap <leader><F2> :AerialToggle!<cr>
 "nmap <Leader><F5> <Plug>(qf_loc_toggle)
@@ -194,18 +191,6 @@ let g:WebDevIconsOS = 'Darwin'
 nmap <leader>n z%
 let g:matchup_matchparen_deferred = 1
 let g:matchup_matchparen_hi_surround_always = 1
-
-
-"--------------------------------------------------------------------------------
-" nerdtree
-"--------------------------------------------------------------------------------
-"let g:NERDTreeWinPos = 'right'
-let NERDTreeIgnore=['\~$', '\.pyc$', 'node_modules', '__pycache__', '\.sqlite3']
-noremap <leader>z :NERDTreeFind<cr>
-let g:NERDTreeMapOpenSplit="s"
-let g:NERDTreeMapOpenVSplit="v"
-" exit vim when nerdtree window only
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 
 "--------------------------------------------------------------------------------
