@@ -88,8 +88,17 @@ require("blink.cmp").setup({
     },
     keymap = {
         ["<C-j>"] = { "show" },
-        ["<enter>"] = { "accept" },
+        ["<enter>"] = { "accept", "fallback" },
         ["<C-;>"] = { "cancel", "fallback" },
+    },
+    fuzzy = {
+        implementation = "prefer_rust_with_warning",
+        prebuilt_binaries = {
+            download = true,
+            -- https://github.com/saghen/blink.cmp/releases/
+            -- update manually for now
+            force_version = "v1.1.1",
+        },
     },
 })
 
@@ -187,6 +196,8 @@ require("lspconfig").ruff.setup({
     init_options = {
         settings = {
             lint = { enable = true },
+            fixAll = false,
+            organizeImports = false,
         },
     },
 })
@@ -285,10 +296,11 @@ vim.keymap.set(
 vim.keymap.set("n", "<leader>b", ":FzfLua buffers<cr>", args)
 vim.keymap.set("n", "<leader>m", ":FzfLua oldfiles<cr>", args)
 vim.keymap.set("n", "<leader>gb", ":FzfLua git_blame<cr>", args)
-vim.keymap.set("v", "<leader>gb", ":FzfLua git_blame<cr>", args)
-vim.keymap.set("n", "<leader>qf", ":FzfLua lsp_code_actions<cr>", args)
+vim.keymap.set("n", "<leader>a", ":FzfLua lsp_code_actions<cr>", args)
 vim.keymap.set("n", "<leader>qi", ":FzfLua lsp_incoming_calls<cr>", args)
 vim.keymap.set("n", "<leader>qo", ":FzfLua lsp_outgoing_calls<cr>", args)
+vim.keymap.set("n", "<leader>co", ":FzfLua commands<cr>", args)
+vim.keymap.set("n", "<leader>ch", ":FzfLua command_history<cr>", args)
 
 --------------------------------------------------------------------------------------------
 --- trouble.nvim
