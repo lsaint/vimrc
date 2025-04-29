@@ -2,6 +2,7 @@
 --- common
 --------------------------------------------------------------------------------------------
 vim.g.python_host_prog = "/opt/homebrew/bin/python3"
+vim.o.winborder = "single"
 
 -- exit terminal mode by pressing ESC
 if vim.fn.exists(":tnoremap") == 2 then
@@ -12,7 +13,7 @@ end
 vim.diagnostic.config({
     --virtual_text = { source = true, prefix = "●" },
     virtual_text = false,
-    float = { source = true, border = "rounded" },
+    float = { source = true },
 })
 
 local hightlight_ignore_list = {
@@ -38,6 +39,59 @@ vim.keymap.set("n", "<leader>i", function()
     vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
 end, args)
 vim.keymap.set("n", "<leader>qh", vim.lsp.buf.signature_help, args)
+
+--------------------------------------------------------------------------------------------
+--- copilot.lua
+--------------------------------------------------------------------------------------------
+require("copilot").setup({
+    suggestion = {
+        auto_trigger = true,
+        keymap = {
+            accept = "<tab>",
+            accept_word = "<C-K>",
+            dismiss = "<C-;>",
+            next = "<C-l>",
+            prev = "<C-h>",
+        },
+    },
+    panel = {
+        keymap = {},
+    },
+    filetypes = {
+        gitcommit = true,
+        markdown = true,
+        yaml = true,
+        --["."] = false,
+    },
+})
+-- todo: file size check
+
+--------------------------------------------------------------------------------------------
+--- blink.cmp
+--------------------------------------------------------------------------------------------
+require("blink.cmp").setup({
+    sources = {
+        default = { "copilot", "lsp", "path", "snippets", "buffer" },
+        providers = {
+            copilot = {
+                name = "copilot",
+                module = "blink-copilot",
+                score_offset = 100,
+                async = true,
+            },
+        },
+    },
+    completion = {
+        menu = {
+            auto_show = false,
+        },
+    },
+    keymap = {
+        ["<C-j>"] = { "show" },
+        ["<enter>"] = { "accept" },
+        ["<C-;>"] = { "cancel", "fallback" },
+    },
+})
 
 --------------------------------------------------------------------------------------------
 --- nvim-tree
@@ -400,7 +454,11 @@ require("mini.animate").setup({
 --------------------------------------------------------------------------------------------
 --- lualine
 --------------------------------------------------------------------------------------------
-require("lualine").setup()
+require("lualine").setup({
+    options = {
+        ignore_focus = hightlight_ignore_list,
+    },
+})
 
 --------------------------------------------------------------------------------------------
 --- vim-illuminate

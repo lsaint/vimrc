@@ -1,7 +1,7 @@
 call plug#begin('~/.vim/plugged')
 Plug 'ibhagwan/fzf-lua'
 Plug 'dstein64/vim-startuptime'
-Plug 'github/copilot.vim'
+Plug 'zbirenbaum/copilot.lua'
 Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'yssl/QFEnter'
 Plug 'editorconfig/editorconfig-vim'
@@ -22,6 +22,10 @@ Plug 'stevearc/stickybuf.nvim'
 Plug 'stevearc/aerial.nvim'
 Plug 'folke/trouble.nvim'
 Plug 'nvim-lualine/lualine.nvim'
+" blink.cmp
+Plug 'rafamadriz/friendly-snippets' " dependency
+Plug 'saghen/blink.cmp'
+Plug 'fang2hou/blink-copilot'
 " dap debug
 Plug 'mfussenegger/nvim-dap'
 Plug 'mfussenegger/nvim-dap-python', {'for': 'python'}
@@ -148,29 +152,6 @@ nmap <leader><F7> <Plug>(qf_shorten_path_toggle)
 nmap <leader><F10> :bufdo! e<cr>
 nnoremap <leader><F11> :vsplit $MYVIMRC<cr>
 nmap <leader><F12> :source ~/.config/nvim/init.vim<cr>
-
-
-
-"--------------------------------------------------------------------------------
-" github copilot
-"--------------------------------------------------------------------------------
-imap <C-j> <Plug>(copilot-suggest)
-imap <C-l> <Plug>(copilot-next)
-imap <C-h> <Plug>(copilot-previous)
-imap <C-;> <Plug>(copilot-dismiss)
-imap <C-K> <Plug>(copilot-accept-word)
-let g:copilot_filetypes = {
-    \ 'gitcommit': v:true,
-    \ 'markdown': v:true,
-    \ 'yaml': v:true
-    \ }
-" disables Copilot for files larger than 200KB
-autocmd BufReadPre *
-    \ let f=getfsize(expand("<afile>"))
-    \ | if f > 200000 || f == -2
-    \ | let b:copilot_enabled = v:false
-    \ | endif
-
 
 
 "--------------------------------------------------------------------------------
