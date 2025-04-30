@@ -1,28 +1,29 @@
 call plug#begin('~/.vim/plugged')
 Plug 'ibhagwan/fzf-lua'
 Plug 'dstein64/vim-startuptime'
-Plug 'zbirenbaum/copilot.lua'
 Plug 'lukas-reineke/indent-blankline.nvim'
-Plug 'yssl/QFEnter'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'markonm/traces.vim'
 Plug 'nvim-tree/nvim-tree.lua'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdcommenter'
-Plug 'romainl/vim-qf'
 Plug 'tpope/vim-fugitive'
 Plug 'unblevable/quick-scope'
-Plug 'wincent/ferret'
 Plug 'skywind3000/vim-quickui'
 Plug 'andymass/vim-matchup'
 Plug 'RRethy/vim-illuminate'
 Plug 'echasnovski/mini.animate'
 Plug 'stevearc/stickybuf.nvim'
 Plug 'stevearc/aerial.nvim'
-Plug 'folke/trouble.nvim'
 Plug 'nvim-lualine/lualine.nvim'
-" blink.cmp
-Plug 'rafamadriz/friendly-snippets' " dependency
+" qf
+Plug 'folke/trouble.nvim'
+Plug 'kevinhwang91/nvim-bqf'
+Plug 'romainl/vim-qf'
+Plug 'wincent/ferret'
+Plug 'yssl/QFEnter'
+" cmp
+Plug 'zbirenbaum/copilot.lua'
 Plug 'saghen/blink.cmp'
 Plug 'fang2hou/blink-copilot'
 " dap debug
@@ -257,6 +258,17 @@ let g:context_menu_1= [
     \ ["&Vim help", 'exec "h " . expand("<cword>")'],
     \ ]
 nnoremap <silent>qm :call quickui#context#open(g:context_menu_1, {})<cr>
+"
+let g:context_menu_qf= [
+    \ ['&Save List', 'exec input("", ":SaveList ")'],
+    \ ['Sa&ve List Add', 'exec input("", ":SaveListAdd ")'],
+    \ ['&List Lists', 'ListLists'],
+    \ ['L&oad Lists', 'exec input("", ":LoadList ")'],
+    \ ['Lo&ad Lists Add', 'exec input("", ":LoadListAdd ")'],
+    \ ['&Doline', 'exec input("", ":Doline ")'],
+    \ ['Do&file', 'exec input("", ":Dofile ")'],
+    \ ]
+nnoremap <silent>qf :call quickui#context#open(g:context_menu_qf, {})<cr>
 "
 let g:quickui_show_tip = 1
 let g:quickui_color_scheme = 'gruvbox'

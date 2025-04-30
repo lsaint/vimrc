@@ -2,7 +2,7 @@
 --- common
 --------------------------------------------------------------------------------------------
 vim.g.python_host_prog = "/opt/homebrew/bin/python3"
-vim.o.winborder = "single"
+--vim.o.winborder = "rounded"
 
 -- exit terminal mode by pressing ESC
 if vim.fn.exists(":tnoremap") == 2 then
@@ -17,8 +17,10 @@ vim.diagnostic.config({
 })
 
 local hightlight_ignore_list = {
+    "qf",
     "NvimTree",
     "help",
+    "checkhealth",
     "aerial",
     "trouble",
     "dap-repl",
@@ -49,9 +51,10 @@ require("copilot").setup({
         keymap = {
             accept = "<tab>",
             accept_word = "<C-K>",
+            accept_line = "<C-l>",
             dismiss = "<C-;>",
-            next = "<C-l>",
-            prev = "<C-h>",
+            next = "<C-d>",
+            prev = "<C-u>",
         },
     },
     panel = {
@@ -71,25 +74,27 @@ require("copilot").setup({
 --------------------------------------------------------------------------------------------
 require("blink.cmp").setup({
     sources = {
-        default = { "copilot", "lsp", "path", "snippets", "buffer" },
+        default = { "copilot", "lsp", "path", "buffer" },
         providers = {
             copilot = {
                 name = "copilot",
                 module = "blink-copilot",
-                score_offset = 100,
+                score_offset = 10,
                 async = true,
             },
         },
     },
     completion = {
-        menu = {
-            auto_show = false,
-        },
+        list = { selection = { preselect = false, auto_insert = false } },
+        menu = { auto_show = true },
+        --ghost_text = { enabled = true },
     },
+    signature = { enabled = true },
     keymap = {
         ["<C-j>"] = { "show" },
         ["<enter>"] = { "accept", "fallback" },
         ["<C-;>"] = { "cancel", "fallback" },
+        ["<C-k>"] = {},
     },
     fuzzy = {
         implementation = "prefer_rust_with_warning",
@@ -157,6 +162,12 @@ vim.api.nvim_create_autocmd("BufEnter", {
         end
     end,
 })
+
+--------------------------------------------------------------------------------------------
+--- nvim-bqf
+--- https://github.com/kevinhwang91/nvim-bqf?tab=readme-ov-file#function-table
+--------------------------------------------------------------------------------------------
+require("bqf").setup({})
 
 --------------------------------------------------------------------------------------------
 --- lsp
@@ -473,7 +484,7 @@ require("lualine").setup({
 })
 
 --------------------------------------------------------------------------------------------
---- vim-illuminate
+--- vim-illuminate: underline
 --------------------------------------------------------------------------------------------
 require("illuminate").configure({ filetypes_denylist = hightlight_ignore_list })
 
