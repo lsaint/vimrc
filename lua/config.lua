@@ -134,12 +134,7 @@ require("nvim-tree").setup({
             vim.keymap.del("n", key, { buffer = bufnr })
         end
         -- set custom mappings
-        vim.keymap.set(
-            "n",
-            "bo",
-            api.tree.toggle_no_bookmark_filter,
-            opts("Toggle Bookmark only")
-        )
+        vim.keymap.set("n", "bo", api.tree.toggle_no_bookmark_filter, opts("Toggle Bookmark only"))
         vim.keymap.set("n", "bv", api.marks.bulk.move, opts("Move Bookmarked"))
         vim.keymap.set("n", "bm", api.marks.toggle, opts("Toggle Bookmark"))
         vim.keymap.set("n", "S", api.node.run.system, opts("Run System"))
@@ -155,9 +150,7 @@ require("nvim-tree").setup({
 vim.api.nvim_create_autocmd("BufEnter", {
     nested = true,
     callback = function()
-        if
-            #vim.api.nvim_list_wins() == 1 and require("nvim-tree.utils").is_nvim_tree_buf()
-        then
+        if #vim.api.nvim_list_wins() == 1 and require("nvim-tree.utils").is_nvim_tree_buf() then
             vim.cmd("quit")
         end
     end,
@@ -167,7 +160,11 @@ vim.api.nvim_create_autocmd("BufEnter", {
 --- nvim-bqf
 --- https://github.com/kevinhwang91/nvim-bqf?tab=readme-ov-file#function-table
 --------------------------------------------------------------------------------------------
-require("bqf").setup({})
+require("bqf").setup({
+    func_map = {
+        ptoggleitem = "<esc>",
+    },
+})
 
 --------------------------------------------------------------------------------------------
 --- lsp
@@ -202,7 +199,7 @@ require("mason-lspconfig").setup({
 require("lspconfig").taplo.setup({})
 require("lspconfig").vimls.setup({})
 require("lspconfig").vale_ls.setup({})
-require("lspconfig").basedpyright.setup({})
+--require("lspconfig").basedpyright.setup({})
 require("lspconfig").ruff.setup({
     init_options = {
         settings = {
@@ -298,20 +295,18 @@ require("fzf-lua").setup({
 })
 vim.keymap.set("n", "<leader>;", ":FzfLua builtin<cr>", args)
 vim.keymap.set("n", "<leader>f", ":FzfLua files<cr>", args)
-vim.keymap.set(
-    "n",
-    "<leader>F",
-    ":FzfLua files hidden=false no_ignore=true follow=true<cr>",
-    args
-)
+vim.keymap.set("n", "<leader>F", ":FzfLua files hidden=false no_ignore=true follow=true<cr>", args)
 vim.keymap.set("n", "<leader>b", ":FzfLua buffers<cr>", args)
 vim.keymap.set("n", "<leader>m", ":FzfLua oldfiles<cr>", args)
 vim.keymap.set("n", "<leader>gb", ":FzfLua git_blame<cr>", args)
+vim.keymap.set("n", "<leader>co", ":FzfLua commands<cr>", args)
+vim.keymap.set("n", "<leader>ch", ":FzfLua command_history<cr>", args)
+
 vim.keymap.set("n", "<leader>a", ":FzfLua lsp_code_actions<cr>", args)
 vim.keymap.set("n", "<leader>qi", ":FzfLua lsp_incoming_calls<cr>", args)
 vim.keymap.set("n", "<leader>qo", ":FzfLua lsp_outgoing_calls<cr>", args)
-vim.keymap.set("n", "<leader>co", ":FzfLua commands<cr>", args)
-vim.keymap.set("n", "<leader>ch", ":FzfLua command_history<cr>", args)
+vim.keymap.set("n", "<leader>`", ":FzfLua lsp_definitions<cr>", args)
+vim.keymap.set("n", "1", ":FzfLua lsp_references<cr>", args)
 
 --------------------------------------------------------------------------------------------
 --- trouble.nvim
@@ -343,6 +338,14 @@ require("nvim-treesitter.configs").setup({
 })
 
 --------------------------------------------------------------------------------------------
+--- goto-preview: show lsp information in floating windows
+--------------------------------------------------------------------------------------------
+require("goto-preview").setup({ opacity = 10 })
+
+vim.keymap.set("n", "`", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", args)
+vim.keymap.set("n", "<esc>", "<cmd>lua require('goto-preview').close_all_win()<CR>", args)
+
+--------------------------------------------------------------------------------------------
 --- stickybuf: locking a buffer to a window
 --------------------------------------------------------------------------------------------
 require("stickybuf").setup()
@@ -371,7 +374,7 @@ local function toggle_ibl()
     ibl_enabled = not ibl_enabled
     require("ibl").setup(vim.tbl_extend("force", ibl_config, { enabled = ibl_enabled }))
 end
-vim.keymap.set("n", "<leader><tab>", toggle_ibl, { silent = true })
+vim.keymap.set("n", "<leader><tab>", toggle_ibl, args)
 
 --------------------------------------------------------------------------------------------
 --- dap
@@ -571,14 +574,7 @@ function highlight_cursor_area() -- luacheck: ignore
         vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
 
         local highlight_group = "CursorWord"
-        vim.api.nvim_buf_add_highlight(
-            bufnr,
-            ns_id,
-            highlight_group,
-            row,
-            start_col,
-            end_col
-        )
+        vim.api.nvim_buf_add_highlight(bufnr, ns_id, highlight_group, row, start_col, end_col)
     else
         vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
     end

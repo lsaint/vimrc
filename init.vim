@@ -37,12 +37,12 @@ Plug 'creativenull/efmls-configs-nvim'
 Plug 'lukas-reineke/lsp-format.nvim'
 Plug 'williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim'
+Plug 'rmagatti/goto-preview'
 " language
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'fatih/vim-go', {'for': 'go'}
 Plug 'OXY2DEV/markview.nvim'
 Plug 'mracos/mermaid.vim'
-Plug 'dart-lang/dart-vim-plugin'
+Plug 'fatih/vim-go', {'for': 'go'}
 " themes
 Plug 'morhetz/gruvbox'
 Plug 'nvim-tree/nvim-web-devicons'
@@ -100,6 +100,13 @@ noremap <C-K> <C-W>k
 noremap <C-H> <C-W>h
 noremap <C-L> <C-W>l
 noremap <C-P> <C-W>p
+
+noremap <C-W>j <C-W>J
+noremap <C-W>k <C-W>K
+noremap <C-W>l <C-W>L
+noremap <C-W>h <C-W>H
+
+
 
 " quit 
 noremap <C-C> <ESC>:q!<CR>
