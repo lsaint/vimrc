@@ -147,9 +147,8 @@ nnoremap <tab>k {
 map <leader>` :e#<CR>
 
 " <leader> number
-nmap <leader>1 :Ack! --python --ignore tests -s -w <C-r><C-w><cr>
-nmap <leader>2 :CtrlSF -S -W <C-r><C-w>
-nmap <leader>4 :Ack! --ignore static/ --ignore node_modules --ignore builds --ignore tests -s -w <C-r><C-w>
+nmap <leader>1 :Ack! --type python --glob !tests -s -w <C-r><C-w><cr>
+nmap <leader>4 :Ack! --glob !static/ --glob !node_modules --glob !builds --glob !*tests -s -w <C-r><C-w>
 
 " <leader> F
 nmap <leader><F2> :AerialToggle!<cr>

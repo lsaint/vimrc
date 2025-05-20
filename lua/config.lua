@@ -49,12 +49,12 @@ require("copilot").setup({
     suggestion = {
         auto_trigger = true,
         keymap = {
-            accept = "<tab>",
+            --accept = "<tab>",
             accept_word = "<C-K>",
             accept_line = "<C-l>",
             dismiss = "<C-;>",
-            next = "<C-d>",
-            prev = "<C-u>",
+            next = "<C-n>",
+            prev = "<C-p>",
         },
     },
     panel = {
@@ -86,7 +86,7 @@ require("blink.cmp").setup({
     },
     completion = {
         list = { selection = { preselect = false, auto_insert = false } },
-        menu = { auto_show = true },
+        menu = { auto_show = false },
         --ghost_text = { enabled = true },
     },
     signature = { enabled = true },
@@ -192,6 +192,7 @@ require("mason-lspconfig").setup({
         --"shellcheck",
         --"oxlint",
     },
+    automatic_enable = false,
 })
 -- lsp list
 -- https://mason-registry.dev/registry/list
@@ -199,7 +200,7 @@ require("mason-lspconfig").setup({
 require("lspconfig").taplo.setup({})
 require("lspconfig").vimls.setup({})
 require("lspconfig").vale_ls.setup({})
---require("lspconfig").basedpyright.setup({})
+require("lspconfig").basedpyright.setup({})
 require("lspconfig").ruff.setup({
     init_options = {
         settings = {
@@ -307,6 +308,9 @@ vim.keymap.set("n", "<leader>qi", ":FzfLua lsp_incoming_calls<cr>", args)
 vim.keymap.set("n", "<leader>qo", ":FzfLua lsp_outgoing_calls<cr>", args)
 vim.keymap.set("n", "<leader>`", ":FzfLua lsp_definitions<cr>", args)
 vim.keymap.set("n", "1", ":FzfLua lsp_references<cr>", args)
+vim.keymap.set("n", "2", ":FzfLua grep_cword<cr>", args)
+vim.keymap.set("n", "3", ":FzfLua grep<cr>", args)
+vim.keymap.set("n", "4", ":FzfLua live_grep<cr>", args)
 
 --------------------------------------------------------------------------------------------
 --- trouble.nvim
