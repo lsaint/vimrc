@@ -257,6 +257,12 @@ require("lspconfig").efm.setup({
             json = formatter_prettier,
             jsonc = formatter_prettier,
 
+            -- brew install djlint
+            htmldjango = {
+                require("efmls-configs.linters.djlint"),
+                require("efmls-configs.formatters.djlint"),
+            },
+
             -- brew install shfmt
             -- using .editorconfig
             sh = formatter_shfmt,
@@ -266,8 +272,8 @@ require("lspconfig").efm.setup({
             toml = { require("efmls-configs.formatters.taplo") },
             markdown = { require("efmls-configs.formatters.mdformat") },
             python = {
-                require("efmls-configs.formatters.ruff"),
                 require("efmls-configs.formatters.ruff_sort"),
+                require("efmls-configs.formatters.ruff"),
             },
         }),
     },
@@ -294,6 +300,8 @@ require("fzf-lua").setup({
         col = 0.60,
     },
 })
+require("fzf-lua").register_ui_select()
+
 vim.keymap.set("n", "<leader>;", ":FzfLua builtin<cr>", args)
 vim.keymap.set("n", "<leader>f", ":FzfLua files<cr>", args)
 vim.keymap.set("n", "<leader>F", ":FzfLua files hidden=false no_ignore=true follow=true<cr>", args)
@@ -306,7 +314,7 @@ vim.keymap.set("n", "<leader>ch", ":FzfLua command_history<cr>", args)
 vim.keymap.set("n", "<leader>a", ":FzfLua lsp_code_actions<cr>", args)
 vim.keymap.set("n", "<leader>qi", ":FzfLua lsp_incoming_calls<cr>", args)
 vim.keymap.set("n", "<leader>qo", ":FzfLua lsp_outgoing_calls<cr>", args)
-vim.keymap.set("n", "<leader>`", ":FzfLua lsp_definitions<cr>", args)
+
 vim.keymap.set("n", "1", ":FzfLua lsp_references<cr>", args)
 vim.keymap.set("n", "2", ":FzfLua grep_cword<cr>", args)
 vim.keymap.set("n", "3", ":FzfLua grep<cr>", args)

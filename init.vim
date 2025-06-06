@@ -42,7 +42,7 @@ Plug 'rmagatti/goto-preview'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'OXY2DEV/markview.nvim'
 Plug 'mracos/mermaid.vim'
-Plug 'fatih/vim-go', {'for': 'go'}
+"Plug 'fatih/vim-go', {'for': 'go'}
 " themes
 Plug 'morhetz/gruvbox'
 Plug 'nvim-tree/nvim-web-devicons'
@@ -105,6 +105,11 @@ noremap <C-W>j <C-W>J
 noremap <C-W>k <C-W>K
 noremap <C-W>l <C-W>L
 noremap <C-W>h <C-W>H
+
+noremap <C-1> 1
+noremap <C-2> 2
+noremap <C-3> 3
+noremap <C-4> 4
 
 
 
@@ -236,7 +241,7 @@ call quickui#menu#install("&Run", [
 call quickui#menu#install("&Config", [
     \ ['&StartupTime', ':StartupTime', 'Times are in milliseconds'],
     \ ['&Vimrc', ':e $MYVIMRC', ''],
-    \ ['Vim&Tips', ':e ~/Library/CloudStorage/Dropbox/vim/vimtips.txt', ''],
+    \ ['Vim&Tips', ':e ~/GDrive/vim/vimtips.txt', ''],
     \ ])
 call quickui#menu#install("&Window", [
     \ ['&Shell', 'terminal', ''],
