@@ -70,6 +70,22 @@ require("copilot").setup({
 -- todo: file size check
 
 --------------------------------------------------------------------------------------------
+--- CopilotChat.nvim
+--------------------------------------------------------------------------------------------
+local select = require("CopilotChat.select")
+require("CopilotChat").setup({
+    model = "claude-sonnet-4",
+    selection = function(source)
+        return select.visual(source) or select.buffer(source)
+    end,
+    highlight_selection = false,
+    mappings = {},
+})
+vim.keymap.set({ "n", "x" }, "<tab><tab>", "<Esc>:CopilotChatToggle<cr>", args)
+vim.keymap.set("n", "<tab>p", ":CopilotChatPrompts<cr>", args)
+vim.keymap.set("n", "<tab>m", ":CopilotChatModels<cr>", args)
+
+--------------------------------------------------------------------------------------------
 --- blink.cmp
 --------------------------------------------------------------------------------------------
 require("blink.cmp").setup({
@@ -114,6 +130,7 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.keymap.set("n", "<leader>z", ":NvimTreeFindFile<cr>", args)
 vim.keymap.set("n", "<F2>", ":NvimTreeToggle<cr>", args)
+vim.cmd("autocmd FileType NvimTree nnoremap <buffer> <silent> <Esc> :NvimTreeClose<CR>")
 require("nvim-tree").setup({
     on_attach = function(bufnr)
         local api = require("nvim-tree.api")

@@ -22,8 +22,11 @@ Plug 'kevinhwang91/nvim-bqf'
 Plug 'romainl/vim-qf'
 Plug 'wincent/ferret'
 Plug 'yssl/QFEnter'
-" cmp
+" ai
 Plug 'zbirenbaum/copilot.lua'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'CopilotC-Nvim/CopilotChat.nvim'
+" cmp
 Plug 'saghen/blink.cmp'
 Plug 'fang2hou/blink-copilot'
 " dap debug
@@ -268,7 +271,7 @@ let g:context_menu_1= [
     \ [ "--", ],
     \ ["&Vim help", 'exec "h " . expand("<cword>")'],
     \ ]
-nnoremap <silent>qm :call quickui#context#open(g:context_menu_1, {})<cr>
+nnoremap <silent><leader>qm :call quickui#context#open(g:context_menu_1, {})<cr>
 "
 let g:context_menu_qf= [
     \ ['&Save List', 'exec input("", ":SaveList ")'],
@@ -279,7 +282,7 @@ let g:context_menu_qf= [
     \ ['&Doline', 'exec input("", ":Doline ")'],
     \ ['Do&file', 'exec input("", ":Dofile ")'],
     \ ]
-nnoremap <silent>qf :call quickui#context#open(g:context_menu_qf, {})<cr>
+nnoremap <silent><leader>qf :call quickui#context#open(g:context_menu_qf, {})<cr>
 "
 let g:quickui_show_tip = 1
 let g:quickui_color_scheme = 'gruvbox'
