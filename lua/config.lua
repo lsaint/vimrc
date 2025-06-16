@@ -49,10 +49,10 @@ require("copilot").setup({
     suggestion = {
         auto_trigger = true,
         keymap = {
-            --accept = "<tab>",
             accept_word = "<C-K>",
             accept_line = "<C-l>",
-            dismiss = "<C-;>",
+            accept = "<C-;>",
+            dismiss = "<C-'>",
             next = "<C-n>",
             prev = "<C-p>",
         },
@@ -95,7 +95,7 @@ require("blink.cmp").setup({
             copilot = {
                 name = "copilot",
                 module = "blink-copilot",
-                score_offset = 10,
+                --score_offset = 10,
                 async = true,
             },
         },
@@ -117,8 +117,7 @@ require("blink.cmp").setup({
         prebuilt_binaries = {
             download = true,
             -- https://github.com/saghen/blink.cmp/releases/
-            -- update manually for now
-            force_version = "v1.1.1",
+            -- force_version = "v1.3.1",
         },
     },
 })
@@ -251,6 +250,80 @@ vim.keymap.set("n", "<leader>dt", function()
     vim.diagnostic.enable(not vim.diagnostic.is_enabled())
 end, vim.tbl_extend("force", args, { desc = "toggle diagnostic" }))
 
+vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function(_args)
+        local bufnr = _args.buf
+        local filename = vim.api.nvim_buf_get_name(bufnr)
+
+        local disable_lsp_filenames = {
+            "local.env",
+            "another_file_to_ignore.log",
+            "temp_data_.*%.json",
+        }
+
+        local disable_lsp_folders = {
+            "/path/to/your/project/node_modules/",
+            "/var/log/",
+            "~/.cache/nvim/",
+        }
+
+        local function is_filename_in_list(file_path, list)
+            for _, pattern in ipairs(list) do
+                if file_path == pattern then
+                    return true
+                end
+                if file_path:match(pattern) then
+                    return true
+                end
+            end
+            return false
+        end
+
+        local function is_file_in_folder_list(file_path, folder_list)
+            local normalized_file_path = vim.fn.fnamemodify(file_path, ":p")
+
+            for _, folder_path in ipairs(folder_list) do
+                local expanded_folder_path = folder_path:gsub("^~", vim.fn.expand("~"))
+                if
+                    not expanded_folder_path:match("/$") and not expanded_folder_path:match("\\$")
+                then
+                    expanded_folder_path = expanded_folder_path .. "/"
+                end
+
+                if normalized_file_path:sub(1, #expanded_folder_path) == expanded_folder_path then
+                    return true
+                end
+            end
+            return false
+        end
+
+        local should_disable_lsp = false
+
+        if is_filename_in_list(filename, disable_lsp_filenames) then
+            should_disable_lsp = true
+        end
+
+        if not should_disable_lsp and is_file_in_folder_list(filename, disable_lsp_folders) then
+            should_disable_lsp = true
+        end
+
+        local ok, stats = pcall(vim.loop.fs_stat, filename)
+        if ok and stats and stats.size > 1024 * 1024 then
+            should_disable_lsp = true
+        end
+
+        if should_disable_lsp then
+            vim.schedule(function()
+                for _, client in pairs(vim.lsp.get_active_clients({ bufnr = bufnr })) do
+                    vim.lsp.buf_detach_client(bufnr, client.id)
+                end
+                vim.diagnostic.disable(bufnr)
+                print("LSP disabled for: " .. filename)
+            end)
+        end
+    end,
+})
+
 --------------------------------------------------------------------------------------------
 --- efm-langserver
 --- partial FORMAT with lsp-format
@@ -333,9 +406,9 @@ vim.keymap.set("n", "<leader>qi", ":FzfLua lsp_incoming_calls<cr>", args)
 vim.keymap.set("n", "<leader>qo", ":FzfLua lsp_outgoing_calls<cr>", args)
 
 vim.keymap.set("n", "1", ":FzfLua lsp_references<cr>", args)
-vim.keymap.set("n", "2", ":FzfLua grep_cword<cr>", args)
-vim.keymap.set("n", "3", ":FzfLua grep<cr>", args)
-vim.keymap.set("n", "4", ":FzfLua live_grep<cr>", args)
+vim.keymap.set("n", "<C-2>", ":FzfLua grep_cword<cr>", args)
+vim.keymap.set("n", "<C-3>", ":FzfLua grep<cr>", args)
+vim.keymap.set("n", "<C-4>", ":FzfLua live_grep<cr>", args)
 
 --------------------------------------------------------------------------------------------
 --- trouble.nvim
@@ -404,6 +477,15 @@ local function toggle_ibl()
     require("ibl").setup(vim.tbl_extend("force", ibl_config, { enabled = ibl_enabled }))
 end
 vim.keymap.set("n", "<leader><tab>", toggle_ibl, args)
+
+--------------------------------------------------------------------------------------------
+--- gitsigns.nvim
+--------------------------------------------------------------------------------------------
+require("gitsigns").setup()
+
+vim.api.nvim_set_hl(0, "GitSignsAdd", { fg = "#859900", bg = "NONE" })
+vim.api.nvim_set_hl(0, "GitSignsChange", { fg = "#b58900", bg = "NONE" })
+vim.api.nvim_set_hl(0, "GitSignsDelete", { fg = "#dc322f", bg = "NONE" })
 
 --------------------------------------------------------------------------------------------
 --- dap

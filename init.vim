@@ -7,7 +7,6 @@ Plug 'markonm/traces.vim'
 Plug 'nvim-tree/nvim-tree.lua'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdcommenter'
-Plug 'tpope/vim-fugitive'
 Plug 'unblevable/quick-scope'
 Plug 'skywind3000/vim-quickui'
 Plug 'andymass/vim-matchup'
@@ -16,6 +15,9 @@ Plug 'echasnovski/mini.animate'
 Plug 'stevearc/stickybuf.nvim'
 Plug 'stevearc/aerial.nvim'
 Plug 'nvim-lualine/lualine.nvim'
+" git
+Plug 'tpope/vim-fugitive'
+Plug 'lewis6991/gitsigns.nvim'
 " qf
 Plug 'folke/trouble.nvim'
 Plug 'kevinhwang91/nvim-bqf'
@@ -27,7 +29,7 @@ Plug 'zbirenbaum/copilot.lua'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'CopilotC-Nvim/CopilotChat.nvim'
 " cmp
-Plug 'saghen/blink.cmp'
+Plug 'saghen/blink.cmp', { 'tag': 'v*' }
 Plug 'fang2hou/blink-copilot'
 " dap debug
 Plug 'mfussenegger/nvim-dap'
@@ -110,9 +112,6 @@ noremap <C-W>l <C-W>L
 noremap <C-W>h <C-W>H
 
 noremap <C-1> 1
-noremap <C-2> 2
-noremap <C-3> 3
-noremap <C-4> 4
 
 
 
