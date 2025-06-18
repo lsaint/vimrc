@@ -16,8 +16,8 @@ Plug 'stevearc/stickybuf.nvim'
 Plug 'stevearc/aerial.nvim'
 Plug 'nvim-lualine/lualine.nvim'
 " git
-Plug 'tpope/vim-fugitive'
 Plug 'lewis6991/gitsigns.nvim'
+Plug 'kdheepak/lazygit.nvim'
 " qf
 Plug 'folke/trouble.nvim'
 Plug 'kevinhwang91/nvim-bqf'

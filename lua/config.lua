@@ -4,9 +4,9 @@
 vim.g.python_host_prog = "/opt/homebrew/bin/python3"
 --vim.o.winborder = "rounded"
 
--- exit terminal mode by pressing ESC
+-- exit terminal mode by pressing CTRL+ESC
 if vim.fn.exists(":tnoremap") == 2 then
-    vim.keymap.set("t", "<Esc>", "<C-\\><C-n>")
+    vim.keymap.set("t", "<C-Esc>", "<C-\\><C-n>")
 end
 
 -- always display diagnostic source
@@ -494,11 +494,13 @@ vim.api.nvim_set_hl(0, "GitSignsChange", { fg = "#b58900", bg = "NONE" })
 vim.api.nvim_set_hl(0, "GitSignsDelete", { fg = "#dc322f", bg = "NONE" })
 
 local gitsigns_commands = {
+    "LazyGit",
     "Gitsigns preview_hunk",
     "Gitsigns preview_hunk_inline",
     "Gitsigns blame",
     "Gitsigns blame_line",
     "Gitsigns diffthis",
+    "Gitsigns toggle_word_diff",
 }
 
 local function execute_gitsigns_command(command)
@@ -521,6 +523,9 @@ local function gitsigns_menu()
     })
 end
 vim.keymap.set("n", "<leader>gg", gitsigns_menu)
+
+-- lazygit
+vim.g.lazygit_floating_window_scaling_factor = 0.93
 
 --------------------------------------------------------------------------------------------
 --- dap
