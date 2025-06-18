@@ -285,7 +285,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
             for _, folder_path in ipairs(folder_list) do
                 local expanded_folder_path = folder_path:gsub("^~", vim.fn.expand("~"))
                 if
-                    not expanded_folder_path:match("/$") and not expanded_folder_path:match("\\$")
+                    not expanded_folder_path:match("/$")
+                    and not expanded_folder_path:match("\\$")
                 then
                     expanded_folder_path = expanded_folder_path .. "/"
                 end
@@ -397,7 +398,6 @@ vim.keymap.set("n", "<leader>f", ":FzfLua files<cr>", args)
 vim.keymap.set("n", "<leader>F", ":FzfLua files hidden=false no_ignore=true follow=true<cr>", args)
 vim.keymap.set("n", "<leader>b", ":FzfLua buffers<cr>", args)
 vim.keymap.set("n", "<leader>m", ":FzfLua oldfiles<cr>", args)
-vim.keymap.set("n", "<leader>gb", ":FzfLua git_blame<cr>", args)
 vim.keymap.set("n", "<leader>co", ":FzfLua commands<cr>", args)
 vim.keymap.set("n", "<leader>ch", ":FzfLua command_history<cr>", args)
 
@@ -481,11 +481,46 @@ vim.keymap.set("n", "<leader><tab>", toggle_ibl, args)
 --------------------------------------------------------------------------------------------
 --- gitsigns.nvim
 --------------------------------------------------------------------------------------------
-require("gitsigns").setup()
+vim.keymap.set("n", "<leader>g1", ":Gitsigns toggle_signs<cr>", args)
+vim.keymap.set("n", "<A-j>", ":Gitsigns preview_hunk_inline<cr>", args)
+
+vim.api.nvim_set_hl(0, "GitSignsStagedAdd", { fg = "#5c5d13", bg = "NONE" })
+vim.api.nvim_set_hl(0, "GitSignsStagedChange", { fg = "#47603e", bg = "NONE" })
+vim.api.nvim_set_hl(0, "GitSignsStagedDelete", { fg = "#7d241a", bg = "NONE" })
+vim.api.nvim_set_hl(0, "GitSignsStagedChangedelete", { fg = "#47603e", bg = "NONE" })
 
 vim.api.nvim_set_hl(0, "GitSignsAdd", { fg = "#859900", bg = "NONE" })
 vim.api.nvim_set_hl(0, "GitSignsChange", { fg = "#b58900", bg = "NONE" })
 vim.api.nvim_set_hl(0, "GitSignsDelete", { fg = "#dc322f", bg = "NONE" })
+
+local gitsigns_commands = {
+    "Gitsigns preview_hunk",
+    "Gitsigns preview_hunk_inline",
+    "Gitsigns blame",
+    "Gitsigns blame_line",
+    "Gitsigns diffthis",
+}
+
+local function execute_gitsigns_command(command)
+    if command and command ~= "" then
+        vim.cmd(command)
+    end
+end
+
+local function gitsigns_menu()
+    require("fzf-lua").fzf_exec(gitsigns_commands, {
+        actions = {
+            ["default"] = function(selected)
+                local choice = selected[1]
+                execute_gitsigns_command(choice)
+            end,
+        },
+        winopts = {
+            title = "Gitsigns Commands",
+        },
+    })
+end
+vim.keymap.set("n", "<leader>gg", gitsigns_menu)
 
 --------------------------------------------------------------------------------------------
 --- dap
