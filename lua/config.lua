@@ -494,7 +494,6 @@ vim.api.nvim_set_hl(0, "GitSignsChange", { fg = "#b58900", bg = "NONE" })
 vim.api.nvim_set_hl(0, "GitSignsDelete", { fg = "#dc322f", bg = "NONE" })
 
 local gitsigns_commands = {
-    "LazyGit",
     "Gitsigns preview_hunk",
     "Gitsigns preview_hunk_inline",
     "Gitsigns blame",
@@ -524,8 +523,7 @@ local function gitsigns_menu()
 end
 vim.keymap.set("n", "<leader>gg", gitsigns_menu)
 
--- lazygit
-vim.g.lazygit_floating_window_scaling_factor = 0.93
+vim.opt.diffopt:append("vertical")
 
 --------------------------------------------------------------------------------------------
 --- dap
@@ -586,7 +584,7 @@ end
 vim.fn.sign_define("DapBreakpoint", { text = "🔴", texthl = "", linehl = "", numhl = "" })
 vim.fn.sign_define("DapStopped", { text = "▶️", texthl = "", linehl = "", numhl = "" })
 
-vim.keymap.set("n", "<F6>", function()
+vim.keymap.set("n", "<F30>", function() -- <C-F6>
     require("dap").continue()
 end, args)
 vim.keymap.set("n", "<F7>", function()
@@ -595,13 +593,13 @@ end, args)
 vim.keymap.set("n", "<F8>", function()
     require("dap").step_over()
 end, args)
-vim.keymap.set("n", "<F9>", function()
+vim.keymap.set("n", "<leader><F9>", function()
     require("dap").step_into()
 end, args)
 vim.keymap.set("n", "<leader><F5>", function()
     require("dap").step_out()
 end, args)
-vim.keymap.set("n", "<F5>", function()
+vim.keymap.set("n", "<F29>", function() -- <C-F5>
     require("dapui").toggle({ reset = true })
 end, args)
 vim.keymap.set("n", "<leader>dh", function()
@@ -613,6 +611,11 @@ end, args)
 vim.keymap.set("n", "<leader>df", function()
     require("dapui").float_element()
 end, args)
+--------------------------------------------------------------------------------------------
+-- lazygit
+--------------------------------------------------------------------------------------------
+vim.g.lazygit_floating_window_scaling_factor = 0.93
+vim.keymap.set("n", "<F5>", ":LazyGit<cr>", args)
 
 --------------------------------------------------------------------------------------------
 --- mini.animate

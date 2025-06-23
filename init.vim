@@ -133,8 +133,11 @@ set backspace=indent,eol,start
 set nocompatible
 set splitright
 set splitbelow
+
 set fillchars=eob:\ 
-set fillchars+=vert:┃
+set fillchars+=vert:\ 
+highlight WinSeparator guibg=#3c3836 
+
 set fileencodings=ucs-bom,utf-8,gbk,latin1
 syntax on
 filetype plugin indent on
