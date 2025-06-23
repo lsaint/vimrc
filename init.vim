@@ -298,4 +298,5 @@ augroup END
 
 lua << EOF
 require('config')
+require('debug')
 EOF
