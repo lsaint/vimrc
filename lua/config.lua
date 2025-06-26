@@ -78,7 +78,7 @@ require("CopilotChat").setup({
     selection = function(source)
         return select.visual(source) or select.buffer(source)
     end,
-    highlight_selection = false,
+    highlight_selection = true,
     mappings = {},
 })
 vim.keymap.set({ "n", "x" }, "<tab><tab>", "<Esc>:CopilotChatToggle<cr>", args)
@@ -482,7 +482,19 @@ vim.keymap.set("n", "<leader><tab>", toggle_ibl, args)
 --- gitsigns.nvim
 --------------------------------------------------------------------------------------------
 vim.keymap.set("n", "<leader>g1", ":Gitsigns toggle_signs<cr>", args)
-vim.keymap.set("n", "<A-j>", ":Gitsigns preview_hunk_inline<cr>", args)
+vim.keymap.set("n", "<A-h>", ":Gitsigns preview_hunk<cr>", args)
+vim.keymap.set("n", "<A-j>", function()
+    vim.cmd("Gitsigns nav_hunk next")
+    vim.defer_fn(function()
+        vim.cmd("Gitsigns preview_hunk_inline")
+    end, 20)
+end, args)
+vim.keymap.set("n", "<A-k>", function()
+    vim.cmd("Gitsigns nav_hunk prev")
+    vim.defer_fn(function()
+        vim.cmd("Gitsigns preview_hunk_inline")
+    end, 20)
+end, args)
 
 vim.api.nvim_set_hl(0, "GitSignsStagedAdd", { fg = "#5c5d13", bg = "NONE" })
 vim.api.nvim_set_hl(0, "GitSignsStagedChange", { fg = "#47603e", bg = "NONE" })
@@ -495,7 +507,8 @@ vim.api.nvim_set_hl(0, "GitSignsDelete", { fg = "#dc322f", bg = "NONE" })
 
 local gitsigns_commands = {
     "Gitsigns preview_hunk",
-    "Gitsigns preview_hunk_inline",
+    "Gitsigns select_hunk",
+    "Gitsigns setqflist",
     "Gitsigns blame",
     "Gitsigns blame_line",
     "Gitsigns diffthis",
