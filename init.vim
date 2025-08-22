@@ -44,9 +44,9 @@ Plug 'williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim'
 Plug 'rmagatti/goto-preview'
 " language
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'OXY2DEV/markview.nvim'
 Plug 'mracos/mermaid.vim'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 "Plug 'fatih/vim-go', {'for': 'go'}
 " themes
 Plug 'morhetz/gruvbox'
@@ -86,7 +86,6 @@ highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=und
 "--------------------------------------------------------------------------------
 " common
 "--------------------------------------------------------------------------------
-
 
 " win style save
 noremap <C-S> :update<CR>
@@ -181,7 +180,7 @@ nmap <leader>dd :Markview<cr>
 "--------------------------------------------------------------------------------
 nmap <leader>n z%
 let g:matchup_matchparen_deferred = 1
-let g:matchup_matchparen_hi_surround_always = 1
+"let g:matchup_matchparen_hi_surround_always = 1
 
 
 "--------------------------------------------------------------------------------

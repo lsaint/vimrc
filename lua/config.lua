@@ -1,6 +1,9 @@
 --------------------------------------------------------------------------------------------
 --- common
 --------------------------------------------------------------------------------------------
+--vim.opt.clipboard = "unnamedplus" -- use system clipboard
+vim.keymap.set("n", "<leader>p", '"+p', { desc = "Paste from system clipboard" })
+
 vim.g.python_host_prog = "/opt/homebrew/bin/python3"
 --vim.o.winborder = "rounded"
 
@@ -15,6 +18,22 @@ vim.diagnostic.config({
     virtual_text = false,
     float = { source = true },
 })
+
+--- show diagnostic when cursor is on the error word
+local diagnostic_augroup = vim.api.nvim_create_augroup("DiagnosticFloat", { clear = true })
+
+vim.api.nvim_create_autocmd("CursorHold", {
+    group = diagnostic_augroup,
+    callback = function()
+        vim.diagnostic.open_float(nil, {
+            scope = "cursor",
+            focusable = false,
+        })
+    end,
+})
+
+vim.o.updatetime = 200
+---
 
 local hightlight_ignore_list = {
     "qf",
@@ -66,8 +85,8 @@ require("copilot").setup({
         yaml = true,
         --["."] = false,
     },
+    -- todo: file size check
 })
--- todo: file size check
 
 --------------------------------------------------------------------------------------------
 --- CopilotChat.nvim
@@ -250,76 +269,74 @@ vim.keymap.set("n", "<leader>dt", function()
     vim.diagnostic.enable(not vim.diagnostic.is_enabled())
 end, vim.tbl_extend("force", args, { desc = "toggle diagnostic" }))
 
-vim.api.nvim_create_autocmd("LspAttach", {
-    callback = function(_args)
-        local bufnr = _args.buf
-        local filename = vim.api.nvim_buf_get_name(bufnr)
+lsp_disable_rules = {
+    filenames = {
+        "local.env",
+        "another_file_to_ignore.log",
+        "temp_data_.*%.json",
+    },
+    folders = {
+        "~/project/node_modules/",
+        "/var/log/",
+        "~/.cache/nvim/",
+    },
+    max_file_size_mb = 1024 * 1024,
+}
 
-        local disable_lsp_filenames = {
-            "local.env",
-            "another_file_to_ignore.log",
-            "temp_data_.*%.json",
-        }
+function should_disable_for_buffer(bufnr)
+    local filename = vim.api.nvim_buf_get_name(bufnr)
+    if not filename or filename == "" then
+        return false
+    end
 
-        local disable_lsp_folders = {
-            "/path/to/your/project/node_modules/",
-            "/var/log/",
-            "~/.cache/nvim/",
-        }
-
-        local function is_filename_in_list(file_path, list)
-            for _, pattern in ipairs(list) do
-                if file_path == pattern then
-                    return true
-                end
-                if file_path:match(pattern) then
-                    return true
-                end
-            end
-            return false
-        end
-
-        local function is_file_in_folder_list(file_path, folder_list)
-            local normalized_file_path = vim.fn.fnamemodify(file_path, ":p")
-
-            for _, folder_path in ipairs(folder_list) do
-                local expanded_folder_path = folder_path:gsub("^~", vim.fn.expand("~"))
-                if
-                    not expanded_folder_path:match("/$")
-                    and not expanded_folder_path:match("\\$")
-                then
-                    expanded_folder_path = expanded_folder_path .. "/"
-                end
-
-                if normalized_file_path:sub(1, #expanded_folder_path) == expanded_folder_path then
-                    return true
-                end
-            end
-            return false
-        end
-
-        local should_disable_lsp = false
-
-        if is_filename_in_list(filename, disable_lsp_filenames) then
-            should_disable_lsp = true
-        end
-
-        if not should_disable_lsp and is_file_in_folder_list(filename, disable_lsp_folders) then
-            should_disable_lsp = true
-        end
-
+    -- size check
+    local max_size = lsp_disable_rules.max_file_size_mb
+    if max_size > 0 then
         local ok, stats = pcall(vim.loop.fs_stat, filename)
-        if ok and stats and stats.size > 1024 * 1024 then
-            should_disable_lsp = true
+        if ok and stats and stats.size > max_size then
+            return true
+        end
+    end
+
+    -- name check
+    for _, pattern in ipairs(lsp_disable_rules.filenames) do
+        if filename:match(pattern) then
+            return true
+        end
+    end
+
+    -- dir check
+    local file_path = vim.fn.fnamemodify(filename, ":p")
+    for _, folder in ipairs(lsp_disable_rules.folders) do
+        local expanded_folder = vim.fn.expand(folder)
+        if file_path:find(expanded_folder, 1, true) == 1 then
+            return true
+        end
+    end
+
+    return false
+end
+
+vim.api.nvim_create_autocmd("LspAttach", {
+    group = vim.api.nvim_create_augroup("MyLspAttachHandler", { clear = true }),
+    callback = function(param)
+        local bufnr = param.buf
+        local client_id = param.data.client_id
+        local client = vim.lsp.get_client_by_id(client_id)
+
+        if client and client.name == "copilot" then
+            return
         end
 
-        if should_disable_lsp then
+        if should_disable_for_buffer(bufnr) then
             vim.schedule(function()
-                for _, client in pairs(vim.lsp.get_active_clients({ bufnr = bufnr })) do
-                    vim.lsp.buf_detach_client(bufnr, client.id)
-                end
-                vim.diagnostic.disable(bufnr)
-                print("LSP disabled for: " .. filename)
+                local filename = vim.api.nvim_buf_get_name(bufnr)
+                vim.notify(
+                    "LSP (" .. client.name .. ") disabled for: " .. filename,
+                    vim.log.levels.INFO
+                )
+                vim.lsp.buf_detach_client(bufnr, client_id)
+                vim.diagnostic.enable(false, { bufnr = bufnr })
             end)
         end
     end,
@@ -481,6 +498,10 @@ vim.keymap.set("n", "<leader><tab>", toggle_ibl, args)
 --------------------------------------------------------------------------------------------
 --- gitsigns.nvim
 --------------------------------------------------------------------------------------------
+require("gitsigns").setup({
+    signcolumn = false,
+})
+
 vim.keymap.set("n", "<leader>g1", ":Gitsigns toggle_signs<cr>", args)
 vim.keymap.set("n", "<A-h>", ":Gitsigns preview_hunk<cr>", args)
 vim.keymap.set("n", "<A-j>", function()
@@ -513,6 +534,7 @@ local gitsigns_commands = {
     "Gitsigns blame_line",
     "Gitsigns diffthis",
     "Gitsigns toggle_word_diff",
+    "Gitsigns toggle_signs",
 }
 
 local function execute_gitsigns_command(command)
