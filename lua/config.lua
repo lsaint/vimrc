@@ -20,19 +20,19 @@ vim.diagnostic.config({
 })
 
 --- show diagnostic when cursor is on the error word
-local diagnostic_augroup = vim.api.nvim_create_augroup("DiagnosticFloat", { clear = true })
+--local diagnostic_augroup = vim.api.nvim_create_augroup("DiagnosticFloat", { clear = true })
 
-vim.api.nvim_create_autocmd("CursorHold", {
-    group = diagnostic_augroup,
-    callback = function()
-        vim.diagnostic.open_float(nil, {
-            scope = "cursor",
-            focusable = false,
-        })
-    end,
-})
+--vim.api.nvim_create_autocmd("CursorHold", {
+--group = diagnostic_augroup,
+--callback = function()
+--vim.diagnostic.open_float(nil, {
+--scope = "cursor",
+--focusable = false,
+--})
+--end,
+--})
 
-vim.o.updatetime = 200
+--vim.o.updatetime = 200
 ---
 
 local hightlight_ignore_list = {
@@ -210,6 +210,9 @@ require("bqf").setup({
 --:MasonUpdate
 --:MasonInstall <package> ... - installs/re-installs @ ~/.local/share/nvim/mason/bin
 --:MasonUninstall <package> ...
+--
+--:lua print(vim.inspect(vim.diagnostic.get(0))) -- get current buffer diagnostics info
+--
 require("mason").setup()
 require("mason-lspconfig").setup({
     -- name list: https://github.com/williamboman/mason-lspconfig.nvim
@@ -232,11 +235,15 @@ require("mason-lspconfig").setup({
 -- lsp list
 -- https://mason-registry.dev/registry/list
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
-require("lspconfig").taplo.setup({})
-require("lspconfig").vimls.setup({})
-require("lspconfig").vale_ls.setup({})
-require("lspconfig").basedpyright.setup({})
-require("lspconfig").ruff.setup({
+vim.lsp.enable("taplo")
+vim.lsp.enable("vimls")
+vim.lsp.enable("vale_ls")
+vim.lsp.enable("basedpyright")
+vim.lsp.enable("lua_ls")
+vim.lsp.enable("oxlint")
+vim.lsp.enable("ts_ls")
+vim.lsp.enable("cssls")
+vim.lsp.config("ruff", {
     init_options = {
         settings = {
             lint = { enable = true },
@@ -247,23 +254,19 @@ require("lspconfig").ruff.setup({
 })
 -- pip3.13 install sourcery==1.3.0 --break-system-packages
 local sourcery_token = os.getenv("SOURCERY_TOKEN")
-require("lspconfig").sourcery.setup({
+vim.lsp.config("sourcery", {
     init_options = {
         token = sourcery_token,
         extension_version = "vim.lsp",
         editor_version = "nvim",
     },
 })
-require("lspconfig").jsonls.setup({
+vim.lsp.config("jsonls", {
     init_options = {
         provideFormatter = false,
     },
 })
-require("lspconfig").lua_ls.setup({})
-require("lspconfig").oxlint.setup({})
-require("lspconfig").ts_ls.setup({})
-require("lspconfig").cssls.setup({})
-require("lspconfig").bashls.setup({ filetypes = { "zsh", "bash", "sh" } })
+vim.lsp.config("bashls", { filetypes = { "zsh", "bash", "sh" } })
 
 vim.keymap.set("n", "<leader>dt", function()
     vim.diagnostic.enable(not vim.diagnostic.is_enabled())
@@ -336,6 +339,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
                     vim.log.levels.INFO
                 )
                 vim.lsp.buf_detach_client(bufnr, client_id)
+                vim.defer_fn(function()
+                    vim.diagnostic.reset()
+                end, 1000)
                 vim.diagnostic.enable(false, { bufnr = bufnr })
             end)
         end
@@ -352,7 +358,7 @@ local default_settings = require("efmls-configs.defaults").languages()
 local formatter_prettier = { require("efmls-configs.formatters.prettier") }
 local formatter_shfmt = { require("efmls-configs.formatters.shfmt") }
 require("lsp-format").setup({})
-require("lspconfig").efm.setup({
+vim.lsp.config("efm", {
     init_options = { documentFormatting = true, documentRangeFormatting = true },
     on_attach = require("lsp-format").on_attach,
     settings = {
