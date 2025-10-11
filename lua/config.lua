@@ -235,15 +235,21 @@ require("mason-lspconfig").setup({
 -- lsp list
 -- https://mason-registry.dev/registry/list
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
-vim.lsp.enable("taplo")
-vim.lsp.enable("vimls")
-vim.lsp.enable("vale_ls")
-vim.lsp.enable("basedpyright")
-vim.lsp.enable("lua_ls")
-vim.lsp.enable("oxlint")
-vim.lsp.enable("ts_ls")
-vim.lsp.enable("cssls")
-vim.lsp.config("ruff", {
+lsp_setup = function(ls, config)
+    if config then
+        vim.lsp.config(ls, config)
+    end
+    vim.lsp.enable(ls)
+end
+lsp_setup("taplo")
+lsp_setup("vimls")
+lsp_setup("vale_ls")
+lsp_setup("basedpyright")
+lsp_setup("lua_ls")
+lsp_setup("oxlint")
+lsp_setup("ts_ls")
+lsp_setup("cssls")
+lsp_setup("ruff", {
     init_options = {
         settings = {
             lint = { enable = true },
@@ -254,19 +260,21 @@ vim.lsp.config("ruff", {
 })
 -- pip3.13 install sourcery==1.3.0 --break-system-packages
 local sourcery_token = os.getenv("SOURCERY_TOKEN")
-vim.lsp.config("sourcery", {
+lsp_setup("sourcery", {
+    cmd = { "sourcery", "lsp" },
+    filetypes = { "python" },
     init_options = {
         token = sourcery_token,
         extension_version = "vim.lsp",
         editor_version = "nvim",
     },
 })
-vim.lsp.config("jsonls", {
+lsp_setup("jsonls", {
     init_options = {
         provideFormatter = false,
     },
 })
-vim.lsp.config("bashls", { filetypes = { "zsh", "bash", "sh" } })
+lsp_setup("bashls", { filetypes = { "zsh", "bash", "sh" } })
 
 vim.keymap.set("n", "<leader>dt", function()
     vim.diagnostic.enable(not vim.diagnostic.is_enabled())
@@ -358,7 +366,7 @@ local default_settings = require("efmls-configs.defaults").languages()
 local formatter_prettier = { require("efmls-configs.formatters.prettier") }
 local formatter_shfmt = { require("efmls-configs.formatters.shfmt") }
 require("lsp-format").setup({})
-vim.lsp.config("efm", {
+lsp_setup("efm", {
     init_options = { documentFormatting = true, documentRangeFormatting = true },
     on_attach = require("lsp-format").on_attach,
     settings = {
