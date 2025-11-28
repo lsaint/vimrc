@@ -282,6 +282,7 @@ end, vim.tbl_extend("force", args, { desc = "toggle diagnostic" }))
 
 lsp_disable_rules = {
     filenames = {
+        ".env",
         "local.env",
         "another_file_to_ignore.log",
         "temp_data_.*%.json",

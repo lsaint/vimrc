@@ -157,6 +157,7 @@ map <leader>` :e#<CR>
 
 " <leader> number
 nmap <leader>1 :Ack! --type python --glob !tests -s -w <C-r><C-w><cr>
+nmap <leader>3 :Ack! --glob !static/ --glob !node_modules --glob !builds -s <C-r><C-w>
 nmap <leader>4 :Ack! --glob !static/ --glob !node_modules --glob !builds --glob !*tests -s -w <C-r><C-w>
 
 " <leader> F
