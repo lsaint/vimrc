@@ -148,7 +148,7 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.keymap.set("n", "<leader>z", ":NvimTreeFindFile<cr>", args)
 vim.keymap.set("n", "<F2>", ":NvimTreeToggle<cr>", args)
-vim.cmd("autocmd FileType NvimTree nnoremap <buffer> <silent> <Esc> :NvimTreeClose<CR>")
+--vim.cmd("autocmd FileType NvimTree nnoremap <buffer> <silent> <Esc> :NvimTreeClose<CR>")
 require("nvim-tree").setup({
     on_attach = function(bufnr)
         local api = require("nvim-tree.api")
