@@ -46,7 +46,7 @@ Plug 'rmagatti/goto-preview'
 " language
 Plug 'OXY2DEV/markview.nvim'
 Plug 'mracos/mermaid.vim'
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate', 'branch': 'main'}
 "Plug 'fatih/vim-go', {'for': 'go'}
 " themes
 Plug 'morhetz/gruvbox'

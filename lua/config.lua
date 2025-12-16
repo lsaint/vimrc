@@ -451,7 +451,7 @@ vim.keymap.set("n", "<leader>t", "<cmd>Trouble diagnostics toggle<cr>", args)
 --------------------------------------------------------------------------------------------
 --- treesitter
 --------------------------------------------------------------------------------------------
-require("nvim-treesitter.configs").setup({
+require("nvim-treesitter").setup({
     ensure_installed = {
         "python",
         "c",
