@@ -581,6 +581,25 @@ vim.opt.diffopt:append("vertical")
 vim.g.lazygit_floating_window_scaling_factor = 0.93
 vim.keymap.set("n", "<F5>", ":LazyGit<cr>", args)
 
+function edit_line_from_lazygit(file_path, line)
+    local path = vim.fn.expand("%:p")
+    if path == file_path then
+        vim.cmd(tostring(line))
+    else
+        vim.cmd("e " .. file_path)
+        vim.cmd(tostring(line))
+    end
+end
+
+function edit_from_lazygit(file_path)
+    local path = vim.fn.expand("%:p")
+    if path == file_path then
+        return
+    else
+        vim.cmd("e " .. file_path)
+    end
+end
+
 --------------------------------------------------------------------------------------------
 --- mini.animate
 --------------------------------------------------------------------------------------------
