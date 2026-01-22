@@ -542,10 +542,10 @@ vim.api.nvim_set_hl(0, "GitSignsChange", { fg = "#b58900", bg = "NONE" })
 vim.api.nvim_set_hl(0, "GitSignsDelete", { fg = "#dc322f", bg = "NONE" })
 
 local gitsigns_commands = {
+    "Gitsigns blame",
     "Gitsigns preview_hunk",
     "Gitsigns select_hunk",
     "Gitsigns setqflist",
-    "Gitsigns blame",
     "Gitsigns blame_line",
     "Gitsigns diffthis",
     "Gitsigns toggle_word_diff",
@@ -586,7 +586,7 @@ function edit_line_from_lazygit(file_path, line)
     if path == file_path then
         vim.cmd(tostring(line))
     else
-        vim.cmd("e " .. file_path)
+        vim.cmd("e " .. vim.fn.fnameescape(file_path))
         vim.cmd(tostring(line))
     end
 end
@@ -596,7 +596,7 @@ function edit_from_lazygit(file_path)
     if path == file_path then
         return
     else
-        vim.cmd("e " .. file_path)
+        vim.cmd("e " .. vim.fn.fnameescape(file_path))
     end
 end
 
