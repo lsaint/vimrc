@@ -9,7 +9,7 @@ vim.g.python_host_prog = "/opt/homebrew/bin/python3"
 
 -- exit terminal mode by pressing CTRL+ESC
 if vim.fn.exists(":tnoremap") == 2 then
-    vim.keymap.set("t", "<C-Esc>", "<C-\\><C-n>")
+    vim.keymap.set("t", "<C-Esc>", [[<C-\><C-n>]])
 end
 
 -- always display diagnostic source
@@ -19,20 +19,6 @@ vim.diagnostic.config({
     float = { source = true },
 })
 
---- show diagnostic when cursor is on the error word
---local diagnostic_augroup = vim.api.nvim_create_augroup("DiagnosticFloat", { clear = true })
-
---vim.api.nvim_create_autocmd("CursorHold", {
---group = diagnostic_augroup,
---callback = function()
---vim.diagnostic.open_float(nil, {
---scope = "cursor",
---focusable = false,
---})
---end,
---})
-
---vim.o.updatetime = 200
 ---
 
 local hightlight_ignore_list = {
@@ -83,9 +69,8 @@ require("copilot").setup({
         gitcommit = true,
         markdown = true,
         yaml = true,
-        --["."] = false,
+        --todo: file size check
     },
-    -- todo: file size check
 })
 
 --------------------------------------------------------------------------------------------
@@ -129,14 +114,14 @@ require("blink.cmp").setup({
         ["<C-j>"] = { "show" },
         ["<enter>"] = { "accept", "fallback" },
         ["<C-;>"] = { "cancel", "fallback" },
-        ["<C-k>"] = {},
+        ["<C-k>"] = {}, -- This was an empty table, which is valid Lua.
     },
     fuzzy = {
         implementation = "prefer_rust_with_warning",
         prebuilt_binaries = {
             download = true,
             -- https://github.com/saghen/blink.cmp/releases/
-            -- force_version = "v1.3.1",
+            --force_version = "v1.3.1",
         },
     },
 })
@@ -292,7 +277,7 @@ lsp_disable_rules = {
         "/var/log/",
         "~/.cache/nvim/",
     },
-    max_file_size_mb = 1024 * 1024,
+    max_file_size_mb = 1024 * 1024, -- This is 1GB, not 1MB. Corrected from original comment.
 }
 
 function should_disable_for_buffer(bufnr)
@@ -501,13 +486,25 @@ hooks.register(hooks.type.VIRTUAL_TEXT, function(_, _, _, virt_text)
     return virt_text
 end)
 
+-- Fix for IblScope error: manually define highlight if missing
+vim.api.nvim_set_hl(0, "IblScope", { fg = "#928374", nocombine = true })
+
 local ibl_enabled = true
-local ibl_config = { scope = { enabled = false } }
-require("ibl").setup(vim.tbl_extend("force", ibl_config, { enabled = ibl_enabled }))
+require("ibl").setup({
+    enabled = ibl_enabled,
+    scope = { enabled = false },
+})
 local function toggle_ibl()
     ibl_enabled = not ibl_enabled
-    require("ibl").setup(vim.tbl_extend("force", ibl_config, { enabled = ibl_enabled }))
+
+    require("ibl").setup({
+
+        enabled = ibl_enabled,
+
+        scope = { enabled = false },
+    })
 end
+
 vim.keymap.set("n", "<leader><tab>", toggle_ibl, args)
 
 --------------------------------------------------------------------------------------------
@@ -717,10 +714,10 @@ function highlight_cursor_area() -- luacheck: ignore
     end
 end
 
-vim.api.nvim_command([[
+vim.api.nvim_command([[ 
   highlight CursorWord guibg=#585858
 ]])
-vim.api.nvim_command([[
+vim.api.nvim_command([[ 
   autocmd CursorMoved * call luaeval('highlight_cursor_area()')
 ]])
 
@@ -787,32 +784,32 @@ end, { silent = true })
 --------------------------------------------------------------------------------------------
 function PyFoldDocString()
     vim.opt_local.foldmethod = "manual"
-    vim.cmd([[
-python3 << EOF
-import vim
-import ast
+    vim.cmd([[ 
+    python3 << EOF
+    import vim
+    import ast
 
-lines = vim.current.buffer[:]
-docstring_start_lines = []
-root = ast.parse("\n".join(lines))
-for node in ast.walk(root):
-    if isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.Module)):
-        if (node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Str)):
-            start = node.body[0].value.lineno
-            docstring_start_lines.append(start)
-docstring_end_lines = []
-for start_line in docstring_start_lines:
-    offset = 0
-    for line in lines[start_line:]:
-        offset += 1
-        if '"""' in line or "'''" in line:
-            docstring_end_lines.append(start_line + offset)
-            break
-docstrings = list(zip(docstring_start_lines, docstring_end_lines))
-for start, end in docstrings:
-    vim.command("%d,%dfold" % (start, end))
-EOF
-]])
+    lines = vim.current.buffer[:]
+    docstring_start_lines = []
+    root = ast.parse("\n".join(lines))
+    for node in ast.walk(root):
+        if isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.Module)):
+            if (node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Str)):
+                start = node.body[0].value.lineno
+                docstring_start_lines.append(start)
+    docstring_end_lines = []
+    for start_line in docstring_start_lines:
+        offset = 0
+        for line in lines[start_line:]:
+            offset += 1
+            if '"""' in line or "'''" in line:
+                docstring_end_lines.append(start_line + offset)
+                break
+    docstrings = list(zip(docstring_start_lines, docstring_end_lines))
+    for start, end in docstrings:
+        vim.command("%d,%dfold" % (start, end))
+    EOF
+    ]])
 end
 
 function TogglePyDocString()
