@@ -11,7 +11,6 @@ vim.opt.hlsearch = true
 vim.opt.hidden = true
 vim.opt.expandtab = true
 vim.opt.backspace = { "indent", "eol", "start" }
--- vim.opt.nocompatible -- Neovim is always nocompatible
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.opt.fileencodings = { "ucs-bom", "utf-8", "gbk", "latin1" }
@@ -19,15 +18,12 @@ vim.opt.fileencodings = { "ucs-bom", "utf-8", "gbk", "latin1" }
 -- Fillchars
 vim.opt.fillchars = { eob = " ", vert = " " }
 
--- Colorscheme (handled by lazy.nvim priority)
--- vim.cmd("colorscheme gruvbox")
-
 -- Highlights
-vim.api.nvim_set_hl(0, "Normal", {bg = "NONE", ctermbg = "NONE"})
-vim.api.nvim_set_hl(0, "LineNr", {bg = "NONE", ctermbg = "NONE"})
-vim.api.nvim_set_hl(0, "SignColumn", {bg = "NONE", ctermbg = "NONE"})
-vim.api.nvim_set_hl(0, "VertSplit", {bg = "NONE", ctermbg = "NONE"})
-vim.api.nvim_set_hl(0, "WinSeparator", {bg = "#3c3836"})
+vim.api.nvim_set_hl(0, "Normal", { bg = "NONE", ctermbg = "NONE" })
+vim.api.nvim_set_hl(0, "LineNr", { bg = "NONE", ctermbg = "NONE" })
+vim.api.nvim_set_hl(0, "SignColumn", { bg = "NONE", ctermbg = "NONE" })
+vim.api.nvim_set_hl(0, "VertSplit", { bg = "NONE", ctermbg = "NONE" })
+vim.api.nvim_set_hl(0, "WinSeparator", { bg = "#3c3836" })
 
 -- True color fix for terminal
 vim.g.t_8f = [[<Esc>[38;2;%lu;%lu;%lum]]
@@ -41,7 +37,7 @@ vim.cmd([[
 ]])
 
 -- QuickScope
-vim.g.qs_highlight_on_keys = { 'f', 'F', 't', 'T' }
+vim.g.qs_highlight_on_keys = { "f", "F", "t", "T" }
 vim.cmd([[ 
   highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
   highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline
@@ -52,11 +48,11 @@ vim.g.matchup_matchparen_deferred = 1
 
 -- QFEnter
 vim.g.qfenter_keymap = {
-  open = { '<CR>', '<2-LeftMouse>' },
-  vopen = { '<C-v>' },
-  hopen = { '<C-s>' },
+    open = { "<CR>", "<2-LeftMouse>" },
+    vopen = { "<C-v>" },
+    hopen = { "<C-s>" },
 }
-vim.g.qfenter_exclude_filetypes = { 'NvimTree', 'aerial' }
+vim.g.qfenter_exclude_filetypes = { "NvimTree", "aerial" }
 
 -- Vim-QF
 vim.g.qf_shorten_path = 0
@@ -66,36 +62,43 @@ vim.g.go_fmt_command = "goimports"
 
 -- QuickUI
 vim.g.quickui_show_tip = 1
-vim.g.quickui_color_scheme = 'gruvbox'
+vim.g.quickui_color_scheme = "gruvbox"
 vim.g.quickui_preview_w = 100
 vim.g.quickui_preview_h = 15
 
 -- Auto commands
 local aucmd = vim.api.nvim_create_autocmd
 aucmd("BufEnter", {
-  pattern = "*",
-  command = "let g:extension = expand('%:e')"
+    pattern = "*",
+    command = "let g:extension = expand('%:e')",
 })
 
 aucmd("FileType", {
-  pattern = "go",
-  callback = function()
-    local map = function(keys, func) vim.keymap.set('n', keys, func, {buffer=true, remap=true}) end
-    map("<Leader>i", "<Plug>(go-info)")
-    map("<Leader>doc", "<Plug>(go-doc)")
-    map("gd", "<Plug>(go-def)")
-  end
+    pattern = "go",
+    callback = function()
+        local map = function(keys, func)
+            vim.keymap.set("n", keys, func, { buffer = true, remap = true })
+        end
+        map("<Leader>i", "<Plug>(go-info)")
+        map("<Leader>doc", "<Plug>(go-doc)")
+        map("gd", "<Plug>(go-def)")
+    end,
 })
 
 aucmd("FileType", {
-  pattern = "qf",
-  callback = function()
-    vim.keymap.set('n', '`', ':call quickui#tools#preview_quickfix()<cr>', {buffer=true, silent=true})
-  end,
-  group = vim.api.nvim_create_augroup("MyQuickfixPreview", { clear = true })
+    pattern = "qf",
+    callback = function()
+        vim.keymap.set(
+            "n",
+            "`",
+            ":call quickui#tools#preview_quickfix()<cr>",
+            { buffer = true, silent = true }
+        )
+    end,
+    group = vim.api.nvim_create_augroup("MyQuickfixPreview", { clear = true }),
 })
 
--- QuickUI Menus (Converted to Vimscript block for compatibility)
+-- QuickUI Menus
 vim.cmd([[ 
   call quickui#menu#reset()
   call quickui#menu#install("&Find", [
@@ -163,9 +166,8 @@ vim.cmd([[
       \ ]
 ]])
 
-
 --------------------------------------------------------------------------------
--- Keymaps (Merged from keymaps.lua)
+-- Keymaps
 --------------------------------------------------------------------------------
 local map = vim.keymap.set
 local opts = { noremap = true, silent = true }
@@ -174,7 +176,7 @@ local opts = { noremap = true, silent = true }
 map({ "n", "v", "i" }, "<C-S>", function()
     vim.cmd("update")
     if vim.fn.mode() == "i" then
-        return "<C-o>:update<CR>" 
+        return "<C-o>:update<CR>"
     end
 end, { desc = "Save file" })
 -- Correcting insert mode save:
@@ -218,8 +220,18 @@ map("n", "<leader>`", ":e#<CR>", opts)
 -- Ack/Grep shortcuts
 map("n", "<leader>1", ":Ack! --type python --glob !tests -s -w <C-r><C-w><cr>", { silent = false })
 map("n", "<leader>2", ":Ack! -s -w ", { silent = false })
-map("n", "<leader>3", ":Ack! --glob !static/ --glob !node_modules --glob !builds -s <C-r><C-w>", { silent = false })
-map("n", "<leader>4", ":Ack! --glob !static/ --glob !node_modules --glob !builds --glob !*tests -s -w <C-r><C-w>", { silent = false })
+map(
+    "n",
+    "<leader>3",
+    ":Ack! --glob !static/ --glob !node_modules --glob !builds -s <C-r><C-w>",
+    { silent = false }
+)
+map(
+    "n",
+    "<leader>4",
+    ":Ack! --glob !static/ --glob !node_modules --glob !builds --glob !*tests -s -w <C-r><C-w>",
+    { silent = false }
+)
 
 -- Leader F mappings
 map("n", "<leader><F2>", ":AerialToggle!<cr>", opts)
@@ -239,3 +251,4 @@ map("n", "<leader>n", "z%", opts)
 map("n", "<space><space>", ":call quickui#menu#open()<cr>", { silent = true })
 map("n", "<leader>qm", ":call quickui#context#open(g:context_menu_1, {})<cr>", { silent = true })
 map("n", "<leader>qf", ":call quickui#context#open(g:context_menu_qf, {})<cr>", { silent = true })
+

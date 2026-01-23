@@ -88,7 +88,6 @@ require("lazy").setup({
 })
 
 --
-require("options")
 
 local user_grp = vim.api.nvim_create_augroup("LazyUserGroup", { clear = true })
 
@@ -124,4 +123,5 @@ vim.api.nvim_create_autocmd("FileType", {
     group = user_grp,
 })
 
+require("options")
 require("config")
