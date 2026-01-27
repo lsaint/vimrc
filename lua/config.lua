@@ -389,8 +389,8 @@ require("fzf-lua").setup({
         row = 0.75,
         col = 0.60,
     },
+    register_ui_select = true,
 })
-require("fzf-lua").register_ui_select()
 
 vim.keymap.set("n", "<leader>;", ":FzfLua builtin<cr>", args)
 vim.keymap.set("n", "<leader>f", ":FzfLua files<cr>", args)
