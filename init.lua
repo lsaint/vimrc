@@ -19,7 +19,7 @@ vim.opt.rtp:prepend(lazypath)
 -- 3. Setup lazy.nvim with plugin list
 require("lazy").setup({
     -- UI & Editor
-    "ibhagwan/fzf-lua",
+    { "ibhagwan/fzf-lua", dependencies = { "nvim-tree/nvim-web-devicons" } },
     "lukas-reineke/indent-blankline.nvim",
     "editorconfig/editorconfig-vim",
     "markonm/traces.vim",
@@ -34,7 +34,6 @@ require("lazy").setup({
     "stevearc/stickybuf.nvim",
     "stevearc/aerial.nvim",
     "nvim-lualine/lualine.nvim",
-    "nvim-tree/nvim-web-devicons",
     {
         "morhetz/gruvbox",
         lazy = false,

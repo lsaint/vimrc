@@ -104,8 +104,6 @@ require("blink.cmp").setup({
         implementation = "prefer_rust_with_warning",
         prebuilt_binaries = {
             download = true,
-            -- https://github.com/saghen/blink.cmp/releases/
-            --force_version = "v1.3.1",
         },
     },
 })
