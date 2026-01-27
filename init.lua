@@ -57,8 +57,6 @@ require("lazy").setup({
 
     -- AI
     "zbirenbaum/copilot.lua",
-    "nvim-lua/plenary.nvim",
-    "CopilotC-Nvim/CopilotChat.nvim",
 
     -- Completion
     { "saghen/blink.cmp", version = "1.*" },

@@ -74,22 +74,6 @@ require("copilot").setup({
 })
 
 --------------------------------------------------------------------------------------------
---- CopilotChat.nvim
---------------------------------------------------------------------------------------------
-local select = require("CopilotChat.select")
-require("CopilotChat").setup({
-    model = "claude-sonnet-4",
-    selection = function(source)
-        return select.visual(source) or select.buffer(source)
-    end,
-    highlight_selection = true,
-    mappings = {},
-})
-vim.keymap.set({ "n", "x" }, "<tab><tab>", "<Esc>:CopilotChatToggle<cr>", args)
-vim.keymap.set("n", "<tab>p", ":CopilotChatPrompts<cr>", args)
-vim.keymap.set("n", "<tab>m", ":CopilotChatModels<cr>", args)
-
---------------------------------------------------------------------------------------------
 --- blink.cmp
 --------------------------------------------------------------------------------------------
 require("blink.cmp").setup({
