@@ -58,8 +58,8 @@ require("copilot").setup({
             accept_line = "<C-l>",
             accept = "<C-;>",
             dismiss = "<C-'>",
-            next = "<C-n>",
-            prev = "<C-p>",
+            next = "<tab>",
+            prev = "<s-tab>",
         },
     },
     panel = {
