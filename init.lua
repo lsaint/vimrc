@@ -227,13 +227,6 @@ vim.cmd([[
       \ [ "--", ],
       \ [ "Fzf &builtin", 'FzfLua builtin', ''],
       \ ])
-  call quickui#menu#install("&Git", [
-      \ ['&Git', 'Git', ''],
-      \ ['Git &Blame', 'Gblame', ''],
-      \ ['Git &Diff', 'Git diff -p', ''],
-      \ ['Git Diff &Split', 'Gdiffsplit', ''],
-      \ ['Git L&og', 'Git log', ''],
-      \ ])
   call quickui#menu#install("F&ormat", [
       \ ['Show &Indent', '<leader><tab>', 'highlight indent'],
       \ [ "--", ],
