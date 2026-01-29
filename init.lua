@@ -324,10 +324,6 @@ map("n", "<C-C>", "<ESC>:q!<CR>", opts)
 -- Copy to system clipboard
 map("v", "<leader>y", '"*y', opts)
 
--- Tab navigation
-map("n", "<tab>j", "}", opts)
-map("n", "<tab>k", "{", opts)
-
 -- Go to last file pos
 map("n", "<leader>`", ":e#<CR>", opts)
 

@@ -34,6 +34,31 @@ local hightlight_ignore_list = {
     "dapui_watches",
 }
 
+local function fzf_menu(commands, title, extra_winopts)
+    local default_winopts = {
+        title = " " .. title .. " ",
+        title_pos = "center",
+        height = 0.25,
+        width = 0.20,
+        relative = "cursor",
+        row = 1,
+        col = 0,
+    }
+    local winopts = vim.tbl_extend("force", default_winopts, extra_winopts or {})
+
+    require("fzf-lua").fzf_exec(commands, {
+        actions = {
+            ["default"] = function(selected)
+                local choice = selected[1]
+                if choice and choice ~= "" then
+                    vim.cmd(choice)
+                end
+            end,
+        },
+        winopts = winopts,
+    })
+end
+
 local args = { noremap = true, silent = true }
 
 vim.keymap.set("n", "<leader>J", vim.lsp.buf.declaration, args)
@@ -50,21 +75,20 @@ vim.keymap.set("n", "<leader>qh", vim.lsp.buf.signature_help, args)
 --------------------------------------------------------------------------------------------
 --- sidekick
 --------------------------------------------------------------------------------------------
-require("sidekick").setup({
-    keys = {
-        {
-            "<tab>",
-            function()
-                -- if there is a next edit, jump to it, otherwise apply it if any
-                if not require("sidekick").nes_jump_or_apply() then
-                    return "<Tab>" -- fallback to normal tab
-                end
-            end,
-            expr = true,
-            desc = "Goto/Apply Next Edit Suggestion",
-        },
-    },
-})
+require("sidekick").setup({})
+
+local function sidekick_menu()
+    fzf_menu({
+        "Sidekick nes apply",
+        "Sidekick nes update",
+        "Sidekick nes enable",
+        "Sidekick nes jump",
+        "Sidekick nes toggle",
+        "Sidekick nes clear",
+        "Sidekick nes disable",
+    }, "Sidekick Commands")
+end
+vim.keymap.set("n", "<C-.>", sidekick_menu, args)
 
 --------------------------------------------------------------------------------------------
 --- copilot.lua
@@ -117,7 +141,7 @@ require("blink.cmp").setup({
         ["<C-j>"] = { "show" },
         ["<enter>"] = { "accept", "fallback" },
         ["<C-;>"] = { "cancel", "fallback" },
-        ["<C-k>"] = {}, -- This was an empty table, which is valid Lua.
+        ["<C-k>"] = {}, -- unmap
     },
     fuzzy = {
         implementation = "prefer_rust_with_warning",
@@ -565,35 +589,17 @@ vim.api.nvim_set_hl(0, "GitSignsAdd", { fg = "#859900", bg = "NONE" })
 vim.api.nvim_set_hl(0, "GitSignsChange", { fg = "#b58900", bg = "NONE" })
 vim.api.nvim_set_hl(0, "GitSignsDelete", { fg = "#dc322f", bg = "NONE" })
 
-local gitsigns_commands = {
-    "Gitsigns blame",
-    "Gitsigns preview_hunk",
-    "Gitsigns select_hunk",
-    "Gitsigns setqflist",
-    "Gitsigns blame_line",
-    "Gitsigns diffthis",
-    "Gitsigns toggle_word_diff",
-    "Gitsigns toggle_signs",
-}
-
-local function execute_gitsigns_command(command)
-    if command and command ~= "" then
-        vim.cmd(command)
-    end
-end
-
 local function gitsigns_menu()
-    require("fzf-lua").fzf_exec(gitsigns_commands, {
-        actions = {
-            ["default"] = function(selected)
-                local choice = selected[1]
-                execute_gitsigns_command(choice)
-            end,
-        },
-        winopts = {
-            title = "Gitsigns Commands",
-        },
-    })
+    fzf_menu({
+        "Gitsigns blame",
+        "Gitsigns preview_hunk",
+        "Gitsigns select_hunk",
+        "Gitsigns setqflist",
+        "Gitsigns blame_line",
+        "Gitsigns diffthis",
+        "Gitsigns toggle_word_diff",
+        "Gitsigns toggle_signs",
+    }, "Gitsigns Commands")
 end
 vim.keymap.set("n", "<leader>gg", gitsigns_menu)
 
