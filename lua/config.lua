@@ -48,6 +48,25 @@ end, args)
 vim.keymap.set("n", "<leader>qh", vim.lsp.buf.signature_help, args)
 
 --------------------------------------------------------------------------------------------
+--- sidekick
+--------------------------------------------------------------------------------------------
+require("sidekick").setup({
+    keys = {
+        {
+            "<tab>",
+            function()
+                -- if there is a next edit, jump to it, otherwise apply it if any
+                if not require("sidekick").nes_jump_or_apply() then
+                    return "<Tab>" -- fallback to normal tab
+                end
+            end,
+            expr = true,
+            desc = "Goto/Apply Next Edit Suggestion",
+        },
+    },
+})
+
+--------------------------------------------------------------------------------------------
 --- copilot.lua
 --------------------------------------------------------------------------------------------
 require("copilot").setup({
@@ -188,7 +207,7 @@ require("mason-lspconfig").setup({
         "taplo", -- toml
         "vimls",
         "lua_ls",
-        "vale_ls", -- markdown
+        --"vale_ls", -- markdown
         "basedpyright",
         "jsonls",
         "cssls",
@@ -210,7 +229,7 @@ lsp_setup = function(ls, config)
 end
 lsp_setup("taplo")
 lsp_setup("vimls")
-lsp_setup("vale_ls")
+--lsp_setup("vale_ls")
 lsp_setup("basedpyright")
 lsp_setup("lua_ls")
 lsp_setup("oxlint")
@@ -418,7 +437,7 @@ vim.keymap.set("n", "<leader>t", "<cmd>Trouble diagnostics toggle<cr>", args)
 --------------------------------------------------------------------------------------------
 --- treesitter
 --------------------------------------------------------------------------------------------
-require("nvim-treesitter").setup({
+require("nvim-treesitter.configs").setup({
     ensure_installed = {
         "python",
         "c",
@@ -435,6 +454,32 @@ require("nvim-treesitter").setup({
         "vimdoc",
         "markdown",
         "markdown_inline",
+    },
+    textobjects = {
+        select = {
+            enable = true,
+            lookahead = true, -- automatically jump forward to textobj
+            keymaps = {
+                ["af"] = "@function.outer",
+                ["if"] = "@function.inner",
+                ["ac"] = "@class.outer",
+                ["ic"] = "@class.inner",
+                ["ap"] = "@parameter.outer",
+                ["ip"] = "@parameter.inner",
+            },
+        },
+        move = {
+            enable = true,
+            set_jumps = true, -- whether to set jumps in the jumplist
+            goto_next_start = {
+                ["]m"] = "@function.outer",
+                ["]]"] = "@class.outer",
+            },
+            goto_previous_start = {
+                ["[m"] = "@function.outer",
+                ["[["] = "@class.outer",
+            },
+        },
     },
 })
 

@@ -20,7 +20,9 @@ require("lazy").setup({
     "lukas-reineke/indent-blankline.nvim",
     "editorconfig/editorconfig-vim",
     "markonm/traces.vim",
+    { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate", branch = "master" },
     "nvim-tree/nvim-tree.lua",
+    "nvim-treesitter/nvim-treesitter-textobjects",
     "tpope/vim-surround",
     "scrooloose/nerdcommenter",
     "unblevable/quick-scope",
@@ -53,6 +55,7 @@ require("lazy").setup({
 
     -- AI
     "zbirenbaum/copilot.lua",
+    "folke/sidekick.nvim",
 
     -- Completion
     { "saghen/blink.cmp", version = "1.*" },
@@ -75,7 +78,6 @@ require("lazy").setup({
     -- Language
     "OXY2DEV/markview.nvim",
     "mracos/mermaid.vim",
-    { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate", branch = "main" },
 }, {
     defaults = { lazy = false },
     ui = { border = "rounded" },
@@ -372,4 +374,3 @@ map("n", "<leader>qm", ":call quickui#context#open(g:context_menu_1, {})<cr>", {
 map("n", "<leader>qf", ":call quickui#context#open(g:context_menu_qf, {})<cr>", { silent = true })
 
 require("config")
-
