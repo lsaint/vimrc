@@ -28,10 +28,6 @@ local hightlight_ignore_list = {
     "checkhealth",
     "aerial",
     "trouble",
-    "dap-repl",
-    "dapui_scopes",
-    "dapui_stacks",
-    "dapui_watches",
 }
 
 local function fzf_menu(commands, title, extra_winopts)
@@ -86,9 +82,13 @@ local function sidekick_menu()
         "Sidekick nes toggle",
         "Sidekick nes clear",
         "Sidekick nes disable",
+        "Sidekick cli send",
+        "Sidekick cli select",
     }, "Sidekick Commands")
 end
-vim.keymap.set("n", "<C-.>", sidekick_menu, args)
+vim.keymap.set("n", "<C-n>", sidekick_menu, args)
+vim.keymap.set("n", "<C-.>", ":Sidekick cli toggle<cr>", args)
+vim.keymap.set("n", "<tab><tab>", ":Sidekick cli prompt<cr>", args)
 
 --------------------------------------------------------------------------------------------
 --- copilot.lua
@@ -432,7 +432,7 @@ require("fzf-lua").setup({
         row = 0.75,
         col = 0.60,
     },
-    register_ui_select = true,
+    ui_select = true,
 })
 
 vim.keymap.set("n", "<leader>;", ":FzfLua builtin<cr>", args)

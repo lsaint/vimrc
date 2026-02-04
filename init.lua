@@ -61,12 +61,6 @@ require("lazy").setup({
     { "saghen/blink.cmp", version = "1.*" },
     "fang2hou/blink-copilot",
 
-    -- Debug (DAP)
-    "mfussenegger/nvim-dap",
-    { "mfussenegger/nvim-dap-python", ft = "python" },
-    "nvim-neotest/nvim-nio",
-    "rcarriga/nvim-dap-ui",
-
     -- LSP
     "neovim/nvim-lspconfig",
     "creativenull/efmls-configs-nvim",
