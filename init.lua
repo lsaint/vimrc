@@ -188,31 +188,6 @@ aucmd("BufEnter", {
     command = "let g:extension = expand('%:e')",
 })
 
-aucmd("FileType", {
-    pattern = "go",
-    callback = function()
-        local map = function(keys, func)
-            vim.keymap.set("n", keys, func, { buffer = true, remap = true })
-        end
-        map("<Leader>i", "<Plug>(go-info)")
-        map("<Leader>doc", "<Plug>(go-doc)")
-        map("gd", "<Plug>(go-def)")
-    end,
-})
-
-aucmd("FileType", {
-    pattern = "qf",
-    callback = function()
-        vim.keymap.set(
-            "n",
-            "`",
-            ":call quickui#tools#preview_quickfix()<cr>",
-            { buffer = true, silent = true }
-        )
-    end,
-    group = vim.api.nvim_create_augroup("MyQuickfixPreview", { clear = true }),
-})
-
 -- QuickUI Menus
 vim.cmd([[ 
   call quickui#menu#reset()
@@ -232,10 +207,8 @@ vim.cmd([[
       \ ['Run &Python', '!python3 %', ''],
       \ ['Run &Go', '!go run %', ''],
       \ ['Run &Shell', '!sh %', ''],
-      \ ['Run &Django', '!python manage.py shell < %', ''],
       \ ])
   call quickui#menu#install("&Config", [
-      \ ['&StartupTime', ':StartupTime', 'Times are in milliseconds'],
       \ ['&Vimrc', ':e $MYVIMRC', ''],
       \ ['Vim&Tips', ':e ~/GDrive/vim/vimtips.txt', ''],
       \ ])
