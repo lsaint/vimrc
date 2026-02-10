@@ -101,8 +101,8 @@ require("copilot").setup({
             accept_line = "<C-l>",
             accept = "<C-;>",
             dismiss = "<C-'>",
-            next = "<tab>",
-            prev = "<s-tab>",
+            next = "<c-n>",
+            prev = "<c-p>",
         },
     },
     panel = {
@@ -510,7 +510,11 @@ require("nvim-treesitter.configs").setup({
 --------------------------------------------------------------------------------------------
 --- goto-preview: show lsp information in floating windows
 --------------------------------------------------------------------------------------------
-require("goto-preview").setup({ opacity = 10 })
+require("goto-preview").setup({
+    opacity = 10,
+    width = 90,
+    height = 20,
+})
 
 vim.keymap.set("n", "`", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", args)
 vim.keymap.set("n", "<esc>", "<cmd>lua require('goto-preview').close_all_win()<CR>", args)

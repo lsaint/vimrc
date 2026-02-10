@@ -14,68 +14,77 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup({
-    -- UI & Editor
-    { "ibhagwan/fzf-lua", dependencies = { "nvim-tree/nvim-web-devicons" } },
-    "lukas-reineke/indent-blankline.nvim",
-    "editorconfig/editorconfig-vim",
-    "markonm/traces.vim",
-    { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate", branch = "master" },
-    "nvim-tree/nvim-tree.lua",
-    "nvim-treesitter/nvim-treesitter-textobjects",
-    "tpope/vim-surround",
-    "scrooloose/nerdcommenter",
-    "unblevable/quick-scope",
-    "skywind3000/vim-quickui",
-    "andymass/vim-matchup",
-    "RRethy/vim-illuminate",
-    "echasnovski/mini.animate",
-    "stevearc/stickybuf.nvim",
-    "stevearc/aerial.nvim",
-    "nvim-lualine/lualine.nvim",
+require("lazy").setup(
     {
-        "morhetz/gruvbox",
-        lazy = false,
-        priority = 1000,
-        config = function()
-            vim.cmd("colorscheme gruvbox")
-        end,
+        -- UI & Editor
+        { "ibhagwan/fzf-lua", dependencies = { "nvim-tree/nvim-web-devicons" } },
+        "lukas-reineke/indent-blankline.nvim",
+        "editorconfig/editorconfig-vim",
+        "markonm/traces.vim",
+        { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate", branch = "master" },
+        "nvim-tree/nvim-tree.lua",
+        "nvim-treesitter/nvim-treesitter-textobjects",
+        "tpope/vim-surround",
+        "scrooloose/nerdcommenter",
+        "unblevable/quick-scope",
+        "skywind3000/vim-quickui",
+        "andymass/vim-matchup",
+        "RRethy/vim-illuminate",
+        "echasnovski/mini.animate",
+        "stevearc/stickybuf.nvim",
+        "stevearc/aerial.nvim",
+        "nvim-lualine/lualine.nvim",
+        {
+            "morhetz/gruvbox",
+            lazy = false,
+            priority = 1000,
+            config = function()
+                vim.cmd("colorscheme gruvbox")
+            end,
+        },
+
+        -- Git
+        "lewis6991/gitsigns.nvim",
+        "kdheepak/lazygit.nvim",
+
+        -- Quickfix
+        "folke/trouble.nvim",
+        "kevinhwang91/nvim-bqf",
+        "romainl/vim-qf",
+        "wincent/ferret",
+        "yssl/QFEnter",
+
+        -- AI
+        "zbirenbaum/copilot.lua",
+        "folke/sidekick.nvim",
+
+        -- Completion
+        { "saghen/blink.cmp", version = "1.*" },
+        "fang2hou/blink-copilot",
+
+        -- LSP
+        "neovim/nvim-lspconfig",
+        "creativenull/efmls-configs-nvim",
+        "lukas-reineke/lsp-format.nvim",
+        "williamboman/mason.nvim",
+        "williamboman/mason-lspconfig.nvim",
+        {
+            "rmagatti/goto-preview",
+            dependencies = { "rmagatti/logger.nvim" },
+            event = "BufEnter",
+            config = true,
+        },
+
+        -- Language
+        "OXY2DEV/markview.nvim",
+        "mracos/mermaid.vim",
     },
-
-    -- Git
-    "lewis6991/gitsigns.nvim",
-    "kdheepak/lazygit.nvim",
-
-    -- Quickfix
-    "folke/trouble.nvim",
-    "kevinhwang91/nvim-bqf",
-    "romainl/vim-qf",
-    "wincent/ferret",
-    "yssl/QFEnter",
-
-    -- AI
-    "zbirenbaum/copilot.lua",
-    "folke/sidekick.nvim",
-
-    -- Completion
-    { "saghen/blink.cmp", version = "1.*" },
-    "fang2hou/blink-copilot",
-
-    -- LSP
-    "neovim/nvim-lspconfig",
-    "creativenull/efmls-configs-nvim",
-    "lukas-reineke/lsp-format.nvim",
-    "williamboman/mason.nvim",
-    "williamboman/mason-lspconfig.nvim",
-    "rmagatti/goto-preview",
-
-    -- Language
-    "OXY2DEV/markview.nvim",
-    "mracos/mermaid.vim",
-}, {
-    defaults = { lazy = false },
-    ui = { border = "rounded" },
-})
+    -- Global config for all plugins
+    {
+        defaults = { lazy = false },
+        ui = { border = "rounded" },
+    }
+)
 
 --
 
