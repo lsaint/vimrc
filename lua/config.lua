@@ -511,12 +511,27 @@ require("nvim-treesitter.configs").setup({
 --- goto-preview: show lsp information in floating windows
 --------------------------------------------------------------------------------------------
 require("goto-preview").setup({
-    opacity = 10,
+    opacity = 12,
     width = 90,
     height = 20,
 })
 
-vim.keymap.set("n", "`", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", args)
+local function better_goto_preview_definition()
+    local params = vim.lsp.util.make_position_params()
+    for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
+        if client.supports_method("textDocument/definition") then
+            params.offset_encoding = client.offset_encoding
+            break
+        end
+    end
+
+    require("goto-preview").goto_preview_definition({
+        lsp_params = params,
+    })
+end
+
+--vim.keymap.set("n", "`", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", args)
+vim.keymap.set("n", "`", better_goto_preview_definition, args)
 vim.keymap.set("n", "<esc>", "<cmd>lua require('goto-preview').close_all_win()<CR>", args)
 
 --------------------------------------------------------------------------------------------
