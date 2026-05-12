@@ -185,6 +185,7 @@ require("nvim-tree").setup({
         vim.keymap.set("n", "S", api.node.run.system, opts("Run System"))
         vim.keymap.set("n", "v", api.node.open.vertical, opts("Open: Vertical Split"))
         vim.keymap.set("n", "s", api.node.open.horizontal, opts("Open: Horizontal Split"))
+        vim.keymap.set("n", "?", api.tree.toggle_help, opts("Help"))
     end,
 
     filters = {
@@ -389,6 +390,7 @@ lsp_setup("efm", {
             yaml = formatter_prettier,
             json = formatter_prettier,
             jsonc = formatter_prettier,
+            markdown = formatter_prettier,
 
             -- brew install djlint
             htmldjango = {
@@ -403,7 +405,6 @@ lsp_setup("efm", {
 
             lua = { require("efmls-configs.formatters.stylua") },
             toml = { require("efmls-configs.formatters.taplo") },
-            markdown = { require("efmls-configs.formatters.mdformat") },
             python = {
                 require("efmls-configs.formatters.ruff_sort"),
                 require("efmls-configs.formatters.ruff"),
@@ -461,7 +462,7 @@ vim.keymap.set("n", "<leader>t", "<cmd>Trouble diagnostics toggle<cr>", args)
 --------------------------------------------------------------------------------------------
 --- treesitter
 --------------------------------------------------------------------------------------------
-require("nvim-treesitter.configs").setup({
+require("nvim-treesitter.config").setup({
     ensure_installed = {
         "python",
         "c",
@@ -516,22 +517,7 @@ require("goto-preview").setup({
     height = 20,
 })
 
-local function better_goto_preview_definition()
-    local params = vim.lsp.util.make_position_params()
-    for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
-        if client.supports_method("textDocument/definition") then
-            params.offset_encoding = client.offset_encoding
-            break
-        end
-    end
-
-    require("goto-preview").goto_preview_definition({
-        lsp_params = params,
-    })
-end
-
---vim.keymap.set("n", "`", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", args)
-vim.keymap.set("n", "`", better_goto_preview_definition, args)
+vim.keymap.set("n", "`", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", args)
 vim.keymap.set("n", "<esc>", "<cmd>lua require('goto-preview').close_all_win()<CR>", args)
 
 --------------------------------------------------------------------------------------------
